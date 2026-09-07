@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /admin.php
+Disallow: /admin-cms.php
+Disallow: /api/
+Disallow: /config/
+Disallow: /includes/
+
+Sitemap: https://digital4local.com/sitemap.php
+Sitemap: https://digital4local.com/sitemap.xml

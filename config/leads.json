@@ -1,0 +1,54 @@
+[
+    {
+        "id": "LEAD-20260902-134812-7599",
+        "name": "Abhishek Test Lead",
+        "email": "audit-test@digital4local.com",
+        "phone": "+1 512 890 4400",
+        "company": "Apex Dental Clinic",
+        "website": "https://apexdentalexample.com",
+        "industry": "Private Dental Clinics",
+        "message": "Testing lead capture &amp; dispatch to info@digital4local.com",
+        "date": "2026-09-02 13:48:12",
+        "status": "New",
+        "source": "Contact Us QC Test"
+    },
+    {
+        "id": "LEAD-20260902-134259-50e4",
+        "name": "Abhishek Test Lead",
+        "email": "audit-test@digital4local.com",
+        "phone": "+1 512 890 4400",
+        "company": "Apex Dental Clinic",
+        "website": "https://apexdentalexample.com",
+        "industry": "Private Dental Clinics",
+        "message": "Testing lead capture &amp; dispatch to info@digital4local.com",
+        "date": "2026-09-02 13:42:59",
+        "status": "New",
+        "source": "Contact Us QC Test"
+    },
+    {
+        "id": "LEAD-20260902-134201-e031",
+        "name": "Quality Control Lead",
+        "email": "qc-tester@digital4local.com",
+        "phone": "+1 512 890 4400",
+        "company": "Digital4Local Automated QC",
+        "website": "https://digital4local.com",
+        "industry": "System Testing",
+        "message": "Automated system diagnostic lead verifying email routing to info@digital4local.com.",
+        "date": "2026-09-02 13:42:01",
+        "status": "New",
+        "source": "Automated Deep QC"
+    },
+    {
+        "id": "LEAD-20260901-095339-f237",
+        "name": "John Test Lead",
+        "email": "john.test@growthscale.com",
+        "phone": "+1 (512) 555-0199",
+        "company": "GrowthScale Global",
+        "website": "",
+        "industry": "local",
+        "message": "Interested in 5x5 geo-grid tracking and GEO ChatGPT citations.",
+        "date": "2026-09-01 09:53:39",
+        "status": "New",
+        "source": "Website Modal"
+    }
+]

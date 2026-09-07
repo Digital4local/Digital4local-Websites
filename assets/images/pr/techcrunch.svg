@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 50" width="160" height="50">
+  <rect x="15" y="10" width="30" height="30" rx="6" fill="#00A562"/>
+  <text x="30" y="31" font-family="Montserrat, sans-serif" font-weight="900" font-size="16" fill="#FFFFFF" text-anchor="middle">TC</text>
+  <text x="105" y="32" font-family="Montserrat, sans-serif" font-weight="800" font-size="16" fill="#14151A" text-anchor="middle">TechCrunch</text>
+</svg>

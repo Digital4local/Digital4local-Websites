@@ -1,0 +1,27 @@
+{
+    "users": [
+        {
+            "id": "USR-001",
+            "username": "admin",
+            "email": "admin@digital4local.com",
+            "name": "Abhishek Raikwar",
+            "role": "Super Admin",
+            "password_hash": "$2y$10$ECMi8EW3KjH.fXpR9aSOF.Jpr7PlmSpOx0.tmJWHHOGqJaI3K/9pS",
+            "created_at": "2026-09-02 13:51:06",
+            "last_login": null,
+            "password_updated_at": "2026-09-02 13:58:48"
+        },
+        {
+            "id": "USR-002",
+            "username": "abhishek",
+            "email": "abhishek@digital4local.com",
+            "name": "Abhishek Raikwar",
+            "role": "Founder & Principal Search Engineer",
+            "password_hash": "$2y$10$ECMi8EW3KjH.fXpR9aSOF.Jpr7PlmSpOx0.tmJWHHOGqJaI3K/9pS",
+            "created_at": "2026-09-02 13:51:06",
+            "last_login": null
+        }
+    ],
+    "session_lifetime_minutes": 180,
+    "max_login_attempts": 5
+}
