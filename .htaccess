@@ -7,6 +7,9 @@
     RewriteRule ^config/.*$ - [F,L]
     RewriteRule ^scripts/.*$ - [F,L]
 
+    # Subfolder asset fallback rewrite (e.g. /blog/assets/... -> /assets/...)
+    RewriteRule ^(?:blog|services|industries)/assets/(.*)$ assets/$1 [L]
+
     # Blog URLs rewrite to blog-single.php template
     RewriteRule ^blog/([a-zA-Z0-9_-]+)/?$ blog-single.php?slug=$1 [QSA,L]
     RewriteRule ^blog/([a-zA-Z0-9_-]+)\.php$ blog-single.php?slug=$1 [QSA,L]

@@ -6,6 +6,27 @@
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $file_path = __DIR__ . $uri;
 
+// 0. Asset rewrite fallback for subfolder requests (e.g. /blog/assets/... -> /assets/...)
+if (preg_match('#^/(?:blog|services|industries)/assets/(.*)$#', $uri, $m)) {
+    $real_asset = __DIR__ . '/assets/' . $m[1];
+    if (file_exists($real_asset) && !is_dir($real_asset)) {
+        $mimes = [
+            'png' => 'image/png',
+            'jpg' => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'svg' => 'image/svg+xml',
+            'ico' => 'image/x-icon',
+            'css' => 'text/css',
+            'js' => 'application/javascript',
+            'webp' => 'image/webp'
+        ];
+        $ext = strtolower(pathinfo($real_asset, PATHINFO_EXTENSION));
+        header('Content-Type: ' . ($mimes[$ext] ?? 'application/octet-stream'));
+        readfile($real_asset);
+        return true;
+    }
+}
+
 // 1. Static asset files (CSS, JS, images, fonts, etc.)
 if ($uri !== '/' && file_exists($file_path) && !is_dir($file_path)) {
     $ext = pathinfo($file_path, PATHINFO_EXTENSION);

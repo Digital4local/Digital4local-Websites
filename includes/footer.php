@@ -11,7 +11,7 @@ $footer_logo_rel_path = ltrim($site_config['brand']['logo_path'], '/');
       <!-- Brand Info Column -->
       <div class="lg:col-span-2 space-y-4">
         <a href="<?php echo $footer_base_path; ?>index.php" class="inline-block" aria-label="Digital4Local Home">
-          <img src="<?php echo $footer_base_path . htmlspecialchars($footer_logo_rel_path); ?>" alt="<?php echo htmlspecialchars($site_config['brand']['logo_alt']); ?>" class="<?php echo htmlspecialchars($site_config['brand']['logo_footer_height']); ?> w-auto object-contain">
+          <img src="<?php echo $footer_base_path . htmlspecialchars($footer_logo_rel_path); ?>" onerror="this.onerror=null; if(!this.dataset.retried){this.dataset.retried='1';this.src='/assets/images/digital4local_logo.png';}else if(this.dataset.retried==='1'){this.dataset.retried='2';this.src='../assets/images/digital4local_logo.png';}" alt="<?php echo htmlspecialchars($site_config['brand']['logo_alt']); ?>" class="<?php echo htmlspecialchars($site_config['brand']['logo_footer_height']); ?> w-auto object-contain">
         </a>
         <p class="text-[#5B5F6B] leading-relaxed max-w-sm">
           <?php echo htmlspecialchars($site_config['footer']['description']); ?>

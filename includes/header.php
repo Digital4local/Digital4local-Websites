@@ -9,7 +9,7 @@ $logo_rel_path = ltrim($site_config['brand']['logo_path'], '/');
     
     <!-- Official Digital4Local Brand Logo -->
     <a href="<?php echo $base_path; ?>index.php" class="flex items-center group py-1" aria-label="Digital4Local Home">
-      <img src="<?php echo $base_path . htmlspecialchars($logo_rel_path); ?>" alt="<?php echo htmlspecialchars($site_config['brand']['logo_alt']); ?>" class="<?php echo htmlspecialchars($site_config['brand']['logo_header_height']); ?> w-auto object-contain group-hover:scale-105 transition-transform duration-200">
+      <img src="<?php echo $base_path . htmlspecialchars($logo_rel_path); ?>" onerror="this.onerror=null; if(!this.dataset.retried){this.dataset.retried='1';this.src='/assets/images/digital4local_logo.png';}else if(this.dataset.retried==='1'){this.dataset.retried='2';this.src='../assets/images/digital4local_logo.png';}" alt="<?php echo htmlspecialchars($site_config['brand']['logo_alt']); ?>" class="<?php echo htmlspecialchars($site_config['brand']['logo_header_height']); ?> w-auto object-contain group-hover:scale-105 transition-transform duration-200">
     </a>
 
     <!-- Desktop Navigation -->
