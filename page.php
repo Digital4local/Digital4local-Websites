@@ -8,11 +8,38 @@ $cfg = get_page_config($page_key);
 $is_draft = ($cfg['status'] ?? 'published') === 'draft';
 $page_title = ($cfg['meta_title'] ?? $cfg['title']) . " | Digital4Local";
 $page_description = $cfg['meta_description'] ?? ($cfg['hero_subheading'] ?? 'Custom high-converting growth solution page powered by Digital4Local AI engine.');
+
+// FAQ Schema Items
+$faq_schema_items = [];
+if (!empty($cfg['faqs']) && is_array($cfg['faqs'])) {
+    foreach ($cfg['faqs'] as $faq) {
+        if (!empty($faq['q']) && !empty($faq['a'])) {
+            $faq_schema_items[] = [
+                '@type' => 'Question',
+                'name' => $faq['q'],
+                'acceptedAnswer' => [
+                    '@type' => 'Answer',
+                    'text' => strip_tags($faq['a'])
+                ]
+            ];
+        }
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <?php include_once 'includes/seo.php'; ?>
+  <?php if (!empty($faq_schema_items)): ?>
+  <!-- Dynamic FAQPage Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": <?php echo json_encode($faq_schema_items, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE); ?>
+  }
+  </script>
+  <?php endif; ?>
 </head>
 <body class="bg-[#FFFFFF] text-[#14151A] min-h-screen relative selection:bg-[#00F0FF] selection:text-[#0A0A0F]">
 
@@ -88,7 +115,33 @@ $page_description = $cfg['meta_description'] ?? ($cfg['hero_subheading'] ?? 'Cus
           <p class="text-xs text-[#5B5F6B]">Automated n8n webhook response pipelines converting inquiries at peak buying intent.</p>
         </div>
       </div>
+    <?php if (!empty($cfg['faqs']) && is_array($cfg['faqs'])): ?>
+    <!-- Dynamic FAQ Accordion Section -->
+    <section class="max-w-4xl mx-auto px-4 pb-20" data-aos="fade-up">
+      <div class="space-y-6">
+        <div class="text-center space-y-2">
+          <span class="text-xs font-mono text-[#00A8B5] font-bold uppercase tracking-wider">FREQUENTLY ASKED QUESTIONS</span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-[#14151A] font-['Montserrat',sans-serif]">Frequently Asked Questions</h2>
+          <p class="text-xs text-[#5B5F6B]">Everything you need to know about our growth architecture and delivery.</p>
+        </div>
+        <div class="space-y-3" id="page-faq-accordion">
+          <?php foreach ($cfg['faqs'] as $faq): 
+            if (empty($faq['q']) || empty($faq['a'])) continue;
+          ?>
+          <div class="faq-item card-dark p-5 sm:p-6 cursor-pointer bg-[#F8FAFC] border border-[#E4E7EC] rounded-xl transition-all hover:border-[#00A8B5]/40">
+            <div class="faq-header flex items-center justify-between font-bold text-sm sm:text-base text-[#14151A]">
+              <span><?php echo htmlspecialchars($faq['q']); ?></span>
+              <i data-lucide="chevron-down" class="w-5 h-5 text-[#00A8B5] faq-chevron transition-transform"></i>
+            </div>
+            <div class="faq-answer text-xs sm:text-sm text-[#5B5F6B] leading-relaxed">
+              <?php echo nl2br(htmlspecialchars($faq['a'])); ?>
+            </div>
+          </div>
+          <?php endforeach; ?>
+        </div>
+      </div>
     </section>
+    <?php endif; ?>
 
     <!-- Bottom Conversion CTA -->
     <section class="max-w-4xl mx-auto px-4 text-center">

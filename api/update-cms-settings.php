@@ -312,6 +312,44 @@ foreach ($input_data as $key => $value) {
         continue;
     }
     
+    // Check if updating standard pages & custom pages
+    if ($key === 'pages' && is_array($value)) {
+        if (!isset($current_settings['pages'])) {
+            $current_settings['pages'] = [];
+        }
+        foreach ($value as $page_k => $page_val) {
+            if (is_array($page_val)) {
+                // Handle FAQs decoding & cleaning
+                if (isset($page_val['faqs'])) {
+                    if (is_string($page_val['faqs'])) {
+                        $dec = @json_decode($page_val['faqs'], true);
+                        if (is_array($dec)) $page_val['faqs'] = $dec;
+                    }
+                    if (is_array($page_val['faqs'])) {
+                        $page_val['faqs'] = array_values(array_filter($page_val['faqs'], function($f) {
+                            return (!empty(trim($f['q'] ?? '')) || !empty(trim($f['a'] ?? '')));
+                        }));
+                    }
+                }
+                if (!isset($current_settings['pages'][$page_k])) {
+                    $current_settings['pages'][$page_k] = [];
+                }
+                $current_settings['pages'][$page_k] = array_merge($current_settings['pages'][$page_k], $page_val);
+                
+                // If custom page, sync to custom_pages array
+                if (strpos($page_k, 'custom_') === 0 && isset($current_settings['custom_pages'])) {
+                    foreach ($current_settings['custom_pages'] as &$cp) {
+                        if (($cp['key'] ?? '') === $page_k) {
+                            $cp = array_merge($cp, $current_settings['pages'][$page_k]);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        continue;
+    }
+    
     if (is_array($value) && isset($current_settings[$key]) && is_array($current_settings[$key])) {
         $current_settings[$key] = array_replace_recursive($current_settings[$key], $value);
     } else {

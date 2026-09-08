@@ -233,7 +233,7 @@ $schema_graph[] = [
             <?php endforeach; ?>
           </ul>
           <div class="pt-3 border-t border-[#E2E8F0]">
-            <a href="blog.php" class="text-[#1B5FAA] font-bold hover:underline flex items-center gap-1 font-sans text-xs">
+            <a href="<?php echo $base_path; ?>blog.php" class="text-[#1B5FAA] font-bold hover:underline flex items-center gap-1 font-sans text-xs">
               ← Back to All Articles
             </a>
           </div>
@@ -255,7 +255,7 @@ $schema_graph[] = [
         <?php if (!empty($post['featured_image'])): 
           $img_src = $post['featured_image'];
           if (strpos($img_src, 'http://') !== 0 && strpos($img_src, 'https://') !== 0) {
-              $img_src = '/' . ltrim($img_src, '/.');
+              $img_src = $base_path . ltrim($img_src, '/.');
           }
         ?>
         <div class="w-full rounded-2xl overflow-hidden border border-[#E2E8F0] shadow-sm mb-6">
@@ -267,7 +267,7 @@ $schema_graph[] = [
         <div class="block lg:hidden bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl p-5 mb-6 shadow-sm">
           <div class="text-[#14151A] font-bold uppercase tracking-wider text-[11px] border-b border-[#E2E8F0] pb-2.5 font-mono flex items-center justify-between">
             <span>ARTICLE HIGHLIGHTS</span>
-            <a href="blog.php" class="text-[#1B5FAA] text-[10px] font-bold hover:underline font-sans">← All Articles</a>
+            <a href="<?php echo $base_path; ?>blog.php" class="text-[#1B5FAA] text-[10px] font-bold hover:underline font-sans">← All Articles</a>
           </div>
           <ul class="space-y-2.5 text-[#475569] font-mono text-[11px] pt-3">
             <?php foreach ($highlights as $h_idx => $hl): 

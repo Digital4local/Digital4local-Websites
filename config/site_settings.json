@@ -92,7 +92,17 @@
             "meta_description": "Local SEO services for businesses across India: Google Business Profile optimisation, review systems, local landing pages and citation consistency that decides who ranks.",
             "focus_keyword": "Local SEO Services",
             "featured_image": "assets/images/hero_dashboard_light_v2.png",
-            "content_html": "\n              <p>Local SEO is the practice of making a business visible to customers searching nearby — in the Google map pack, in 'near me' results, and increasingly in AI answers.</p>            "
+            "content_html": "\n              <p>Local SEO is the practice of making a business visible to customers searching nearby — in the Google map pack, in 'near me' results, and increasingly in AI answers.</p>            ",
+            "faqs": [
+                {
+                    "a": "Local SEO optimizes your Google Business Profile and local citations.",
+                    "q": "What is Local SEO?"
+                },
+                {
+                    "a": "Typically 60-90 days with our 5x5 geo grid optimization.",
+                    "q": "How fast can I rank in map pack?"
+                }
+            ]
         },
         "services_geo_aeo": {
             "title": "GEO & AEO Services",

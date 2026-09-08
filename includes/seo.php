@@ -4,6 +4,9 @@
  * Engineered for 100% Google, Bing, ChatGPT, and Perplexity Search Indexation & GEO
  */
 
+require_once __DIR__ . '/site-config.php';
+$seo_base_path = function_exists('get_base_path') ? get_base_path() : '/';
+
 if (!isset($page_title) || empty($page_title)) {
     $page_title = "Digital4Local | The AI Growth Engine for Local Businesses, Startups & SaaS";
 }
@@ -150,6 +153,12 @@ $schema_data = [
 <meta name="robots" content="<?php echo htmlspecialchars($page_robots); ?>">
 <link rel="canonical" href="<?php echo htmlspecialchars($canonical_url); ?>">
 
+<!-- Favicon & Touch Icons -->
+<link rel="icon" type="image/x-icon" href="<?php echo $seo_base_path; ?>favicon.ico?v=2">
+<link rel="icon" type="image/png" sizes="32x32" href="<?php echo $seo_base_path; ?>assets/images/favicon-32x32.png?v=2">
+<link rel="icon" type="image/png" sizes="16x16" href="<?php echo $seo_base_path; ?>assets/images/favicon-16x16.png?v=2">
+<link rel="apple-touch-icon" sizes="180x180" href="<?php echo $seo_base_path; ?>assets/images/apple-touch-icon.png?v=2">
+
 <!-- Open Graph / Facebook / LinkedIn -->
 <meta property="og:type" content="website">
 <meta property="og:url" content="<?php echo htmlspecialchars($canonical_url); ?>">
@@ -181,7 +190,8 @@ $schema_data = [
 
 <!-- Custom Design System CSS -->
 <?php
-$css_path = (strpos($_SERVER['REQUEST_URI'] ?? '', '/services/') !== false || strpos($_SERVER['REQUEST_URI'] ?? '', '/industries/') !== false) ? '../assets/css/custom.css' : 'assets/css/custom.css';
+$seo_base_path = function_exists('get_base_path') ? get_base_path() : '/';
+$css_path = $seo_base_path . 'assets/css/custom.css';
 ?>
 <link rel="stylesheet" href="<?php echo $css_path; ?>">
 

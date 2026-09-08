@@ -1,18 +1,15 @@
 <?php
 require_once __DIR__ . '/site-config.php';
-if (!isset($base_path)) {
-    $script_path = $_SERVER['SCRIPT_NAME'] ?? $_SERVER['REQUEST_URI'] ?? '';
-    $is_subfolder = (strpos($script_path, '/services/') !== false || strpos($script_path, '/industries/') !== false || strpos($script_path, '/blog/') !== false);
-    $base_path = $is_subfolder ? '../' : '';
-}
+$base_path = get_base_path();
 $current_page = basename($_SERVER['PHP_SELF']);
+$logo_rel_path = ltrim($site_config['brand']['logo_path'], '/');
 ?>
 <header id="main-header" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 py-3 px-4 sm:px-8 bg-[#FFFFFF]/95 backdrop-blur-md border-b border-[#E4E7EC] shadow-sm">
   <div class="max-w-7xl mx-auto flex items-center justify-between">
     
     <!-- Official Digital4Local Brand Logo -->
     <a href="<?php echo $base_path; ?>index.php" class="flex items-center group py-1" aria-label="Digital4Local Home">
-      <img src="<?php echo $base_path . htmlspecialchars($site_config['brand']['logo_path']); ?>" alt="<?php echo htmlspecialchars($site_config['brand']['logo_alt']); ?>" class="<?php echo htmlspecialchars($site_config['brand']['logo_header_height']); ?> w-auto object-contain group-hover:scale-105 transition-transform duration-200">
+      <img src="<?php echo $base_path . htmlspecialchars($logo_rel_path); ?>" alt="<?php echo htmlspecialchars($site_config['brand']['logo_alt']); ?>" class="<?php echo htmlspecialchars($site_config['brand']['logo_header_height']); ?> w-auto object-contain group-hover:scale-105 transition-transform duration-200">
     </a>
 
     <!-- Desktop Navigation -->

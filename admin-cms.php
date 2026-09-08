@@ -116,6 +116,12 @@ $page_cfg = get_page_config($active_key);
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CMS Studio & Content Suite | Digital4Local</title>
   
+  <!-- Favicon & Touch Icons -->
+  <link rel="icon" type="image/x-icon" href="favicon.ico?v=2">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon-32x32.png?v=2">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon-16x16.png?v=2">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png?v=2">
+  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -470,11 +476,9 @@ $page_cfg = get_page_config($active_key);
         <button onclick="switchEditorTab('media')" class="editor-tab-btn px-3.5 py-2 rounded-t-lg text-[#9CA3AF] hover:text-white text-xs flex items-center gap-1.5 transition-all">
           <i data-lucide="image" class="w-3.5 h-3.5"></i> Featured Image
         </button>
-        <?php if ($is_blog_item): ?>
         <button onclick="switchEditorTab('faqs')" class="editor-tab-btn px-3.5 py-2 rounded-t-lg text-[#9CA3AF] hover:text-white text-xs flex items-center gap-1.5 transition-all">
           <i data-lucide="help-circle" class="w-3.5 h-3.5 text-[#00F0FF]"></i> FAQs (Accordion)
         </button>
-        <?php endif; ?>
         <button onclick="switchEditorTab('seo')" class="editor-tab-btn px-3.5 py-2 rounded-t-lg text-[#9CA3AF] hover:text-white text-xs flex items-center gap-1.5 transition-all">
           <i data-lucide="search" class="w-3.5 h-3.5"></i> SEO & Schema
         </button>
@@ -652,16 +656,15 @@ $page_cfg = get_page_config($active_key);
         <!-- ========================================== -->
         <!-- TAB 4: DYNAMIC FAQS & ACCORDION BUILDER -->
         <!-- ========================================== -->
-        <?php if ($is_blog_item): ?>
         <div id="tab-pane-faqs" class="space-y-4 hidden">
           <div class="card-dark p-4 space-y-4 bg-[#111827] border border-[#1F2937] rounded-xl">
             <div class="flex items-center justify-between border-b border-[#1F2937] pb-3">
               <div>
                 <h3 class="text-xs font-mono uppercase font-bold text-[#00F0FF] flex items-center gap-1.5">
                   <i data-lucide="help-circle" class="w-4 h-4 text-[#00F0FF]"></i>
-                  <span>Frequently Asked Questions (Accordion)</span>
+                  <span>Frequently Asked Questions (Accordion Builder)</span>
                 </h3>
-                <p class="text-[11px] text-[#9CA3AF]">Manage interactive collapsible FAQs with automated FAQPage Schema.</p>
+                <p class="text-[11px] text-[#9CA3AF]">Manage interactive collapsible FAQs with automated Accordion & FAQPage Schema.</p>
               </div>
               <button type="button" onclick="addNewFaqItem()" class="px-3 py-1.5 bg-[#00A8B5] hover:bg-[#00F0FF] text-[#0F172A] font-bold rounded-lg text-xs flex items-center gap-1 shadow-md">
                 <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i> Add Question
@@ -672,21 +675,23 @@ $page_cfg = get_page_config($active_key);
             <div id="faq-items-list" class="space-y-3">
               <!-- Render existing FAQs -->
               <?php 
-              $existing_faqs = $active_blog_post['faqs'] ?? [];
-              if (empty($existing_faqs)) {
-                  $existing_faqs = [];
+              $existing_faqs = [];
+              if ($is_blog_item && isset($active_blog_post['faqs']) && is_array($active_blog_post['faqs'])) {
+                  $existing_faqs = $active_blog_post['faqs'];
+              } elseif (isset($page_cfg['faqs']) && is_array($page_cfg['faqs'])) {
+                  $existing_faqs = $page_cfg['faqs'];
               }
               ?>
             </div>
 
             <!-- Hidden JSON Field for form submission -->
-            <input type="hidden" name="active_blog_post[faqs]" id="faq-json-payload" value="<?php echo htmlspecialchars(json_encode($existing_faqs)); ?>">
+            <input type="hidden" name="<?php echo $is_blog_item ? 'active_blog_post[faqs]' : 'pages['.$active_key.'][faqs]'; ?>" id="faq-json-payload" value="<?php echo htmlspecialchars(json_encode($existing_faqs)); ?>">
 
             <!-- Live Accordion Interactive Preview -->
             <div class="pt-4 border-t border-[#1F2937] space-y-2">
               <div class="text-[10px] font-mono text-[#00F0FF] font-bold uppercase flex items-center justify-between">
                 <span>Interactive Live Accordion Preview</span>
-                <span class="text-[10px] text-[#9CA3AF]">Click question to test toggle</span>
+                <span class="text-[10px] text-[#9CA3AF]">Click question to test accordion toggle</span>
               </div>
               <div id="faq-accordion-preview-box" class="space-y-2 bg-[#0B0F19] p-3 rounded-xl border border-[#1F2937]">
                 <!-- Populated dynamically via Javascript -->
@@ -695,7 +700,6 @@ $page_cfg = get_page_config($active_key);
 
           </div>
         </div>
-        <?php endif; ?>
 
         <!-- ========================================== -->
         <!-- TAB 5: SEO & AEO OPTIMIZATION SUITE -->
@@ -1035,7 +1039,7 @@ $page_cfg = get_page_config($active_key);
     }
 
     // 4. Dynamic FAQs & Accordion Management
-    let faqsData = <?php echo json_encode($active_blog_post['faqs'] ?? []); ?>;
+    let faqsData = <?php echo json_encode($existing_faqs); ?>;
     if (!Array.isArray(faqsData)) faqsData = [];
 
     function renderFaqItems() {
@@ -1047,7 +1051,7 @@ $page_cfg = get_page_config($active_key);
       previewBox.innerHTML = '';
 
       if (faqsData.length === 0) {
-        container.innerHTML = '<div class="p-4 rounded-xl bg-[#1F2937]/50 border border-dashed border-[#374151] text-center text-xs text-[#9CA3AF]">No FAQ questions added yet. Click "+ Add Question" above.</div>';
+        container.innerHTML = '<div class="p-4 rounded-xl bg-[#1F2937]/50 border border-dashed border-[#374151] text-center text-xs text-[#9CA3AF]">No FAQ questions added yet. Click "+ Add Question" above to add interactive accordions.</div>';
         previewBox.innerHTML = '<div class="p-3 text-center text-xs text-[#6B7280]">Accordion preview will appear here when FAQs are added.</div>';
         document.getElementById('faq-json-payload').value = JSON.stringify([]);
         return;
@@ -1056,36 +1060,36 @@ $page_cfg = get_page_config($active_key);
       faqsData.forEach((faq, index) => {
         // Builder item
         const itemCard = document.createElement('div');
-        itemCard.className = 'p-3.5 bg-[#1F2937] border border-[#374151] rounded-xl space-y-2.5';
+        itemCard.className = 'p-3.5 bg-[#1F2937] border border-[#374151] rounded-xl space-y-2.5 shadow-sm';
         itemCard.innerHTML = `
-          <div class="flex items-center justify-between">
-            <span class="px-2 py-0.5 rounded bg-[#00A8B5]/20 text-[#00F0FF] text-[10px] font-mono font-bold">FAQ #${index + 1}</span>
+          <div class="flex items-center justify-between border-b border-[#374151]/60 pb-2">
+            <span class="px-2 py-0.5 rounded bg-[#00A8B5]/20 text-[#00F0FF] text-[10px] font-mono font-bold">FAQ Accordion Item #${index + 1}</span>
             <div class="flex items-center gap-1">
-              ${index > 0 ? `<button type="button" onclick="moveFaq(${index}, -1)" class="p-1 hover:bg-[#374151] text-[#9CA3AF] hover:text-white rounded" title="Move Up"><i data-lucide="arrow-up" class="w-3 h-3"></i></button>` : ''}
-              ${index < faqsData.length - 1 ? `<button type="button" onclick="moveFaq(${index}, 1)" class="p-1 hover:bg-[#374151] text-[#9CA3AF] hover:text-white rounded" title="Move Down"><i data-lucide="arrow-down" class="w-3 h-3"></i></button>` : ''}
-              <button type="button" onclick="removeFaq(${index})" class="p-1 text-[#EF4444] hover:bg-[#EF4444]/20 rounded" title="Delete Question"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+              ${index > 0 ? `<button type="button" onclick="moveFaq(${index}, -1)" class="p-1 hover:bg-[#374151] text-[#9CA3AF] hover:text-white rounded transition-colors" title="Move Up"><i data-lucide="arrow-up" class="w-3.5 h-3.5"></i></button>` : ''}
+              ${index < faqsData.length - 1 ? `<button type="button" onclick="moveFaq(${index}, 1)" class="p-1 hover:bg-[#374151] text-[#9CA3AF] hover:text-white rounded transition-colors" title="Move Down"><i data-lucide="arrow-down" class="w-3.5 h-3.5"></i></button>` : ''}
+              <button type="button" onclick="removeFaq(${index})" class="p-1 text-[#EF4444] hover:bg-[#EF4444]/20 rounded transition-colors" title="Delete Question"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
             </div>
           </div>
           <div>
-            <label class="block text-[10px] font-mono text-[#9CA3AF] mb-1 font-bold">QUESTION</label>
-            <input type="text" class="w-full bg-[#111827] border border-[#374151] rounded-lg px-2.5 py-1.5 text-xs text-white outline-none focus:border-[#00A8B5] font-semibold" value="${escapeHtml(faq.q || '')}" oninput="updateFaqQuestion(${index}, this.value)" placeholder="e.g. How does AI search citation work?">
+            <label class="block text-[10px] font-mono text-[#9CA3AF] mb-1 font-bold">QUESTION (ACCORDION HEADER)</label>
+            <input type="text" class="w-full bg-[#111827] border border-[#374151] rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-[#00A8B5] font-semibold transition-colors" value="${escapeHtml(faq.q || '')}" oninput="updateFaqQuestion(${index}, this.value)" placeholder="e.g. How does local SEO help my business?">
           </div>
           <div>
-            <label class="block text-[10px] font-mono text-[#9CA3AF] mb-1 font-bold">ANSWER</label>
-            <textarea rows="2" class="w-full bg-[#111827] border border-[#374151] rounded-lg px-2.5 py-1.5 text-xs text-[#CBD5E1] outline-none focus:border-[#00A8B5]" oninput="updateFaqAnswer(${index}, this.value)" placeholder="Enter comprehensive answer...">${escapeHtml(faq.a || '')}</textarea>
+            <label class="block text-[10px] font-mono text-[#9CA3AF] mb-1 font-bold">ANSWER (ACCORDION COLLAPSED CONTENT)</label>
+            <textarea rows="3" class="w-full bg-[#111827] border border-[#374151] rounded-lg px-3 py-2 text-xs text-[#CBD5E1] outline-none focus:border-[#00A8B5] transition-colors leading-relaxed" oninput="updateFaqAnswer(${index}, this.value)" placeholder="Enter comprehensive answer text...">${escapeHtml(faq.a || '')}</textarea>
           </div>
         `;
         container.appendChild(itemCard);
 
         // Preview Accordion item
         const previewItem = document.createElement('div');
-        previewItem.className = 'border border-[#374151] rounded-lg overflow-hidden bg-[#111827] text-xs';
+        previewItem.className = 'border border-[#374151] rounded-xl overflow-hidden bg-[#111827] text-xs transition-all hover:border-[#00A8B5]/50';
         previewItem.innerHTML = `
-          <button type="button" class="w-full p-2.5 text-left font-bold text-white flex items-center justify-between gap-2 hover:bg-[#1F2937]" onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('.preview-icon').textContent = this.nextElementSibling.classList.contains('hidden') ? '+' : '−'">
-            <span>${escapeHtml(faq.q || 'Untitled Question')}</span>
-            <span class="preview-icon text-sm font-mono text-[#00F0FF] shrink-0 font-bold">+</span>
+          <button type="button" class="w-full p-3.5 text-left font-bold text-white flex items-center justify-between gap-3 hover:bg-[#1F2937] transition-colors" onclick="toggleCmsFaqPreview(this)">
+            <span class="text-xs sm:text-sm font-semibold">${escapeHtml(faq.q || 'Untitled Question')}</span>
+            <span class="preview-icon text-sm font-mono text-[#00F0FF] shrink-0 font-bold px-2 py-0.5 rounded bg-[#00F0FF]/10 transition-transform">+</span>
           </button>
-          <div class="p-2.5 pt-0 text-[11px] text-[#9CA3AF] hidden border-t border-[#1F2937] leading-relaxed">
+          <div class="preview-ans p-3.5 pt-0 text-xs text-[#9CA3AF] hidden border-t border-[#1F2937] leading-relaxed bg-[#050811]/60">
             ${escapeHtml(faq.a || 'No answer provided yet.').replace(/\n/g, '<br>')}
           </div>
         `;
@@ -1094,6 +1098,21 @@ $page_cfg = get_page_config($active_key);
 
       document.getElementById('faq-json-payload').value = JSON.stringify(faqsData);
       if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
+
+    function toggleCmsFaqPreview(btn) {
+      const ans = btn.nextElementSibling;
+      const icon = btn.querySelector('.preview-icon');
+      const isClosed = ans.classList.contains('hidden');
+      
+      // Close other preview items
+      document.querySelectorAll('#faq-accordion-preview-box .preview-ans').forEach(a => a.classList.add('hidden'));
+      document.querySelectorAll('#faq-accordion-preview-box .preview-icon').forEach(i => { i.textContent = '+'; });
+      
+      if (isClosed) {
+        ans.classList.remove('hidden');
+        icon.textContent = '−';
+      }
     }
 
     function escapeHtml(str) {
@@ -1304,6 +1323,7 @@ $page_cfg = get_page_config($active_key);
         if (!payload['pages'][activeKey]) payload['pages'][activeKey] = {};
         payload['pages'][activeKey]['status'] = status;
         payload['pages'][activeKey]['content_html'] = editorInstance ? editorInstance.getData() : '';
+        payload['pages'][activeKey]['faqs'] = faqsData;
       }
 
       showToast('Saving live changes...', 'info');

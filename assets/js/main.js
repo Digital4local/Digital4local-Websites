@@ -301,9 +301,12 @@ function initBookDemoModal() {
     const website = document.getElementById('demo-website')?.value?.trim() || '';
     const industry = document.getElementById('demo-industry')?.value || 'General';
 
-    const apiPath = (window.location.pathname.includes('/services/') || window.location.pathname.includes('/industries/')) 
-      ? '../api/save-lead.php' 
-      : 'api/save-lead.php';
+    let basePath = '/';
+    const subMatch = window.location.pathname.match(/^(\/[^\/]+)\/(services|industries|blog|api)\//i);
+    if (subMatch && !['/services', '/industries', '/blog', '/api'].includes(subMatch[1].toLowerCase())) {
+      basePath = subMatch[1] + '/';
+    }
+    const apiPath = basePath + 'api/save-lead.php';
 
     try {
       await fetch(apiPath, {
@@ -320,19 +323,22 @@ function initBookDemoModal() {
 
 /* FAQ Accordion Toggle */
 function initFAQAccordion() {
-  const faqHeaders = document.querySelectorAll('.faq-header');
-  faqHeaders.forEach(header => {
-    header.addEventListener('click', () => {
-      const item = header.parentElement;
-      const isActive = item.classList.contains('active');
-      
-      // Close other FAQs
-      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('active'));
+  document.addEventListener('click', (e) => {
+    const header = e.target.closest('.faq-header') || e.target.closest('.faq-accordion-btn');
+    if (!header) return;
 
-      if (!isActive) {
-        item.classList.add('active');
-      }
-    });
+    const item = header.closest('.faq-item') || header.parentElement;
+    if (!item) return;
+
+    const isActive = item.classList.contains('active');
+    
+    // Close sibling/other FAQs in the same container or page
+    const container = item.closest('#page-faq-accordion, #blog-faq-accordion, .space-y-4, .space-y-3') || document;
+    container.querySelectorAll('.faq-item').forEach(i => i.classList.remove('active'));
+
+    if (!isActive) {
+      item.classList.add('active');
+    }
   });
 }
 

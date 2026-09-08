@@ -1,8 +1,7 @@
 <?php
-$footer_script_path = $_SERVER['SCRIPT_NAME'] ?? $_SERVER['REQUEST_URI'] ?? '';
-$footer_is_subfolder = (strpos($footer_script_path, '/services/') !== false || strpos($footer_script_path, '/industries/') !== false || strpos($footer_script_path, '/blog/') !== false);
-$footer_base_path = $footer_is_subfolder ? '../' : '';
 require_once __DIR__ . '/site-config.php';
+$footer_base_path = get_base_path();
+$footer_logo_rel_path = ltrim($site_config['brand']['logo_path'], '/');
 ?>
 <!-- Global Footer -->
 <footer class="bg-[#F8FAFC] border-t border-[#E4E7EC] text-[#14151A] pt-16 pb-12 relative overflow-hidden">
@@ -12,7 +11,7 @@ require_once __DIR__ . '/site-config.php';
       <!-- Brand Info Column -->
       <div class="lg:col-span-2 space-y-4">
         <a href="<?php echo $footer_base_path; ?>index.php" class="inline-block" aria-label="Digital4Local Home">
-          <img src="<?php echo $footer_base_path . htmlspecialchars($site_config['brand']['logo_path']); ?>" alt="<?php echo htmlspecialchars($site_config['brand']['logo_alt']); ?>" class="<?php echo htmlspecialchars($site_config['brand']['logo_footer_height']); ?> w-auto object-contain">
+          <img src="<?php echo $footer_base_path . htmlspecialchars($footer_logo_rel_path); ?>" alt="<?php echo htmlspecialchars($site_config['brand']['logo_alt']); ?>" class="<?php echo htmlspecialchars($site_config['brand']['logo_footer_height']); ?> w-auto object-contain">
         </a>
         <p class="text-[#5B5F6B] leading-relaxed max-w-sm">
           <?php echo htmlspecialchars($site_config['footer']['description']); ?>
@@ -125,7 +124,7 @@ require_once __DIR__ . '/site-config.php';
 
 <!-- Include Main Interactive JS -->
 <?php
-$js_path = $footer_is_subfolder ? '../assets/js/main.js' : 'assets/js/main.js';
+$js_path = $footer_base_path . 'assets/js/main.js';
 ?>
 <script src="<?php echo $js_path; ?>"></script>
 <script>

@@ -6,6 +6,28 @@
 
 $settings_file = __DIR__ . '/../config/site_settings.json';
 
+if (!function_exists('get_base_path')) {
+    /**
+     * Helper to compute dynamic base URL path for assets and links
+     * Works on domain root (https://digital4local.com -> '/')
+     * and subfolders (http://localhost/digital4local/ -> '/digital4local/')
+     */
+    function get_base_path() {
+        static $base = null;
+        if ($base !== null) return $base;
+        
+        $script = $_SERVER['SCRIPT_NAME'] ?? '';
+        $script_dir = dirname($script);
+        $script_dir = str_replace('\\', '/', $script_dir);
+        $script_dir = preg_replace('#/(services|industries|blog|api)(/.*)?$#i', '', $script_dir);
+        $script_dir = trim($script_dir, '/');
+        
+        $base = !empty($script_dir) ? '/' . $script_dir . '/' : '/';
+        return $base;
+    }
+}
+$base_path = get_base_path();
+
 // Default Fallback Array
 $site_config_defaults = [
     'brand' => [

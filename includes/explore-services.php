@@ -4,8 +4,8 @@
  * Interlinks only the 8 official core services offered by Digital4Local
  */
 
-$is_in_services_dir = (strpos($_SERVER['SCRIPT_NAME'] ?? '', '/services/') !== false);
-$prefix = $is_in_services_dir ? '' : 'services/';
+$es_base_path = function_exists('get_base_path') ? get_base_path() : '/';
+$prefix = $es_base_path . 'services/';
 $current_page_file = basename($_SERVER['SCRIPT_NAME'] ?? '');
 
 $core_services_list = [
