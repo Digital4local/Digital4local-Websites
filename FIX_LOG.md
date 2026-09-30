@@ -63,3 +63,15 @@
 - [x] **Added `MarketingAgency` JSON-LD Schema**: Inserted into the `<head>` section of `index.php` with official address (Bhopal), geographic coordinates, operating hours, phone, exact citation profiles, area served list (16 local/regional hubs), and full knowledge topics for AI citations.
 - [x] **Generated Production Build**: Updated `digital4local_htdocs.zip` and synced `C:\xampp\htdocs\digital4local`.
 - [x] **Pushed to GitHub**: Deployed to `origin/main` repository.
+
+### Phase 8: Dynamic JSON-LD Structured Data Architecture (Site-Wide)
+- [x] **Engineered Central Schema Engine (`includes/schema-engine.php`)**:
+  - **Global `WebPage` Schema**: Injected on 100% of pages with dynamic page titles, canonical URLs, and `WebSite` graph linkage.
+  - **Global `BreadcrumbList` Schema**: Hierarchical trail generation matching site routing (Home > Services > Service Name, Home > Blog > Article Name, Home > Industries > Industry Name, etc.).
+  - **Dynamic `Service` Schema**: Generated across all 8 individual service pages with service vertical, structured tiered `Offer` pricing (e.g. ₹9,999/mo, ₹29,999 setup), and provider set as `Organization` with name `Digital4local`.
+  - **Dynamic `BlogPosting` / `Article` Schema**: Generated for blog articles and industry blueprints with headline mapping, ISO dates, author as `Person` "Abhishek Raikwar", and publisher as `Organization` "Digital4local".
+  - **Dynamic `FAQPage` Schema**: Automatically detected and extracted on all pages containing FAQs (Services, Industries, Blog, Pricing, Contact, CMS pages) with strict HTML sanitization.
+  - **Strict Constraints Enforced**: 0 `Review` / `AggregateRating` schemas generated anywhere, 0 duplicate `LocalBusiness` / `MarketingAgency` on homepage, 100% valid JSON-LD inside `<head>`.
+- [x] **Automated Test Suite (`scripts/test_schema_engine.py`)**: Verified 100% pass rate across all 10 page types.
+- [x] **Rebuilt Deployment Zip & XAMPP Sync**: Updated `digital4local_htdocs.zip` (5.20 MB) and pushed to GitHub `main`.
+

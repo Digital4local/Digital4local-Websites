@@ -42,16 +42,6 @@ if (!empty($cfg['faqs']) && is_array($cfg['faqs'])) {
 <html lang="en">
 <head>
   <?php include_once 'includes/seo.php'; ?>
-  <?php if (!empty($faq_schema_items)): ?>
-  <!-- Dynamic FAQPage Schema -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": <?php echo json_encode($faq_schema_items, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE); ?>
-  }
-  </script>
-  <?php endif; ?>
 </head>
 <body class="bg-[#FFFFFF] text-[#14151A] min-h-screen relative selection:bg-[#00F0FF] selection:text-[#0A0A0F]">
 

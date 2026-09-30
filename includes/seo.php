@@ -110,3 +110,8 @@ $css_path = $seo_base_path . 'assets/css/custom.css';
 ?>
 <link rel="stylesheet" href="<?php echo $css_path; ?>">
 
+<?php
+// Dynamic JSON-LD Structured Data Engine
+require_once __DIR__ . '/schema-engine.php';
+d4l_render_dynamic_schema_head();
+?>

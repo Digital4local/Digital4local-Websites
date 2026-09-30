@@ -160,14 +160,6 @@ $schema_graph[] = [
 <html lang="en" class="scroll-smooth">
 <head>
   <?php include_once __DIR__ . '/includes/seo.php'; ?>
-  
-  <!-- Structured Data Graph: BlogPosting + FAQPage + Breadcrumbs -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@graph": <?php echo json_encode($schema_graph, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE); ?>
-  }
-  </script>
 </head>
 <body class="bg-[#FFFFFF] text-[#14151A] min-h-screen relative font-['Inter',sans-serif] selection:bg-[#00F0FF] selection:text-[#0A0A0F]">
 
