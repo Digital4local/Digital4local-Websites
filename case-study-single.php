@@ -2,6 +2,7 @@
 /**
  * Digital4Local - Dedicated Case Study Detail Page
  * Dynamic Route: /case-studies/[slug]
+ * Strict Content Rule: Verified metrics and facts only. Zero placeholders.
  */
 
 require_once __DIR__ . '/includes/site-config.php';
@@ -80,7 +81,7 @@ $wa_cta_url = "https://wa.me/{$clean_phone}?text=" . urlencode($cs['whatsapp_cta
       }
     },
     "datePublished": "2025-06-01T08:00:00+05:30",
-    "dateModified": "2026-09-30T10:00:00+05:30"
+    "dateModified": "2026-09-30T12:00:00+05:30"
   }
   </script>
 
@@ -110,22 +111,6 @@ $wa_cta_url = "https://wa.me/{$clean_phone}?text=" . urlencode($cs['whatsapp_cta
     ]
   }
   </script>
-
-  <style>
-    .placeholder-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.25rem;
-      padding: 0.2rem 0.6rem;
-      border-radius: 0.375rem;
-      font-family: monospace;
-      font-size: 0.75rem;
-      font-weight: 700;
-      background-color: #FEF3C7;
-      color: #92400E;
-      border: 1px dashed #F59E0B;
-    }
-  </style>
 </head>
 <body class="bg-[#FFFFFF] text-[#14151A] font-sans antialiased selection:bg-[#00F0FF] selection:text-[#0A0A0F]">
 
@@ -146,16 +131,20 @@ $wa_cta_url = "https://wa.me/{$clean_phone}?text=" . urlencode($cs['whatsapp_cta
         <span class="text-[#14151A] truncate max-w-xs"><?php echo htmlspecialchars($cs['short_name']); ?></span>
       </nav>
 
-      <!-- Client Tag + Industry + Country Flag -->
+      <!-- Client Pill Badge (Styled Wordmark) + Meta Badges -->
       <div class="flex flex-wrap items-center gap-3 mb-6">
-        <span class="px-3.5 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-[#00F0FF]/15 text-[#008A94] border border-[#00F0FF]/30">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-[#14151A] text-white text-xs font-bold shadow-sm">
+          <span class="w-2 h-2 rounded-full bg-[#00F0FF]"></span>
+          <span><?php echo htmlspecialchars($cs['short_name']); ?></span>
+        </div>
+        <span class="px-3.5 py-1.5 rounded-full text-xs font-black uppercase tracking-wider bg-[#00F0FF]/15 text-[#008A94] border border-[#00F0FF]/30">
           <?php echo htmlspecialchars($cs['industry']); ?>
         </span>
-        <span class="px-3 py-1 rounded-full text-xs font-bold bg-[#F6F8FB] text-[#5B5F6B] border border-[#E4E7EC]">
+        <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-[#F6F8FB] text-[#5B5F6B] border border-[#E4E7EC]">
           <?php echo $cs['flag']; ?> <?php echo htmlspecialchars($cs['location']); ?>
         </span>
-        <span class="text-xs font-semibold text-[#5B5F6B]">
-          Timeline: <?php echo htmlspecialchars($cs['timeline']); ?>
+        <span class="text-xs font-semibold text-[#5B5F6B] py-1">
+          Timeline: <strong class="text-[#14151A]"><?php echo htmlspecialchars($cs['timeline']); ?></strong>
         </span>
       </div>
 
@@ -179,13 +168,7 @@ $wa_cta_url = "https://wa.me/{$clean_phone}?text=" . urlencode($cs['whatsapp_cta
               <?php echo htmlspecialchars($stat['value']); ?>
             </div>
             <div class="text-xs text-[#5B5F6B] font-medium">
-              <?php 
-                if (strpos($stat['sub'], '[ADD:') !== false) {
-                  echo '<span class="placeholder-badge">' . htmlspecialchars($stat['sub']) . '</span>';
-                } else {
-                  echo htmlspecialchars($stat['sub']);
-                }
-              ?>
+              <?php echo htmlspecialchars($stat['sub']); ?>
             </div>
           </div>
         <?php endforeach; ?>
@@ -246,15 +229,14 @@ $wa_cta_url = "https://wa.me/{$clean_phone}?text=" . urlencode($cs['whatsapp_cta
         <?php if (!empty($cs['institutions'])): ?>
           <!-- Sub-Institution Breakdown for Higher Education Group -->
           <div class="mt-8 pt-6 border-t border-[#E4E7EC]">
-            <h3 class="text-sm font-bold uppercase tracking-wider text-[#14151A] mb-4">
-              Institutions in Scope:
+            <h3 class="text-xs font-bold uppercase tracking-wider text-[#14151A] mb-4">
+              Campuses & Universities in Scope:
             </h3>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
               <?php foreach ($cs['institutions'] as $inst): ?>
                 <div class="bg-[#F6F8FB] p-4 rounded-xl border border-[#E4E7EC]">
                   <h4 class="font-bold text-xs text-[#14151A] mb-1"><?php echo htmlspecialchars($inst['name']); ?></h4>
-                  <p class="text-[11px] text-[#5B5F6B] mb-2"><?php echo htmlspecialchars($inst['focus']); ?></p>
-                  <span class="text-[10px] font-bold text-[#008A94] uppercase"><?php echo htmlspecialchars($inst['status']); ?></span>
+                  <p class="text-[11px] text-[#5B5F6B] leading-relaxed"><?php echo htmlspecialchars($inst['focus']); ?></p>
                 </div>
               <?php endforeach; ?>
             </div>
@@ -323,15 +305,7 @@ $wa_cta_url = "https://wa.me/{$clean_phone}?text=" . urlencode($cs['whatsapp_cta
               <?php foreach ($srv['bullets'] as $b): ?>
                 <li class="flex items-start gap-2">
                   <i data-lucide="check" class="w-4 h-4 text-[#16A34A] shrink-0 mt-0.5"></i>
-                  <span>
-                    <?php 
-                      if (strpos($b, '[ADD:') !== false) {
-                        echo '<span class="placeholder-badge">' . htmlspecialchars($b) . '</span>';
-                      } else {
-                        echo htmlspecialchars($b);
-                      }
-                    ?>
-                  </span>
+                  <span><?php echo htmlspecialchars($b); ?></span>
                 </li>
               <?php endforeach; ?>
             </ul>
@@ -340,147 +314,191 @@ $wa_cta_url = "https://wa.me/{$clean_phone}?text=" . urlencode($cs['whatsapp_cta
       </div>
     </section>
 
-    <!-- 6. The Results (Verified Metrics & Narrative) -->
+    <!-- 6. The Results / Outcome Section -->
     <section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mb-16" data-aos="fade-up">
       <div class="bg-gradient-to-br from-[#F6F8FB] via-[#FFFFFF] to-[#F6F8FB] border-2 border-[#16A34A] rounded-3xl p-8 sm:p-10 shadow-xl">
         
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[#16A34A]/10 text-[#16A34A] border border-[#16A34A]/30 mb-4">
-          <i data-lucide="trending-up" class="w-3.5 h-3.5"></i>
-          <span>Verified Business Outcome</span>
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[#16A34A]/10 text-[#16A34A] border border-[#16A34A]/30">
+            <i data-lucide="trending-up" class="w-3.5 h-3.5"></i>
+            <span>Verified Business Outcome</span>
+          </div>
+          
+          <?php if (!empty($cs['has_ai_verified_result'])): ?>
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-800 border border-purple-200">
+              <i data-lucide="award" class="w-3.5 h-3.5 text-purple-600"></i>
+              <span><?php echo htmlspecialchars($cs['ai_verified_text']); ?></span>
+            </span>
+          <?php endif; ?>
         </div>
 
         <h2 class="text-2xl sm:text-3xl font-extrabold text-[#14151A] tracking-tight font-display mb-6">
-          The Results
+          <?php echo ($cs['results_type'] === 'stats') ? 'The Results' : 'Business Outcome'; ?>
         </h2>
 
-        <!-- Before / After Stat Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-          <?php foreach ($cs['results_metrics'] as $rm): ?>
-            <div class="bg-white p-6 rounded-2xl border border-[#E4E7EC] shadow-sm flex flex-col justify-between">
-              <div class="text-[10px] uppercase font-bold text-[#5B5F6B] mb-2">
-                <?php echo htmlspecialchars($rm['label']); ?>
+        <?php if ($cs['results_type'] === 'stats' && !empty($cs['results_metrics'])): ?>
+          <!-- Stat Grid for Numeric Results -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+            <?php foreach ($cs['results_metrics'] as $rm): ?>
+              <div class="bg-white p-6 rounded-2xl border border-[#E4E7EC] shadow-sm flex flex-col justify-between">
+                <div class="text-[10px] uppercase font-bold text-[#5B5F6B] mb-2">
+                  <?php echo htmlspecialchars($rm['label']); ?>
+                </div>
+                <div class="text-2xl sm:text-3xl font-black text-[#16A34A] my-2">
+                  <?php echo htmlspecialchars($rm['value']); ?>
+                </div>
+                <div class="text-xs text-[#5B5F6B] font-medium">
+                  <?php echo htmlspecialchars($rm['note']); ?>
+                </div>
               </div>
-              <div class="flex items-baseline gap-2 my-2">
-                <span class="text-sm font-bold text-slate-400 line-through">
-                  <?php 
-                    if (strpos($rm['before'], '[ADD:') !== false) {
-                      echo '<span class="placeholder-badge">' . htmlspecialchars($rm['before']) . '</span>';
-                    } else {
-                      echo htmlspecialchars($rm['before']);
-                    }
-                  ?>
-                </span>
-                <i data-lucide="arrow-right" class="w-4 h-4 text-[#16A34A]"></i>
-                <span class="text-xl sm:text-2xl font-black text-[#16A34A]">
-                  <?php 
-                    if (strpos($rm['after'], '[ADD:') !== false) {
-                      echo '<span class="placeholder-badge">' . htmlspecialchars($rm['after']) . '</span>';
-                    } else {
-                      echo htmlspecialchars($rm['after']);
-                    }
-                  ?>
-                </span>
+            <?php endforeach; ?>
+          </div>
+
+        <?php elseif ($cs['results_type'] === 'outcome'): ?>
+          <!-- Qualitative Outcome Card + Deliverables Checklist -->
+          <div class="bg-white border border-[#E4E7EC] rounded-2xl p-6 sm:p-8 mb-8 shadow-sm">
+            <div class="text-xs font-black uppercase tracking-wider text-[#008A94] mb-2">
+              Key Business Impact
+            </div>
+            <p class="text-xl sm:text-2xl font-extrabold text-[#14151A] leading-snug mb-6">
+              "<?php echo htmlspecialchars($cs['outcome_summary']); ?>"
+            </p>
+
+            <div class="pt-6 border-t border-[#E4E7EC]">
+              <div class="text-xs font-bold uppercase tracking-wider text-[#5B5F6B] mb-4">
+                What We Delivered:
               </div>
-              <div class="text-xs text-[#5B5F6B]">
-                <?php 
-                  if (strpos($rm['note'], '[ADD:') !== false) {
-                    echo '<span class="placeholder-badge">' . htmlspecialchars($rm['note']) . '</span>';
-                  } else {
-                    echo htmlspecialchars($rm['note']);
-                  }
-                ?>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <?php foreach ($cs['delivered_checklist'] as $item): ?>
+                  <div class="flex items-start gap-2.5 text-xs sm:text-sm text-[#14151A]">
+                    <i data-lucide="check-circle-2" class="w-4 h-4 text-[#16A34A] shrink-0 mt-0.5"></i>
+                    <span><?php echo htmlspecialchars($item); ?></span>
+                  </div>
+                <?php endforeach; ?>
               </div>
             </div>
-          <?php endforeach; ?>
-        </div>
+          </div>
+        <?php endif; ?>
 
         <!-- Results Narrative Paragraph -->
-        <p class="text-sm sm:text-base text-[#14151A] leading-relaxed mb-6 font-medium">
-          <?php 
-            $narrative = $cs['results_narrative'];
-            if (strpos($narrative, '[ADD:') !== false) {
-              $narrative = preg_replace('/(\[ADD:[^\]]+\])/', '<span class="placeholder-badge">$1</span>', $narrative);
-              echo $narrative;
-            } else {
-              echo htmlspecialchars($narrative);
-            }
-          ?>
+        <p class="text-sm sm:text-base text-[#14151A] leading-relaxed font-medium">
+          <?php echo htmlspecialchars($cs['results_narrative']); ?>
         </p>
-
-        <!-- Chart Slot Placeholder Box -->
-        <div class="bg-white border-2 border-dashed border-[#CBD5E1] rounded-2xl p-6 text-center text-xs text-[#5B5F6B] flex items-center justify-center gap-2">
-          <i data-lucide="image" class="w-4 h-4 text-slate-400"></i>
-          <span class="placeholder-badge"><?php echo htmlspecialchars($cs['chart_placeholder']); ?></span>
-        </div>
 
       </div>
     </section>
 
-    <!-- 7. AI Search Visibility Block (Centrepiece) -->
+    <!-- 7. AI Search Strategy Block ("Built to be found on AI search") -->
     <?php $ai = $cs['ai_search_visibility']; ?>
     <section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mb-16" data-aos="fade-up">
       <div class="bg-gradient-to-br from-[#0F172A] via-[#1E293B] to-[#0F172A] text-white rounded-3xl p-8 sm:p-10 shadow-2xl border-2 border-[#00F0FF]/30">
         
+        <!-- Header & Engine Badges -->
         <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
           <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-[#00F0FF] text-[#14151A]">
             <i data-lucide="bot" class="w-3.5 h-3.5"></i>
-            <span>AI Search Visibility (AEO / GEO)</span>
+            <span>AI Search Strategy</span>
           </div>
-          <span class="text-xs text-[#00F0FF] font-mono">
-            ChatGPT · Gemini · AI Overviews · Perplexity · Copilot
-          </span>
+
+          <!-- Verified badge for SolarForYou if applicable -->
+          <?php if (!empty($cs['has_ai_verified_result'])): ?>
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#16A34A]/20 text-[#4ADE80] border border-[#16A34A]/40">
+              <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
+              <span>Ranking in AI search within 6 months</span>
+            </span>
+          <?php endif; ?>
         </div>
 
-        <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight mb-4">
-          How <?php echo htmlspecialchars($cs['short_name']); ?> Became Visible in AI Answer Engines
+        <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight mb-3">
+          Built to be found on AI search
         </h2>
 
-        <p class="text-xs sm:text-sm text-slate-300 leading-relaxed mb-8 max-w-3xl">
-          <?php echo htmlspecialchars($ai['narrative']); ?>
+        <p class="text-xs sm:text-sm text-slate-300 leading-relaxed mb-6 max-w-3xl">
+          We ensure <?php echo htmlspecialchars($cs['short_name']); ?> is structured, cited, and recommended when prospective customers ask conversational AI engines for recommendations.
         </p>
 
-        <!-- AI Mention Status Grid -->
-        <div class="bg-white/5 border border-white/10 rounded-2xl p-5 mb-6 overflow-x-auto">
-          <div class="text-xs font-bold uppercase tracking-wider text-[#00F0FF] mb-4">
-            AI Engine × Prompt Citation Benchmark:
-          </div>
-          <table class="w-full text-left text-xs min-w-[500px]">
-            <thead>
-              <tr class="border-b border-white/10 text-slate-400 font-mono">
-                <th class="pb-2 w-1/3">Target Query Prompt</th>
-                <th class="pb-2 text-center">ChatGPT</th>
-                <th class="pb-2 text-center">Gemini</th>
-                <th class="pb-2 text-center">AI Overviews</th>
-                <th class="pb-2 text-center">Perplexity</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-white/5">
-              <?php foreach ($ai['prompts'] as $prompt): ?>
-                <tr>
-                  <td class="py-2.5 pr-2 font-medium text-slate-200">
-                    "<?php echo htmlspecialchars($prompt); ?>"
-                  </td>
-                  <td class="py-2.5 text-center"><span class="placeholder-badge">[ADD: Status]</span></td>
-                  <td class="py-2.5 text-center"><span class="placeholder-badge">[ADD: Status]</span></td>
-                  <td class="py-2.5 text-center"><span class="placeholder-badge">[ADD: Status]</span></td>
-                  <td class="py-2.5 text-center"><span class="placeholder-badge">[ADD: Status]</span></td>
-                </tr>
-              <?php endforeach; ?>
-            </tbody>
-          </table>
+        <!-- AI Engine Badges Bar -->
+        <div class="flex flex-wrap items-center gap-2 sm:gap-3 mb-8">
+          <span class="text-xs font-bold text-slate-400 mr-2">Optimized For:</span>
+          <span class="px-3 py-1 rounded-full text-xs font-bold bg-white/10 text-white border border-white/15">ChatGPT</span>
+          <span class="px-3 py-1 rounded-full text-xs font-bold bg-white/10 text-white border border-white/15">Google Gemini</span>
+          <span class="px-3 py-1 rounded-full text-xs font-bold bg-white/10 text-white border border-white/15">Google AI Overviews</span>
+          <span class="px-3 py-1 rounded-full text-xs font-bold bg-white/10 text-white border border-white/15">Perplexity</span>
+          <span class="px-3 py-1 rounded-full text-xs font-bold bg-white/10 text-white border border-white/15">Microsoft Copilot</span>
         </div>
 
-        <!-- AI Screenshot Slot -->
-        <div class="bg-white/5 border border-dashed border-white/20 rounded-xl p-5 text-center text-xs text-slate-400 flex items-center justify-center gap-2">
-          <i data-lucide="image" class="w-4 h-4 text-[#00F0FF]"></i>
-          <span class="placeholder-badge"><?php echo htmlspecialchars($ai['screenshot_placeholder']); ?></span>
+        <!-- Prompts We Optimised For -->
+        <div class="bg-white/5 border border-white/10 rounded-2xl p-6 mb-8">
+          <div class="text-xs font-black uppercase tracking-wider text-[#00F0FF] mb-4 flex items-center gap-2">
+            <i data-lucide="message-square" class="w-4 h-4"></i>
+            <span>Target Prompts We Optimised For:</span>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <?php foreach ($ai['prompts'] as $prompt): ?>
+              <div class="bg-white/5 border border-white/10 p-3.5 rounded-xl text-xs text-slate-200 font-medium flex items-start gap-2.5">
+                <span class="text-[#00F0FF] font-bold">“</span>
+                <span class="leading-relaxed"><?php echo htmlspecialchars($prompt); ?></span>
+                <span class="text-[#00F0FF] font-bold ml-auto">”</span>
+              </div>
+            <?php endforeach; ?>
+          </div>
+        </div>
+
+        <!-- How We Did It: 4 Core Pillars -->
+        <div>
+          <div class="text-xs font-black uppercase tracking-wider text-slate-300 mb-4">
+            How We Optimize for AI Answer Engines:
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            
+            <div class="bg-white/5 border border-white/10 p-4 rounded-xl">
+              <div class="w-8 h-8 rounded-lg bg-[#00F0FF]/15 text-[#00F0FF] flex items-center justify-center mb-3">
+                <i data-lucide="network" class="w-4 h-4"></i>
+              </div>
+              <h4 class="text-xs font-bold text-white mb-1">Entity & Brand Building</h4>
+              <p class="text-[11px] text-slate-400 leading-relaxed">
+                Establishing authoritative entity signals across digital Knowledge Graphs.
+              </p>
+            </div>
+
+            <div class="bg-white/5 border border-white/10 p-4 rounded-xl">
+              <div class="w-8 h-8 rounded-lg bg-[#00F0FF]/15 text-[#00F0FF] flex items-center justify-center mb-3">
+                <i data-lucide="database" class="w-4 h-4"></i>
+              </div>
+              <h4 class="text-xs font-bold text-white mb-1">Citations & Consistency</h4>
+              <p class="text-[11px] text-slate-400 leading-relaxed">
+                Ensuring complete NAP data alignment across high-trust business directories.
+              </p>
+            </div>
+
+            <div class="bg-white/5 border border-white/10 p-4 rounded-xl">
+              <div class="w-8 h-8 rounded-lg bg-[#00F0FF]/15 text-[#00F0FF] flex items-center justify-center mb-3">
+                <i data-lucide="code" class="w-4 h-4"></i>
+              </div>
+              <h4 class="text-xs font-bold text-white mb-1">Structured Data & Schema</h4>
+              <p class="text-[11px] text-slate-400 leading-relaxed">
+                Deploying semantic JSON-LD so AI engines parse services & locations accurately.
+              </p>
+            </div>
+
+            <div class="bg-white/5 border border-white/10 p-4 rounded-xl">
+              <div class="w-8 h-8 rounded-lg bg-[#00F0FF]/15 text-[#00F0FF] flex items-center justify-center mb-3">
+                <i data-lucide="help-circle" class="w-4 h-4"></i>
+              </div>
+              <h4 class="text-xs font-bold text-white mb-1">Answer-First FAQ Content</h4>
+              <p class="text-[11px] text-slate-400 leading-relaxed">
+                Writing question-first copy tailored for direct conversational AI synthesis.
+              </p>
+            </div>
+
+          </div>
         </div>
 
       </div>
     </section>
 
-    <!-- 8. Client Testimonial (Hidden if null/empty) -->
-    <?php if (!empty($cs['testimonial'])): ?>
+    <!-- 8. Client Testimonial (Rendered ONLY when real quote exists) -->
+    <?php if (!empty($cs['testimonial']) && !empty($cs['testimonial']['quote'])): ?>
       <section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mb-16" data-aos="fade-up">
         <div class="bg-[#FFFFFF] border-2 border-amber-300 rounded-3xl p-8 sm:p-10 shadow-lg relative">
           
@@ -494,14 +512,7 @@ $wa_cta_url = "https://wa.me/{$clean_phone}?text=" . urlencode($cs['whatsapp_cta
           </div>
 
           <blockquote class="text-base sm:text-lg text-[#14151A] italic leading-relaxed mb-6">
-            <?php 
-              $q = $cs['testimonial']['quote'];
-              if (strpos($q, '[ADD:') !== false) {
-                echo '<span class="placeholder-badge">' . htmlspecialchars($q) . '</span>';
-              } else {
-                echo '"' . htmlspecialchars($q) . '"';
-              }
-            ?>
+            "<?php echo htmlspecialchars($cs['testimonial']['quote']); ?>"
           </blockquote>
 
           <div class="flex items-center gap-3">
@@ -548,7 +559,7 @@ $wa_cta_url = "https://wa.me/{$clean_phone}?text=" . urlencode($cs['whatsapp_cta
           Want results like <?php echo htmlspecialchars($cs['short_name']); ?>?
         </h2>
         <p class="text-xs sm:text-sm text-slate-300 max-w-xl mx-auto mb-8 leading-relaxed">
-          Get your free 5x5 Google Maps geo-grid scan, competitor audit, and 90-day growth roadmap today.
+          Get your free 5x5 Google Maps geo-grid scan, competitor gap analysis, and 90-day growth roadmap today.
         </p>
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
           <a href="<?php echo $wa_cta_url; ?>" target="_blank" rel="noopener noreferrer" class="btn-primary !py-3.5 !px-8 !text-sm font-bold shadow-xl">

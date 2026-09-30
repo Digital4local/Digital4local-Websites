@@ -2,6 +2,7 @@
 /**
  * Digital4Local - Case Studies Hub & Portfolio Listing Page
  * Route: /case-studies
+ * Strict Content Rule: Verified metrics and facts only. Zero placeholders.
  */
 
 require_once __DIR__ . '/includes/site-config.php';
@@ -90,7 +91,7 @@ $base_path = function_exists('get_base_path') ? get_base_path() : '/';
       <!-- Eyebrow Badge -->
       <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#00F0FF]/15 border border-[#00F0FF]/30 text-[#008A94] text-xs font-bold tracking-wide uppercase mb-6 shadow-sm">
         <i data-lucide="award" class="w-4 h-4"></i>
-        <span>Verified Proof & Data-Backed Results</span>
+        <span>Verified Proof & Measurable Growth</span>
       </div>
 
       <!-- H1 -->
@@ -99,7 +100,7 @@ $base_path = function_exists('get_base_path') ? get_base_path() : '/';
       </h1>
 
       <p class="text-base sm:text-lg md:text-xl text-[#5B5F6B] leading-relaxed max-w-3xl mx-auto">
-        Explore how local clinics, universities, showrooms, and UK energy brands transformed their inbound leads, Google Maps positions, and AI search visibility with Digital4Local.
+        Explore how clinics, universities, resorts, retail stores, and UK solar brands transformed their inbound leads, Google Maps rankings, and AI search visibility with Digital4Local.
       </p>
 
     </section>
@@ -165,7 +166,7 @@ $base_path = function_exists('get_base_path') ? get_base_path() : '/';
               <?php echo htmlspecialchars($featured['results_narrative']); ?>
             </p>
 
-            <!-- 2 Large Stat Chips -->
+            <!-- 3 Stat Chips -->
             <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-2">
               <div class="bg-white/10 p-3.5 rounded-xl border border-white/10 backdrop-blur-sm">
                 <div class="text-[10px] text-slate-400 uppercase font-bold">Google Maps</div>
@@ -193,7 +194,7 @@ $base_path = function_exists('get_base_path') ? get_base_path() : '/';
               <i data-lucide="arrow-right" class="w-4 h-4"></i>
             </a>
             <span class="text-xs text-slate-400 text-right">
-              Includes full strategy breakdown, AI search engine audit & review playbook.
+              Includes full strategy breakdown, GBP playbook & AI search approach.
             </span>
           </div>
 
@@ -208,6 +209,7 @@ $base_path = function_exists('get_base_path') ? get_base_path() : '/';
         <?php foreach ($case_studies as $slug => $cs): 
           $cats_attr = implode(' ', $cs['filter_categories']);
           $cs_url = $base_path . 'case-studies/' . $cs['slug'];
+          $is_stats = ($cs['results_type'] === 'stats');
         ?>
           <div class="case-study-card bg-[#FFFFFF] border-2 border-[#E4E7EC] hover:border-[#00A8B5] rounded-3xl p-6 sm:p-7 flex flex-col justify-between shadow-sm hover:shadow-2xl transition-all duration-300 group hover:-translate-y-1.5" data-categories="<?php echo htmlspecialchars($cats_attr); ?>" data-aos="fade-up">
             
@@ -237,22 +239,38 @@ $base_path = function_exists('get_base_path') ? get_base_path() : '/';
               </div>
 
               <!-- Outcome Headline -->
-              <h3 class="text-lg sm:text-xl font-extrabold text-[#14151A] leading-snug mb-4 group-hover:text-[#00A8B5] transition-colors">
+              <h3 class="text-lg sm:text-xl font-extrabold text-[#14151A] leading-snug mb-4 group-hover:text-[#00A8B5] transition-colors line-clamp-3">
                 <?php echo htmlspecialchars($cs['headline']); ?>
               </h3>
 
-              <!-- 2 Key Stat Chips -->
-              <div class="grid grid-cols-2 gap-3 mb-6">
-                <div class="bg-[#F6F8FB] p-3 rounded-xl border border-[#E4E7EC]">
-                  <div class="text-[10px] text-[#5B5F6B] uppercase font-bold"><?php echo htmlspecialchars($cs['stats_headline'][0]['label']); ?></div>
-                  <div class="text-sm sm:text-base font-black text-[#008A94] truncate"><?php echo htmlspecialchars($cs['stats_headline'][0]['value']); ?></div>
-                </div>
+              <?php if ($is_stats): ?>
+                <!-- 2 Numeric Stat Chips for Quantitative Case Studies -->
+                <div class="grid grid-cols-2 gap-3 mb-6">
+                  <div class="bg-[#F6F8FB] p-3 rounded-xl border border-[#E4E7EC]">
+                    <div class="text-[10px] text-[#5B5F6B] uppercase font-bold"><?php echo htmlspecialchars($cs['stats_headline'][0]['label']); ?></div>
+                    <div class="text-sm sm:text-base font-black text-[#008A94] truncate"><?php echo htmlspecialchars($cs['stats_headline'][0]['value']); ?></div>
+                  </div>
 
-                <div class="bg-[#F6F8FB] p-3 rounded-xl border border-[#E4E7EC]">
-                  <div class="text-[10px] text-[#5B5F6B] uppercase font-bold"><?php echo htmlspecialchars($cs['stats_headline'][1]['label']); ?></div>
-                  <div class="text-sm sm:text-base font-black text-[#16A34A] truncate"><?php echo htmlspecialchars($cs['stats_headline'][1]['value']); ?></div>
+                  <div class="bg-[#F6F8FB] p-3 rounded-xl border border-[#E4E7EC]">
+                    <div class="text-[10px] text-[#5B5F6B] uppercase font-bold"><?php echo htmlspecialchars($cs['stats_headline'][1]['label']); ?></div>
+                    <div class="text-sm sm:text-base font-black text-[#16A34A] truncate"><?php echo htmlspecialchars($cs['stats_headline'][1]['value']); ?></div>
+                  </div>
                 </div>
-              </div>
+              <?php else: ?>
+                <!-- 2 Service Scope Chips for Qualitative Case Studies -->
+                <div class="grid grid-cols-2 gap-3 mb-6">
+                  <div class="bg-[#F6F8FB] p-3 rounded-xl border border-[#E4E7EC]">
+                    <div class="text-[10px] text-[#5B5F6B] uppercase font-bold">Scope Delivered</div>
+                    <div class="text-xs font-bold text-[#008A94] truncate"><?php echo htmlspecialchars($cs['services'][0]); ?></div>
+                  </div>
+
+                  <div class="bg-[#F6F8FB] p-3 rounded-xl border border-[#E4E7EC]">
+                    <div class="text-[10px] text-[#5B5F6B] uppercase font-bold">Key Focus</div>
+                    <div class="text-xs font-bold text-[#16A34A] truncate"><?php echo htmlspecialchars($cs['services'][1] ?? 'Growth SEO'); ?></div>
+                  </div>
+                </div>
+              <?php endif; ?>
+
             </div>
 
             <!-- Bottom CTA Link -->
@@ -273,7 +291,7 @@ $base_path = function_exists('get_base_path') ? get_base_path() : '/';
       <div class="bg-gradient-to-r from-[#F6F8FB] via-[#EAF9FA] to-[#F6F8FB] border-2 border-[#00A8B5] rounded-3xl p-8 sm:p-12 text-center shadow-xl">
         <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[#00F0FF]/15 text-[#008A94] border border-[#00F0FF]/30 mb-4">
           <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
-          <span>Partner With Bhopal’s Growth Leaders</span>
+          <span>Partner With Growth Leaders</span>
         </div>
         <h2 class="text-3xl sm:text-4xl font-extrabold text-[#14151A] tracking-tight font-display mb-4">
           Your business could be our next <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#00A8B5] to-[#0284C7]">#1 ranking success story</span>

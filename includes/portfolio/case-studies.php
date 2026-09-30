@@ -2,10 +2,9 @@
 /**
  * Case Studies & Proven Results Section Component for Portfolio Landing Page
  * Features 3 verified client case studies + Link to /case-studies hub
+ * Strict Content Rule: Verified metrics and facts only. Zero placeholders.
  */
 $base_path = function_exists('get_base_path') ? get_base_path() : '/';
-$solar_logo = $base_path . 'assets/images/clients/solar4good.png';
-$rkdf_logo = $base_path . 'assets/images/clients/rkdf_university.jpg';
 ?>
 <section class="py-20 sm:py-28 bg-[#FFFFFF] relative overflow-hidden" id="results">
   
@@ -30,13 +29,13 @@ $rkdf_logo = $base_path . 'assets/images/clients/rkdf_university.jpg';
       
       <!-- Top Badge -->
       <div class="flex flex-wrap items-center justify-between gap-4 mb-8">
-        <div class="flex items-center gap-4">
-          <div class="w-14 h-14 rounded-2xl bg-white p-2 border border-[#E4E7EC] shadow-sm flex items-center justify-center">
-            <img src="<?php echo $solar_logo; ?>" alt="Solar4Good" class="max-h-10 w-auto object-contain" onerror="this.src='/assets/images/digital4local_logo.png';">
+        <div class="flex items-center gap-3">
+          <div class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#14151A] text-white text-xs font-bold shadow-sm">
+            <span class="w-2 h-2 rounded-full bg-[#00F0FF]"></span>
+            <span>Solar4Good (UK)</span>
           </div>
           <div>
-            <span class="text-xs font-black tracking-widest text-[#008A94] uppercase">Featured Case Study #1</span>
-            <h3 class="text-2xl font-extrabold text-[#14151A]">Solar4Good (UK)</h3>
+            <span class="text-xs font-black tracking-widest text-[#008A94] uppercase block">Featured Case Study #1</span>
             <span class="text-xs text-[#5B5F6B]">🇬🇧 Renewable Energy & Solar Installation · UK</span>
           </div>
         </div>
@@ -56,7 +55,7 @@ $rkdf_logo = $base_path . 'assets/images/clients/rkdf_university.jpg';
           <div class="flex items-baseline gap-3 my-2">
             <span class="text-lg font-bold text-slate-400 line-through">#14</span>
             <i data-lucide="arrow-right" class="w-5 h-5 text-[#00A8B5]"></i>
-            <span class="text-3xl sm:text-4xl font-black text-[#00A8B5] counter" data-target="2">#1–#2</span>
+            <span class="text-3xl sm:text-4xl font-black text-[#00A8B5]">#1–#2</span>
           </div>
           <div class="text-xs font-bold text-[#16A34A] flex items-center gap-1">
             <i data-lucide="trophy" class="w-3.5 h-3.5"></i>
@@ -70,7 +69,7 @@ $rkdf_logo = $base_path . 'assets/images/clients/rkdf_university.jpg';
           <div class="flex items-baseline gap-3 my-2">
             <span class="text-lg font-bold text-slate-400 line-through">9 / mo</span>
             <i data-lucide="arrow-right" class="w-5 h-5 text-[#16A34A]"></i>
-            <span class="text-3xl sm:text-4xl font-black text-[#16A34A] counter" data-target="200">200+</span>
+            <span class="text-3xl sm:text-4xl font-black text-[#16A34A]">200+</span>
           </div>
           <div class="text-xs font-bold text-[#16A34A] flex items-center gap-1">
             <i data-lucide="phone-incoming" class="w-3.5 h-3.5"></i>
@@ -86,7 +85,7 @@ $rkdf_logo = $base_path . 'assets/images/clients/rkdf_university.jpg';
           </div>
           <div class="text-xs font-bold text-[#8B5CF6] flex items-center gap-1">
             <i data-lucide="zap" class="w-3.5 h-3.5"></i>
-            <span>Local SEO + Citations + Reviews</span>
+            <span>GBP + Local SEO + Citations</span>
           </div>
         </div>
 
@@ -114,31 +113,32 @@ $rkdf_logo = $base_path . 'assets/images/clients/rkdf_university.jpg';
       <div class="bg-[#F6F8FB] border-2 border-[#E4E7EC] hover:border-[#00A8B5] rounded-3xl p-7 flex flex-col justify-between shadow-sm hover:shadow-xl transition-all group" data-aos="fade-up" data-aos-delay="100">
         <div>
           <div class="flex items-center justify-between mb-4">
-            <span class="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-[#00F0FF]/15 text-[#008A94] border border-[#00F0FF]/30">
-              Case Study #2 · 🎓 Higher Education
-            </span>
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-xl bg-[#14151A] text-white text-[11px] font-bold">
+              <span class="w-2 h-2 rounded-full bg-[#00F0FF]"></span>
+              <span>SRKU · RKDF · APJAKU</span>
+            </div>
             <span class="text-xs font-bold text-[#5B5F6B]">🇮🇳 Bhopal, MP</span>
           </div>
 
           <h3 class="text-xl font-extrabold text-[#14151A] mb-2 group-hover:text-[#00A8B5] transition-colors">
-            Higher Education Group: SRKU, RKDF & APJ Abdul Kalam University
+            Higher Education Group: 40% Growth Across 3 Universities
           </h3>
 
           <p class="text-xs sm:text-sm text-[#5B5F6B] leading-relaxed mb-6">
-            Complete website development, localized SEO silos, brand identity, and multi-campus social media campaigns driving 40% growth in student admission enquiries.
+            Complete website development, localized SEO silos, brand identity, and multi-campus social media management driving 40% growth in digital performance and admission enquiries.
           </p>
 
           <!-- Key Metrics -->
           <div class="grid grid-cols-2 gap-3 bg-white p-4 rounded-xl border border-[#E4E7EC] mb-6">
             <div>
-              <div class="text-[10px] uppercase text-[#5B5F6B] font-bold">Overall Growth</div>
+              <div class="text-[10px] uppercase text-[#5B5F6B] font-bold">Digital Performance</div>
               <div class="text-xl font-black text-[#16A34A]">40% Growth</div>
-              <div class="text-[10px] text-[#5B5F6B]">Admissions & Search</div>
+              <div class="text-[10px] text-[#5B5F6B]">Admissions & Traffic</div>
             </div>
             <div>
               <div class="text-[10px] uppercase text-[#5B5F6B] font-bold">Universities Scaled</div>
               <div class="text-xl font-black text-[#008A94]">3 Campuses</div>
-              <div class="text-[10px] text-[#5B5F6B]">4-Month Retainer</div>
+              <div class="text-[10px] text-[#5B5F6B]">Multi-Campus Retainer</div>
             </div>
           </div>
         </div>
@@ -156,18 +156,19 @@ $rkdf_logo = $base_path . 'assets/images/clients/rkdf_university.jpg';
       <div class="bg-[#F6F8FB] border-2 border-[#E4E7EC] hover:border-[#00A8B5] rounded-3xl p-7 flex flex-col justify-between shadow-sm hover:shadow-xl transition-all group" data-aos="fade-up" data-aos-delay="200">
         <div>
           <div class="flex items-center justify-between mb-4">
-            <span class="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-[#16A34A]/10 text-[#16A34A] border border-[#16A34A]/30">
-              Case Study #3 · 🩺 Healthcare
-            </span>
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-xl bg-[#14151A] text-white text-[11px] font-bold">
+              <span class="w-2 h-2 rounded-full bg-[#16A34A]"></span>
+              <span>Smile Dental Clinic</span>
+            </div>
             <span class="text-xs font-bold text-[#5B5F6B]">🇮🇳 Bhopal, MP</span>
           </div>
 
           <h3 class="text-xl font-extrabold text-[#14151A] mb-2 group-hover:text-[#00A8B5] transition-colors">
-            Smile Dental Clinic: 80% More Patient Leads in 3 Months
+            Smile Dental Clinic: 80% More Leads in 3 Months
           </h3>
 
           <p class="text-xs sm:text-sm text-[#5B5F6B] leading-relaxed mb-6">
-            Google Business Profile re-engineering, treatment-specific local keyword ranking, and an automated 5-star review acceleration engine in Bhopal.
+            Google Business Profile re-engineering, treatment-specific local keyword ranking, and automated review acceleration in Bhopal.
           </p>
 
           <!-- Key Metrics -->
@@ -179,8 +180,8 @@ $rkdf_logo = $base_path . 'assets/images/clients/rkdf_university.jpg';
             </div>
             <div>
               <div class="text-[10px] uppercase text-[#5B5F6B] font-bold">Google Maps Status</div>
-              <div class="text-xl font-black text-[#008A94]">Domination</div>
-              <div class="text-[10px] text-[#5B5F6B]">Top 3 Local Pack</div>
+              <div class="text-xl font-black text-[#008A94]">Top Visibility</div>
+              <div class="text-[10px] text-[#5B5F6B]">Local Search in Bhopal</div>
             </div>
           </div>
         </div>
