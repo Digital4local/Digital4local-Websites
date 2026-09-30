@@ -1,16 +1,25 @@
 import os
 import shutil
 import zipfile
+import stat
 
-source_dir = r"c:\Users\ASUS\OneDrive\Desktop\Antigravity New Folder"
+def remove_readonly(func, path, excinfo):
+    try:
+        os.chmod(path, stat.S_IWRITE)
+        func(path)
+    except Exception:
+        pass
+
+source_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 htdocs_dest = r"C:\xampp\htdocs\digital4local"
 zip_dest = os.path.join(source_dir, "digital4local_htdocs.zip")
 
-include_dirs = ['assets', 'includes', 'config', 'api', 'services', 'industries', 'blog']
+include_dirs = ['assets', 'includes', 'config', 'api', 'services', 'industries', 'blog', '.well-known']
 include_files = [
     'index.php', 'services.php', 'pricing.php', 'about.php', 'contact.php',
     'blog.php', 'blog-single.php', 'page.php', 'admin.php', 'admin-cms.php',
-    'admin-login.php', 'admin-logout.php', 'sitemap.php', '.htaccess'
+    'admin-login.php', 'admin-logout.php', 'sitemap.php', 'robots.txt', 'favicon.ico', '.htaccess', 'router.php',
+    'llms.txt', 'llm.txt', 'llms-full.txt'
 ]
 
 print("=" * 70)
@@ -20,7 +29,7 @@ print("=" * 70)
 # 1. Prepare C:\xampp\htdocs\digital4local directory
 if os.path.exists(htdocs_dest):
     print(f"Cleaning existing {htdocs_dest}...")
-    shutil.rmtree(htdocs_dest)
+    shutil.rmtree(htdocs_dest, onerror=remove_readonly)
 
 os.makedirs(htdocs_dest, exist_ok=True)
 print(f"Created directory: {htdocs_dest}")
@@ -30,7 +39,7 @@ for d in include_dirs:
     src_path = os.path.join(source_dir, d)
     dest_path = os.path.join(htdocs_dest, d)
     if os.path.exists(src_path):
-        shutil.copytree(src_path, dest_path)
+        shutil.copytree(src_path, dest_path, ignore=shutil.ignore_patterns('.git*', '__pycache__', '*.pyc'))
         print(f"  -> Copied folder: {d}/")
 
 # Copy files

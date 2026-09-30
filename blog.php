@@ -40,7 +40,7 @@ $grid_posts = !empty($all_posts) ? array_slice($all_posts, 1) : [];
     <?php if ($featured_post): ?>
     <!-- Featured Hero Article -->
     <section class="max-w-7xl mx-auto px-4 sm:px-8 pb-16">
-      <a href="blog/<?php echo urlencode($featured_post['slug']); ?>.php" class="block group">
+      <a href="blog/<?php echo urlencode($featured_post['slug']); ?>" class="block group">
         <div class="card-dark p-6 sm:p-10 border-l-4 border-l-[#1B5FAA] flex flex-col lg:flex-row gap-8 items-center justify-between group-hover:border-[#00B4D8] bg-[#F6F8FB] rounded-3xl shadow-sm hover:shadow-xl transition-all">
           <div class="space-y-4 max-w-2xl">
             <div class="flex items-center gap-3 text-xs font-mono">
@@ -79,7 +79,7 @@ $grid_posts = !empty($all_posts) ? array_slice($all_posts, 1) : [];
     <section class="max-w-7xl mx-auto px-4 sm:px-8 pb-20">
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="blog-posts-grid">
         <?php foreach ($grid_posts as $post): ?>
-        <a href="blog/<?php echo urlencode($post['slug']); ?>.php" class="blog-card card-dark overflow-hidden flex flex-col justify-between group rounded-3xl bg-white border border-[#E2E8F0] shadow-sm hover:shadow-xl hover:border-[#1B5FAA] transition-all" data-category="<?php echo htmlspecialchars($post['category'] ?? 'General'); ?>">
+        <a href="blog/<?php echo urlencode($post['slug']); ?>" class="blog-card card-dark overflow-hidden flex flex-col justify-between group rounded-3xl bg-white border border-[#E2E8F0] shadow-sm hover:shadow-xl hover:border-[#1B5FAA] transition-all" data-category="<?php echo htmlspecialchars($post['category'] ?? 'General'); ?>">
           <div>
             <?php if (!empty($post['featured_image'])): ?>
             <div class="w-full h-48 overflow-hidden bg-slate-100 border-b border-[#E2E8F0]">

@@ -283,7 +283,7 @@
         },
         "industries_local_biz": {
             "title": "Local Service Businesses",
-            "url": "industries/local-business.php",
+            "url": "industries/local-business-seo.php",
             "status": "published",
             "badge": "LOCAL BUSINESS SOLUTION",
             "hero_title": "Dominate Local Search For",
@@ -297,7 +297,7 @@
         },
         "industries_startups": {
             "title": "Startups & Scaleups",
-            "url": "industries/startups.php",
+            "url": "industries/startup-seo-agency.php",
             "status": "published",
             "badge": "FOR STARTUPS & SCALEUPS",
             "hero_title": "Rapid Customer Acquisition for",
@@ -311,7 +311,7 @@
         },
         "industries_saas": {
             "title": "SaaS & Enterprise Platforms",
-            "url": "industries/saas.php",
+            "url": "industries/saas-marketing-agency.php",
             "status": "published",
             "badge": "SAAS & ENTERPRISE ENGINE",
             "hero_title": "Scale Organic Trial Signups &",
@@ -723,7 +723,7 @@
         "copyright": "© 2026 Digital4Local. All rights reserved.",
         "description": "The international-standard AI growth engine powering Local Businesses, Startups, and SaaS enterprises to dominate Google Maps, Local SEO, and AI Search Engines (GEO & AEO)."
     },
-    "active_page_key": "blog",
+    "active_page_key": "blog_local-seo-for-solar-installers",
     "is_blog_post": "1",
     "blog_slug": "topadvertisement-agensies",
     "original_blog_slug": "topadvertisement-agensies"

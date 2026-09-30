@@ -40,8 +40,8 @@ $recent_display_posts = array_slice($all_recent_posts, 0, 3);
       </div>
 
       <div class="shrink-0">
-        <a href="<?php echo $asset_prefix; ?>blog.php" class="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-white border border-[#CBD5E1] text-[#14151A] font-bold text-sm hover:border-[#1B5FAA] hover:text-[#1B5FAA] hover:shadow-md transition-all group">
-          <span>View All 6+ Articles</span>
+        <a href="<?php echo (function_exists('get_base_path') ? get_base_path() : $asset_prefix); ?>blog.php" class="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-white border border-[#CBD5E1] text-[#14151A] font-bold text-sm hover:border-[#1B5FAA] hover:text-[#1B5FAA] hover:shadow-md transition-all group">
+          <span>View All <?php echo count($all_recent_posts); ?> Articles</span>
           <span class="group-hover:translate-x-1 transition-transform">→</span>
         </a>
       </div>
@@ -56,7 +56,7 @@ $recent_display_posts = array_slice($all_recent_posts, 0, 3);
         } else {
             $post_img_resolved = $post_img;
         }
-        $post_link = $asset_prefix . 'blog/' . urlencode($post['slug']) . '.php';
+        $post_link = (function_exists('get_base_path') ? get_base_path() : $asset_prefix) . 'blog/' . urlencode($post['slug']);
       ?>
       <article class="bg-white rounded-3xl border border-[#E2E8F0] shadow-sm hover:shadow-xl hover:border-[#1B5FAA] transition-all flex flex-col justify-between overflow-hidden group" data-aos="fade-up">
         

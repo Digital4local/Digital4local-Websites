@@ -300,6 +300,8 @@ function initBookDemoModal() {
     const company = document.getElementById('demo-company')?.value?.trim() || '';
     const website = document.getElementById('demo-website')?.value?.trim() || '';
     const industry = document.getElementById('demo-industry')?.value || 'General';
+    const hp = document.getElementById('demo-hp')?.value || '';
+    const ts = document.getElementById('demo-form-ts')?.value || '';
 
     let basePath = '/';
     const subMatch = window.location.pathname.match(/^(\/[^\/]+)\/(services|industries|blog|api)\//i);
@@ -312,7 +314,17 @@ function initBookDemoModal() {
       await fetch(apiPath, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, phone, company, website, industry, source: 'Interactive Booking Modal' })
+        body: JSON.stringify({ 
+          name, 
+          email, 
+          phone, 
+          company, 
+          website, 
+          industry, 
+          _hp_company_sec: hp,
+          form_ts: ts,
+          source: 'Interactive Booking Modal' 
+        })
       });
     } catch (e) {
       console.warn('Lead capture notice:', e);

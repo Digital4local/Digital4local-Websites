@@ -1,103 +1,191 @@
 <?php
 /**
  * Digital4Local - Media & Image Uploader API Handler
- * Handles file uploads from Admin CMS and saves to assets/images/uploads/
+ * Hardened with Admin Session Authentication, CSRF Validation, Real MIME Type Verification,
+ * SVG XML Sanitization (Anti-Stored XSS / Anti-XXE), and Upload Directory Execution Lockdown.
  */
-header('Content-Type: application/json');
+header('Content-Type: application/json; charset=utf-8');
+require_once __DIR__ . '/../includes/auth-middleware.php';
 
 $upload_dir = __DIR__ . '/../assets/images/uploads/';
 if (!file_exists($upload_dir)) {
-    @mkdir($upload_dir, 0777, true);
+    @mkdir($upload_dir, 0755, true);
+}
+
+// 1. Mandatory Session Authentication
+if (!is_admin_logged_in()) {
+    http_response_code(401);
+    echo json_encode(['success' => false, 'message' => 'Unauthorized. Admin authentication required to upload media.']);
+    exit;
 }
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
     echo json_encode(['success' => false, 'message' => 'Invalid request method. Only POST is accepted.']);
     exit;
 }
 
-// Check if file is uploaded
-if (!isset($_FILES['media_file']) || $_FILES['media_file']['error'] !== UPLOAD_ERR_OK) {
-    // Check if JSON request with base64 image data
-    $raw = file_get_contents('php://input');
-    $json = json_decode($raw, true);
+// 2. CSRF Token Verification
+$csrf_header = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
+$csrf_param = $_POST['csrf_token'] ?? '';
+$token_to_verify = !empty($csrf_header) ? $csrf_header : $csrf_param;
+
+if (!verify_csrf_token($token_to_verify)) {
+    http_response_code(403);
+    echo json_encode(['success' => false, 'message' => 'CSRF validation failed. Please reload your admin panel and try again.']);
+    exit;
+}
+
+// Ensure .htaccess protection in upload directory
+$upload_htaccess = $upload_dir . '.htaccess';
+if (!file_exists($upload_htaccess)) {
+    $htaccess_security = "# Prevent execution of any scripts in upload directory\n" .
+                         "<FilesMatch \"\.(php|phtml|php3|php4|php5|php7|phps|phar|cgi|pl|py|sh|exe|bat|cmd)$\">\n" .
+                         "    Order Deny,Allow\n" .
+                         "    Deny from all\n" .
+                         "</FilesMatch>\n" .
+                         "Options -ExecCGI -Indexes\n" .
+                         "php_flag engine off\n";
+    @file_put_contents($upload_htaccess, $htaccess_security);
+}
+
+$allowed_extensions = [
+    'jpg' => 'image/jpeg',
+    'jpeg' => 'image/jpeg',
+    'png' => 'image/png',
+    'webp' => 'image/webp',
+    'gif' => 'image/gif',
+    'svg' => 'image/svg+xml',
+    'ico' => ['image/x-icon', 'image/vnd.microsoft.icon', 'image/ico']
+];
+
+/**
+ * Sanitize SVG content to prevent Stored XSS and XML Entity Injection (XXE)
+ */
+function sanitize_svg_content($content) {
+    // Check for dangerous XXE declarations
+    if (stripos($content, '<!ENTITY') !== false || stripos($content, 'SYSTEM') !== false) {
+        return false;
+    }
+    // Remove script tags and embedded event handlers
+    $content = preg_replace('#<script(.*?)>(.*?)</script>#is', '', $content);
+    $content = preg_replace('#<foreignObject(.*?)>(.*?)</foreignObject>#is', '', $content);
+    $content = preg_replace('#<iframe(.*?)>(.*?)</iframe>#is', '', $content);
+    $content = preg_replace('#\son\w+\s*=\s*("[^"]*"|\'[^\']*\'|[^\s>]+)#i', '', $content);
+    $content = preg_replace('#href\s*=\s*["\']javascript:[^"\']*["\']#i', '', $content);
+    $content = preg_replace('#xlink:href\s*=\s*["\']javascript:[^"\']*["\']#i', '', $content);
+    return $content;
+}
+
+$uploaded_content = null;
+$detected_ext = '';
+$original_name = '';
+
+// Check Multipart Upload
+if (isset($_FILES['media_file']) && $_FILES['media_file']['error'] === UPLOAD_ERR_OK) {
+    $file = $_FILES['media_file'];
+    $file_size = $file['size'];
+    $original_name = basename($file['name']);
+
+    if ($file_size > 5 * 1024 * 1024) {
+        http_response_code(413);
+        echo json_encode(['success' => false, 'message' => 'File size exceeds maximum allowed limit of 5MB.']);
+        exit;
+    }
+
+    $ext = strtolower(pathinfo($original_name, PATHINFO_EXTENSION));
+    if (!array_key_exists($ext, $allowed_extensions)) {
+        http_response_code(415);
+        echo json_encode(['success' => false, 'message' => 'Invalid file extension. Allowed formats: JPG, PNG, WEBP, GIF, SVG, ICO.']);
+        exit;
+    }
+
+    $uploaded_content = @file_get_contents($file['tmp_name']);
+    $detected_ext = $ext;
+} else {
+    // Check Base64 Payload
+    $raw = @file_get_contents('php://input');
+    $json = @json_decode($raw, true);
+
     if (isset($json['base64_data']) && !empty($json['base64_data'])) {
         $base64_string = $json['base64_data'];
-        $extension = 'png';
+        $ext = 'png';
         if (preg_match('/^data:image\/(\w+);base64,/', $base64_string, $type)) {
             $base64_string = substr($base64_string, strpos($base64_string, ',') + 1);
-            $extension = strtolower($type[1]);
-            if ($extension === 'jpeg') $extension = 'jpg';
+            $ext = strtolower($type[1]);
+            if ($ext === 'jpeg') $ext = 'jpg';
         }
-        $data = base64_decode($base64_string);
-        if ($data !== false) {
-            $filename = 'upload_' . date('Ymd_His') . '_' . bin2hex(random_bytes(4)) . '.' . $extension;
-            $filepath = $upload_dir . $filename;
-            if (file_put_contents($filepath, $data) !== false) {
-                $relative_url = 'assets/images/uploads/' . $filename;
-                echo json_encode([
-                    'success' => true,
-                    'message' => 'Image uploaded successfully!',
-                    'url' => $relative_url,
-                    'filename' => $filename
-                ]);
-                exit;
-            }
+        
+        if (!array_key_exists($ext, $allowed_extensions)) {
+            http_response_code(415);
+            echo json_encode(['success' => false, 'message' => 'Unsupported image format.']);
+            exit;
+        }
+
+        $decoded = @base64_decode($base64_string);
+        if ($decoded !== false && strlen($decoded) <= 5 * 1024 * 1024) {
+            $uploaded_content = $decoded;
+            $detected_ext = $ext;
+            $original_name = 'upload_' . $ext;
         }
     }
+}
 
-    $error_msg = 'No file uploaded or upload error occurred.';
-    if (isset($_FILES['media_file']['error'])) {
-        $error_code = $_FILES['media_file']['error'];
-        $upload_errors = [
-            UPLOAD_ERR_INI_SIZE   => 'File exceeds upload_max_filesize limit.',
-            UPLOAD_ERR_FORM_SIZE  => 'File exceeds MAX_FILE_SIZE directive.',
-            UPLOAD_ERR_PARTIAL    => 'File was only partially uploaded.',
-            UPLOAD_ERR_NO_FILE    => 'No file was uploaded.',
-            UPLOAD_ERR_NO_TMP_DIR => 'Missing temporary folder.',
-            UPLOAD_ERR_CANT_WRITE => 'Failed to write file to disk.',
-            UPLOAD_ERR_EXTENSION  => 'A PHP extension stopped the file upload.'
-        ];
-        $error_msg = $upload_errors[$error_code] ?? $error_msg;
+if ($uploaded_content === null || empty($detected_ext)) {
+    http_response_code(400);
+    echo json_encode(['success' => false, 'message' => 'No valid media file provided or upload error occurred.']);
+    exit;
+}
+
+// 3. Deep MIME Type Verification
+if ($detected_ext !== 'svg') {
+    if (function_exists('finfo_open')) {
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $real_mime = finfo_buffer($finfo, $uploaded_content);
+        finfo_close($finfo);
+
+        $expected_mime = $allowed_extensions[$detected_ext];
+        $is_valid_mime = false;
+        if (is_array($expected_mime)) {
+            $is_valid_mime = in_array($real_mime, $expected_mime);
+        } else {
+            $is_valid_mime = ($real_mime === $expected_mime);
+        }
+
+        if (!$is_valid_mime && $detected_ext !== 'ico') {
+            http_response_code(415);
+            echo json_encode(['success' => false, 'message' => "MIME type mismatch ({$real_mime}). Upload aborted for security."]);
+            exit;
+        }
     }
-    echo json_encode(['success' => false, 'message' => $error_msg]);
-    exit;
+} else {
+    // Sanitize SVG XML
+    $sanitized_svg = sanitize_svg_content($uploaded_content);
+    if ($sanitized_svg === false) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => 'SVG file contains unsafe scripts or entities.']);
+        exit;
+    }
+    $uploaded_content = $sanitized_svg;
 }
 
-$file = $_FILES['media_file'];
-$file_tmp = $file['tmp_name'];
-$file_name = basename($file['name']);
-$file_size = $file['size'];
-
-// Max size: 10MB
-if ($file_size > 10 * 1024 * 1024) {
-    echo json_encode(['success' => false, 'message' => 'File size exceeds maximum limit of 10MB.']);
-    exit;
-}
-
-// Validate file extension and MIME type
-$allowed_extensions = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg', 'ico'];
-$ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
-
-if (!in_array($ext, $allowed_extensions)) {
-    echo json_encode(['success' => false, 'message' => 'Invalid file format. Allowed formats: JPG, PNG, WEBP, GIF, SVG, ICO.']);
-    exit;
-}
-
-// Generate unique clean file name
-$clean_name = preg_replace('/[^a-zA-Z0-9_\-]/', '', pathinfo($file_name, PATHINFO_FILENAME));
-$clean_name = substr($clean_name, 0, 30);
-$unique_filename = $clean_name . '_' . date('Ymd_His') . '_' . bin2hex(random_bytes(3)) . '.' . $ext;
+// 4. Generate Safe Filename
+$clean_basename = preg_replace('/[^a-zA-Z0-9_-]/', '', pathinfo($original_name, PATHINFO_FILENAME));
+$clean_basename = substr($clean_basename ?: 'media', 0, 25);
+$unique_filename = 'upload_' . date('Ymd_His') . '_' . bin2hex(random_bytes(4)) . '.' . $detected_ext;
 $target_file = $upload_dir . $unique_filename;
 
-if (move_uploaded_file($file_tmp, $target_file)) {
+if (@file_put_contents($target_file, $uploaded_content, LOCK_EX) !== false) {
+    @chmod($target_file, 0644);
     $relative_url = 'assets/images/uploads/' . $unique_filename;
     echo json_encode([
         'success' => true,
-        'message' => 'Image uploaded successfully!',
+        'message' => 'Image uploaded and sanitized successfully!',
         'url' => $relative_url,
         'filename' => $unique_filename,
-        'size_kb' => round($file_size / 1024, 1)
+        'size_kb' => round(strlen($uploaded_content) / 1024, 1)
     ]);
 } else {
-    echo json_encode(['success' => false, 'message' => 'Failed to move uploaded file to uploads directory.']);
+    http_response_code(500);
+    echo json_encode(['success' => false, 'message' => 'Failed to write uploaded file to disk.']);
 }

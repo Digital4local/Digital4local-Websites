@@ -9,7 +9,7 @@ $canonical_url = "https://digital4local.com/services/link-building-pr.php";
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <?php include_once '../includes/seo.php'; ?>
+  <?php include_once __DIR__ . '/../includes/seo.php'; ?>
 
   <!-- FAQPage Schema for Link Building & Digital PR -->
   <script type="application/ld+json">
@@ -88,7 +88,7 @@ $canonical_url = "https://digital4local.com/services/link-building-pr.php";
 <body class="bg-[#FFFFFF] text-[#14151A] min-h-screen relative selection:bg-[#00F0FF] selection:text-[#0A0A0F]">
 
   <div class="bg-ambient-glow"></div>
-  <?php include_once '../includes/header.php'; ?>
+  <?php include_once __DIR__ . '/../includes/header.php'; ?>
 
   <main class="relative z-10 pt-28 pb-24">
     
@@ -139,7 +139,7 @@ $canonical_url = "https://digital4local.com/services/link-building-pr.php";
     <!-- ========================================================================= -->
     <!-- 2. SECTION — Trust strip (Global Logo Strip) -->
     <!-- ========================================================================= -->
-    <?php include '../includes/trust-strip.php'; ?>
+    <?php include __DIR__ . '/../includes/trust-strip.php'; ?>
 
     <!-- ========================================================================= -->
     <!-- 3. SECTION — What we will not do (Differentiator) -->
@@ -686,14 +686,14 @@ $canonical_url = "https://digital4local.com/services/link-building-pr.php";
     <!-- 10.5. SECTION — Tools & AI We Use for Link Building & PR -->
     <?php 
     $current_stack_key = 'link-building-pr';
-    include '../includes/tools-stack.php'; 
+    include __DIR__ . '/../includes/tools-stack.php'; 
     ?>
 
     <!-- 10.6. SECTION — We Get You Featured On (Top 10 PR & News Websites) -->
-    <?php include '../includes/pr-features.php'; ?>
+    <?php include __DIR__ . '/../includes/pr-features.php'; ?>
 
     <!-- 10.7. SECTION — Top 20 Citation Sources We Build -->
-    <?php include '../includes/citation-sources.php'; ?>
+    <?php include __DIR__ . '/../includes/citation-sources.php'; ?>
 
     <!-- ========================================================================= -->
     <!-- 11. SECTION — Frequently asked questions (8 questions) -->
@@ -805,7 +805,7 @@ $canonical_url = "https://digital4local.com/services/link-building-pr.php";
     <!-- ========================================================================= -->
     <!-- 12. SECTION — Explore more (Official 8 Services Cross-linking) -->
     <!-- ========================================================================= -->
-    <?php include '../includes/explore-services.php'; ?>
+    <?php include __DIR__ . '/../includes/explore-services.php'; ?>
 
     <!-- ========================================================================= -->
     <!-- 13. SECTION — Closing CTA banner -->
@@ -828,6 +828,6 @@ $canonical_url = "https://digital4local.com/services/link-building-pr.php";
 
   </main>
 
-  <?php include_once '../includes/footer.php'; ?>
+  <?php include_once __DIR__ . '/../includes/footer.php'; ?>
 </body>
 </html>

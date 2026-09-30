@@ -59,10 +59,23 @@ $service_pages = [
 ];
 
 $industry_pages = [
-    'industries_index' => ['title' => 'Industries Hub', 'url' => 'industries/index.php', 'type' => 'Industry'],
-    'industries_local_biz' => ['title' => 'Local Businesses', 'url' => 'industries/local-business.php', 'type' => 'Industry'],
-    'industries_startups' => ['title' => 'Startups & Scaleups', 'url' => 'industries/startups.php', 'type' => 'Industry'],
-    'industries_saas' => ['title' => 'SaaS Enterprise', 'url' => 'industries/saas.php', 'type' => 'Industry']
+    'industries_index' => ['title' => 'Industries Blueprint Hub', 'url' => 'industries/index.php', 'type' => 'Industry'],
+    'industries_solar' => ['title' => 'Solar Installers', 'url' => 'industries/solar-installers-seo.php', 'type' => 'Industry'],
+    'industries_heat_pump' => ['title' => 'Heat Pump Installers', 'url' => 'industries/heat-pump-installers-seo.php', 'type' => 'Industry'],
+    'industries_ev_charger' => ['title' => 'EV Charger Installers', 'url' => 'industries/ev-charger-installers-seo.php', 'type' => 'Industry'],
+    'industries_roofing' => ['title' => 'Roofing Companies', 'url' => 'industries/roofing-companies-seo.php', 'type' => 'Industry'],
+    'industries_kitchen_bath' => ['title' => 'Kitchen & Bath', 'url' => 'industries/kitchen-bathroom-renovators-seo.php', 'type' => 'Industry'],
+    'industries_loft' => ['title' => 'Lofts & Extensions', 'url' => 'industries/loft-conversion-builders-seo.php', 'type' => 'Industry'],
+    'industries_dental' => ['title' => 'Private Dental Clinics', 'url' => 'industries/dental-clinics-seo.php', 'type' => 'Industry'],
+    'industries_aesthetics' => ['title' => 'Aesthetics Clinics', 'url' => 'industries/aesthetics-clinics-seo.php', 'type' => 'Industry'],
+    'industries_law' => ['title' => 'Law Firms & Solicitors', 'url' => 'industries/law-firms-seo.php', 'type' => 'Industry'],
+    'industries_driveway' => ['title' => 'Driveways & Landscaping', 'url' => 'industries/driveway-landscaping-seo.php', 'type' => 'Industry'],
+    'industries_pool' => ['title' => 'Swimming Pool Installers', 'url' => 'industries/pool-installers-seo.php', 'type' => 'Industry'],
+    'industries_removal' => ['title' => 'Removal Companies', 'url' => 'industries/removal-companies-seo.php', 'type' => 'Industry'],
+    'industries_security' => ['title' => 'Security & CCTV', 'url' => 'industries/security-cctv-installers-seo.php', 'type' => 'Industry'],
+    'industries_local_biz' => ['title' => 'Local Businesses', 'url' => 'industries/local-business-seo.php', 'type' => 'Industry'],
+    'industries_startups' => ['title' => 'Startups & Scaleups', 'url' => 'industries/startup-seo-agency.php', 'type' => 'Industry'],
+    'industries_saas' => ['title' => 'SaaS Enterprise', 'url' => 'industries/saas-marketing-agency.php', 'type' => 'Industry']
 ];
 
 $custom_pages = [];
@@ -71,7 +84,7 @@ if (isset($site_config['pages'])) {
         if (strpos($k, 'custom_') === 0) {
             $custom_pages[$k] = [
                 'title' => $p['title'] ?? 'Custom Landing Page',
-                'url' => $p['url'] ?? ('page.php?slug=' . str_replace('custom_', '', $k)),
+                'url' => $p['url'] ?? ('page/' . str_replace('custom_', '', $k)),
                 'type' => 'Landing Page'
             ];
         }
@@ -83,7 +96,7 @@ if (isset($site_config['custom_pages']) && is_array($site_config['custom_pages']
         if (!isset($custom_pages[$k])) {
             $custom_pages[$k] = [
                 'title' => $cp['title'] ?? 'Custom Landing Page',
-                'url' => $cp['url'] ?? ('page.php?slug=' . ($cp['slug'] ?? 'page')),
+                'url' => $cp['url'] ?? ('page/' . ($cp['slug'] ?? 'page')),
                 'type' => 'Landing Page'
             ];
         }
@@ -95,7 +108,7 @@ $blog_posts_list = get_blog_posts();
 // Resolve active item data
 if ($is_blog_item) {
     $active_title = $active_blog_post['title'] ?? 'Blog Article';
-    $active_url = 'blog-single.php?slug=' . urlencode($active_blog_slug);
+    $active_url = 'blog/' . urlencode($active_blog_slug);
     $active_status = $active_blog_post['status'] ?? 'published';
     $active_type = 'Blog Article';
 } else {
@@ -851,7 +864,7 @@ $page_cfg = get_page_config($active_key);
         <div>
           <label class="block font-mono text-[#9CA3AF] mb-1 font-bold">URL SLUG</label>
           <div class="flex items-center bg-[#1F2937] border border-[#374151] rounded-lg px-3 py-2">
-            <span class="text-[#6B7280] font-mono">page.php?slug=</span>
+            <span class="text-[#6B7280] font-mono">page/</span>
             <input type="text" id="new-page-slug-input" placeholder="dentist-seo-services" class="bg-transparent border-none text-[#00F0FF] font-mono outline-none flex-1">
           </div>
         </div>
@@ -898,7 +911,7 @@ $page_cfg = get_page_config($active_key);
         <div>
           <label class="block font-mono text-[#9CA3AF] mb-1 font-bold">URL SLUG</label>
           <div class="flex items-center bg-[#1F2937] border border-[#374151] rounded-lg px-3 py-2">
-            <span class="text-[#6B7280] font-mono">blog-single.php?slug=</span>
+            <span class="text-[#6B7280] font-mono">blog/</span>
             <input type="text" id="new-post-slug-input" placeholder="ai-search-optimization-blueprint-2026" class="bg-transparent border-none text-[#10B981] font-mono outline-none flex-1">
           </div>
         </div>
@@ -1154,6 +1167,8 @@ $page_cfg = get_page_config($active_key);
     // Initial render
     renderFaqItems();
 
+    window.CSRF_TOKEN = <?php echo json_encode(get_csrf_token()); ?>;
+
     // 5. Inline & Featured Image Upload Handler
     async function handleInlineImageUpload(event) {
       const file = event.target.files[0];
@@ -1161,10 +1176,15 @@ $page_cfg = get_page_config($active_key);
 
       const formData = new FormData();
       formData.append('media_file', file);
+      formData.append('csrf_token', window.CSRF_TOKEN);
       showToast('Uploading image...', 'info');
 
       try {
-        const response = await fetch('api/upload-media.php', { method: 'POST', body: formData });
+        const response = await fetch('api/upload-media.php', { 
+          method: 'POST', 
+          headers: { 'X-CSRF-Token': window.CSRF_TOKEN },
+          body: formData 
+        });
         const result = await response.json();
         if (result.success && editorInstance) {
           const content = `<p><img src="${result.url}" alt="Uploaded Media" class="max-w-full rounded-xl my-4" /></p>`;
@@ -1186,10 +1206,15 @@ $page_cfg = get_page_config($active_key);
 
       const formData = new FormData();
       formData.append('media_file', file);
+      formData.append('csrf_token', window.CSRF_TOKEN);
       showToast('Uploading featured image...', 'info');
 
       try {
-        const response = await fetch('api/upload-media.php', { method: 'POST', body: formData });
+        const response = await fetch('api/upload-media.php', { 
+          method: 'POST', 
+          headers: { 'X-CSRF-Token': window.CSRF_TOKEN },
+          body: formData 
+        });
         const result = await response.json();
         if (result.success) {
           document.getElementById('featured-image-preview').src = result.url;
@@ -1209,10 +1234,15 @@ $page_cfg = get_page_config($active_key);
 
       const formData = new FormData();
       formData.append('media_file', file);
+      formData.append('csrf_token', window.CSRF_TOKEN);
       showToast('Uploading media...', 'info');
 
       try {
-        const response = await fetch('api/upload-media.php', { method: 'POST', body: formData });
+        const response = await fetch('api/upload-media.php', { 
+          method: 'POST', 
+          headers: { 'X-CSRF-Token': window.CSRF_TOKEN },
+          body: formData 
+        });
         const result = await response.json();
         if (result.success) {
           showToast('Media uploaded: ' + result.filename, 'success');
@@ -1273,7 +1303,13 @@ $page_cfg = get_page_config($active_key);
 
     function reloadPreviewIframe() {
       const iframe = document.getElementById('cms-live-preview-frame');
-      iframe.src = iframe.src.split('?')[0] + '?slug=' + encodeURIComponent(document.getElementById('form-blog-slug')?.value || '') + '&t=' + new Date().getTime();
+      const isBlog = document.getElementById('form-is-blog-post').value === '1';
+      if (isBlog) {
+        const slug = document.getElementById('edit-blog-slug')?.value || document.getElementById('form-blog-slug')?.value || '';
+        iframe.src = 'blog/' + encodeURIComponent(slug) + '?t=' + new Date().getTime();
+      } else {
+        iframe.src = iframe.src.split('?')[0] + '?t=' + new Date().getTime();
+      }
     }
 
     // 8. Save All CMS Settings via API
@@ -1287,7 +1323,7 @@ $page_cfg = get_page_config($active_key);
       const formData = new FormData(form);
       
       // Convert form data to nested JSON object
-      const payload = {};
+      const payload = { csrf_token: window.CSRF_TOKEN };
       for (const [key, value] of formData.entries()) {
         const matches = key.match(/^([^\[]+)\[([^\]]+)\](?:\[([^\]]+)\])?$/);
         if (matches) {
@@ -1331,7 +1367,10 @@ $page_cfg = get_page_config($active_key);
       try {
         const response = await fetch('api/update-cms-settings.php', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': window.CSRF_TOKEN
+          },
           body: JSON.stringify(payload)
         });
         const result = await response.json();
@@ -1381,8 +1420,16 @@ $page_cfg = get_page_config($active_key);
 
       const response = await fetch('api/update-cms-settings.php', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'add_custom_page', new_page_title: title, new_page_slug: slug })
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': window.CSRF_TOKEN
+        },
+        body: JSON.stringify({ 
+          action: 'add_custom_page', 
+          new_page_title: title, 
+          new_page_slug: slug,
+          csrf_token: window.CSRF_TOKEN
+        })
       });
       const res = await response.json();
       if (res.success) {
@@ -1400,8 +1447,17 @@ $page_cfg = get_page_config($active_key);
 
       const response = await fetch('api/update-cms-settings.php', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'add_blog_post', new_post_title: title, new_post_slug: slug, new_post_category: category })
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': window.CSRF_TOKEN
+        },
+        body: JSON.stringify({ 
+          action: 'add_blog_post', 
+          new_post_title: title, 
+          new_post_slug: slug, 
+          new_post_category: category,
+          csrf_token: window.CSRF_TOKEN
+        })
       });
       const res = await response.json();
       if (res.success) {
@@ -1415,8 +1471,15 @@ $page_cfg = get_page_config($active_key);
       if (!confirm(`Are you sure you want to permanently delete '${pageTitle}'?`)) return;
       const response = await fetch('api/update-cms-settings.php', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'delete_custom_page', page_key: pageKey })
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': window.CSRF_TOKEN
+        },
+        body: JSON.stringify({ 
+          action: 'delete_custom_page', 
+          page_key: pageKey,
+          csrf_token: window.CSRF_TOKEN
+        })
       });
       const res = await response.json();
       if (res.success) window.location.href = 'admin-cms.php?page=index';
@@ -1426,8 +1489,15 @@ $page_cfg = get_page_config($active_key);
       if (!confirm(`Are you sure you want to delete blog article '${title}'?`)) return;
       const response = await fetch('api/update-cms-settings.php', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'delete_blog_post', post_slug: slug })
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': window.CSRF_TOKEN
+        },
+        body: JSON.stringify({ 
+          action: 'delete_blog_post', 
+          post_slug: slug,
+          csrf_token: window.CSRF_TOKEN
+        })
       });
       const res = await response.json();
       if (res.success) window.location.href = 'admin-cms.php?page=blog';

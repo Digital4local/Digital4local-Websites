@@ -9,7 +9,7 @@ $canonical_url = "https://digital4local.com/services/social-media.php";
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <?php include_once '../includes/seo.php'; ?>
+  <?php include_once __DIR__ . '/../includes/seo.php'; ?>
 
   <!-- FAQPage Schema for Social Media Marketing -->
   <script type="application/ld+json">
@@ -88,7 +88,7 @@ $canonical_url = "https://digital4local.com/services/social-media.php";
 <body class="bg-[#FFFFFF] text-[#14151A] min-h-screen relative selection:bg-[#00F0FF] selection:text-[#0A0A0F]">
 
   <div class="bg-ambient-glow"></div>
-  <?php include_once '../includes/header.php'; ?>
+  <?php include_once __DIR__ . '/../includes/header.php'; ?>
 
   <main class="relative z-10 pt-28 pb-24">
     
@@ -139,7 +139,7 @@ $canonical_url = "https://digital4local.com/services/social-media.php";
     <!-- ========================================================================= -->
     <!-- 2. SECTION — Trust strip (Global Logo Strip) -->
     <!-- ========================================================================= -->
-    <?php include '../includes/trust-strip.php'; ?>
+    <?php include __DIR__ . '/../includes/trust-strip.php'; ?>
 
     <!-- ========================================================================= -->
     <!-- 3. SECTION — Definitions (3-card grid) -->
@@ -670,7 +670,7 @@ $canonical_url = "https://digital4local.com/services/social-media.php";
     <!-- 10.5. SECTION — Tools & AI We Use for Social Media -->
     <?php 
     $current_stack_key = 'social-media';
-    include '../includes/tools-stack.php'; 
+    include __DIR__ . '/../includes/tools-stack.php'; 
     ?>
 
     <!-- ========================================================================= -->
@@ -783,7 +783,7 @@ $canonical_url = "https://digital4local.com/services/social-media.php";
     <!-- ========================================================================= -->
     <!-- 12. SECTION — Explore more (Official 8 Services Cross-linking) -->
     <!-- ========================================================================= -->
-    <?php include '../includes/explore-services.php'; ?>
+    <?php include __DIR__ . '/../includes/explore-services.php'; ?>
 
     <!-- ========================================================================= -->
     <!-- 13. SECTION — Closing CTA banner -->
@@ -806,6 +806,6 @@ $canonical_url = "https://digital4local.com/services/social-media.php";
 
   </main>
 
-  <?php include_once '../includes/footer.php'; ?>
+  <?php include_once __DIR__ . '/../includes/footer.php'; ?>
 </body>
 </html>

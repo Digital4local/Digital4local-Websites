@@ -1,6 +1,18 @@
 <?php
 require_once __DIR__ . '/includes/site-config.php';
 
+// Clean URL Redirection: If accessed directly via /blog-single.php?slug=xxx, 301 redirect to clean URL /blog/xxx
+if (isset($_SERVER['REQUEST_URI']) && strpos($_SERVER['REQUEST_URI'], 'blog-single.php') !== false) {
+    $raw_slug = $_GET['slug'] ?? '';
+    $clean_slug = preg_replace('/\.php$/', '', trim($raw_slug, '/'));
+    if (!empty($clean_slug)) {
+        $base_url_prefix = function_exists('get_base_path') ? get_base_path() : '/';
+        header("HTTP/1.1 301 Moved Permanently");
+        header("Location: " . rtrim($base_url_prefix, '/') . "/blog/" . urlencode($clean_slug));
+        exit;
+    }
+}
+
 $slug = $_GET['slug'] ?? '';
 $slug = str_replace('.php', '', trim($slug, '/'));
 

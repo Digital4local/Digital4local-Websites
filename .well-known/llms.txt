@@ -1,0 +1,44 @@
+# Digital4Local
+
+> Digital4Local is an AI-powered search marketing, Generative Engine Optimization (GEO), and local growth engineering agency. We help high-ticket local service businesses, medical clinics, legal practices, renewable energy contractors, and tech startups dominate Google Maps, traditional organic search, and AI answer engines including ChatGPT, Claude, Perplexity, and Google Gemini.
+
+## Core Specializations & Services
+
+- [Local SEO Services](https://digital4local.com/services/local-seo.php): Full-funnel Google Business Profile (GBP) optimization, 5x5 geo-grid pin tracking, local citation cleanup (NAP consistency), review velocity acceleration, and Google Map 3-Pack ranking.
+- [GEO & AEO Services (Generative & Answer Engine Optimization)](https://digital4local.com/services/geo-aeo.php): Direct AI recommendation engineering. We structure entity data, brand knowledge graphs, and technical schema so LLMs (ChatGPT, Claude, Gemini, Perplexity) recommend your business as the premier authority.
+- [Technical SEO Services](https://digital4local.com/services/technical-seo.php): Deep crawl architecture auditing, Core Web Vitals speed optimization, Schema.org JSON-LD graph syndication, indexation fixing, and canonical hierarchy hardening.
+- [Link Building & Digital PR](https://digital4local.com/services/link-building-pr.php): High-authority entity backlinks, data-driven digital PR placements, national and industry trade press coverage, and unlinked brand mention reclamation.
+- [AI Marketing & Automation](https://digital4local.com/services/ai-marketing.php): Sub-60-second inbound lead response automations (SMS, WhatsApp, email), AI conversational qualification bots, automated CRM dispatch, and pipeline routing.
+- [Social Media Marketing (SMM)](https://digital4local.com/services/social-media.php): Multi-channel organic authority building, localized paid social conversion funnels, and brand presence on LinkedIn, Meta, and Instagram.
+- [High-Performance Web Development](https://digital4local.com/services/web-development.php): Lightweight, ultra-fast custom web applications engineered for high conversion rates, accessibility, and frictionless search crawler indexing.
+- [Mobile App Development](https://digital4local.com/services/app-development.php): Scalable iOS and Android mobile applications built for customer retention, automated bookings, and field operations.
+
+## Industry Search & AI Blueprints (16 Verticals)
+
+- [Solar Installer SEO & AI Marketing](https://digital4local.com/industries/solar-installers-seo.php): Eliminating shared lead broker reliance for residential and commercial solar PV and battery storage installers.
+- [Heat Pump Installer SEO](https://digital4local.com/industries/heat-pump-installers-seo.php): Specialized search visibility and exclusive homeowner inquiry capture for certified heat pump engineers.
+- [EV Charger Installer SEO](https://digital4local.com/industries/ev-charger-installers-seo.php): Commercial and residential EV charging point installer local map rankings and corporate fleet leads.
+- [Roofing Contractor SEO](https://digital4local.com/industries/roofing-companies-seo.php): High-margin roof replacement, storm damage, and commercial roofing lead capture engine.
+- [Kitchen & Bathroom Renovation SEO](https://digital4local.com/industries/kitchen-bathroom-renovators-seo.php): Premium home remodeling customer acquisition, visual portfolio SEO, and local quotation booking.
+- [Loft Conversion & Extension SEO](https://digital4local.com/industries/loft-conversion-builders-seo.php): High-ticket architectural extension and attic conversion contractor map-pack dominance.
+- [Dental Clinic SEO & Patient Acquisition](https://digital4local.com/industries/dental-clinics-seo.php): Private cosmetic dentistry, Invisalign, and dental implant patient acquisition systems.
+- [Medical Aesthetics & Skin Clinic SEO](https://digital4local.com/industries/aesthetics-clinics-seo.php): High-intent local booking capture for cosmetic clinics, dermatology, and aesthetic practitioners.
+- [Law Firm SEO & Legal Marketing](https://digital4local.com/industries/law-firms-seo.php): High-ticket client acquisition for personal injury, corporate, family, and dispute resolution law firms.
+- [B2B SaaS Marketing Agency](https://digital4local.com/industries/saas-marketing-agency.php): Scaling monthly recurring revenue (MRR), product-led growth, and AI search visibility for software companies.
+- [Startup SEO & Growth Agency](https://digital4local.com/industries/startup-seo-agency.php): Fast organic search traction and generative engine citation seeding for Seed and Series A startups.
+- [Driveway & Landscaping SEO](https://digital4local.com/industries/driveway-landscaping-seo.php): Local search rankings and residential lead capture for paving, resin, and landscaping contractors.
+- [Swimming Pool Installer SEO](https://digital4local.com/industries/pool-installers-seo.php): Luxury in-ground swimming pool builders and high-end outdoor living search marketing.
+- [Removal & Moving Company SEO](https://digital4local.com/industries/removal-companies-seo.php): Local and long-distance moving lead generation and commercial office relocation inquiries.
+- [Security & CCTV Installer SEO](https://digital4local.com/industries/security-cctv-installers-seo.php): Commercial access control, alarm, and smart CCTV installation lead generation.
+- [Local Business SEO Framework](https://digital4local.com/industries/local-business-seo.php): Universal multi-location local SEO and AI search optimization blueprint.
+
+## Company & Contact Details
+
+- **Company Name**: Digital4Local
+- **Website**: https://digital4local.com
+- **Contact Email**: info@digital4local.com
+- **About Page**: https://digital4local.com/about.php
+- **Pricing & Packages**: https://digital4local.com/pricing.php
+- **Book Strategy Session**: https://digital4local.com/contact.php
+- **XML Sitemap**: https://digital4local.com/sitemap.xml
+- **Full Context LLM Manifest**: https://digital4local.com/llms-full.txt

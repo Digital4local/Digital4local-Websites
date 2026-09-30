@@ -1,16 +1,15 @@
 <?php
 /**
  * Digital4Local - Command Center & CMS Admin Login Portal
+ * Hardened with CSRF verification, brute-force lockout, rate limiting, and open-redirect shielding.
  */
 require_once __DIR__ . '/includes/auth-middleware.php';
 require_once __DIR__ . '/includes/site-config.php';
 
 start_admin_session();
 
-$redirect_target = $_GET['redirect'] ?? 'admin.php';
-if (empty($redirect_target) || strpos($redirect_target, 'admin-login') !== false) {
-    $redirect_target = 'admin.php';
-}
+$raw_redirect = $_GET['redirect'] ?? 'admin.php';
+$redirect_target = safe_redirect_url($raw_redirect, 'admin.php');
 
 // If already logged in, redirect straight to target
 if (is_admin_logged_in()) {
@@ -26,17 +25,24 @@ if (isset($_GET['logged_out'])) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $identifier = $_POST['username'] ?? '';
-    $password = $_POST['password'] ?? '';
-    
-    $result = authenticate_admin($identifier, $password);
-    if ($result['success']) {
-        header("Location: " . $redirect_target);
-        exit;
+    $csrf_token = $_POST['csrf_token'] ?? '';
+    if (!verify_csrf_token($csrf_token)) {
+        $error_message = 'Security validation failed (Invalid or expired CSRF token). Please try again.';
     } else {
-        $error_message = $result['message'] ?? 'Authentication failed.';
+        $identifier = htmlspecialchars(trim($_POST['username'] ?? ''));
+        $password = $_POST['password'] ?? '';
+        
+        $result = authenticate_admin($identifier, $password);
+        if ($result['success']) {
+            header("Location: " . $redirect_target);
+            exit;
+        } else {
+            $error_message = $result['message'] ?? 'Authentication failed.';
+        }
     }
 }
+
+$csrf_token = get_csrf_token();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -110,6 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <?php endif; ?>
 
       <form method="POST" action="" class="space-y-5">
+        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
         
         <!-- Username / Email Field -->
         <div class="space-y-1.5">
@@ -147,7 +154,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <input 
               type="password" 
               name="password" 
-              id="password-input"
+              id="password-input" 
               required 
               placeholder="••••••••••••" 
               class="w-full bg-slate-900/80 border border-slate-700/80 focus:border-[#00B4D8] focus:ring-2 focus:ring-[#00B4D8]/20 rounded-xl pl-10 pr-11 py-3 text-sm text-white placeholder-slate-500 outline-none transition-all font-mono"
@@ -163,7 +170,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           </div>
         </div>
 
-        <!-- Remember Me Checkbox -->
+        <!-- Session Duration -->
         <div class="flex items-center justify-between text-xs pt-1">
           <label class="flex items-center gap-2 cursor-pointer text-slate-400 hover:text-slate-300">
             <input type="checkbox" name="remember" checked class="rounded bg-slate-800 border-slate-700 text-[#00B4D8] focus:ring-0">
@@ -186,7 +193,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <!-- Security Footer -->
     <div class="text-center text-xs text-slate-500 font-mono space-y-1">
-      <div>🔒 256-Bit SSL Encrypted Admin Gateway</div>
+      <div>🔒 256-Bit SSL Encrypted Admin Gateway • Rate-Limited</div>
       <div>© 2026 Digital4Local. Authorized Personnel Only.</div>
     </div>
 
@@ -201,16 +208,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     const toggleBtn = document.getElementById('toggle-password-btn');
     const eyeIcon = document.getElementById('eye-icon');
 
-    toggleBtn.addEventListener('click', () => {
-      if (pwdInput.type === 'password') {
-        pwdInput.type = 'text';
-        eyeIcon.setAttribute('data-lucide', 'eye-off');
-      } else {
-        pwdInput.type = 'password';
-        eyeIcon.setAttribute('data-lucide', 'eye');
-      }
-      lucide.createIcons();
-    });
+    if (toggleBtn && pwdInput) {
+      toggleBtn.addEventListener('click', () => {
+        if (pwdInput.type === 'password') {
+          pwdInput.type = 'text';
+          eyeIcon.setAttribute('data-lucide', 'eye-off');
+        } else {
+          pwdInput.type = 'password';
+          eyeIcon.setAttribute('data-lucide', 'eye');
+        }
+        lucide.createIcons();
+      });
+    }
   </script>
 </body>
 </html>

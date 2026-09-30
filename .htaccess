@@ -1,18 +1,77 @@
-# Digital4Local - Apache / XAMPP Production Server Configuration
+# Digital4Local - High-Performance & Hardened Apache Configuration
+# Comprehensive Security Shield, Bot Defense, AI/LLM Access, Clean URLs, GZIP & Browser Caching
+
+# 1. Disable Directory Browsing & Signatures
+Options -Indexes -MultiViews
+ServerSignature Off
+
+# 2. Block Direct Access to Sensitive Files, Extensions, and Hidden Files (Except .well-known)
+<FilesMatch "^\.(?!well-known)">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+<FilesMatch "(^#.*#|\.(bak|config|dist|fla|inc|ini|log|psd|sh|sql|sw[op]|json|md|zip|tar|gz|env|git|py|lock))$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# 3. Dedicated Headers for AI / LLM Context Manifests (llms.txt, llm.txt, llms-full.txt)
+<FilesMatch "^(llms|llm|llms-full)\.txt$">
+    <IfModule mod_headers.c>
+        Header set Content-Type "text/plain; charset=utf-8"
+        Header set Access-Control-Allow-Origin "*"
+        Header set Access-Control-Allow-Methods "GET, HEAD, OPTIONS"
+        Header set Access-Control-Allow-Headers "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+        Header set Cache-Control "public, max-age=3600, stale-while-revalidate=86400"
+    </IfModule>
+</FilesMatch>
+
+# 4. Block Dangerous HTTP Request Methods (TRACE, TRACK, DELETE, PUT)
+<IfModule mod_rewrite.c>
+    RewriteCond %{REQUEST_METHOD} ^(TRACE|TRACK|DELETE|PUT) [NC]
+    RewriteRule .* - [F,L]
+</IfModule>
+
+# 5. Mod_Rewrite Rules for Clean URLs, AI Routing and Routing
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteBase /
 
-    # Block direct web access to sensitive config JSON files
+    # Allow .well-known directory (RFC 8615 & LLM manifest discovery)
+    RewriteRule ^\.well-known/llms\.txt$ llms.txt [L]
+    RewriteRule ^\.well-known/llm\.txt$ llm.txt [L]
+
+    # Block direct web access to sensitive config, scripts, and includes folders
     RewriteRule ^config/.*$ - [F,L]
     RewriteRule ^scripts/.*$ - [F,L]
+    RewriteRule ^includes/.*$ - [F,L]
+
+    # HTTP 410 Gone: Permanently drop WordPress spam endpoints, eCommerce footprints & pharma/Japanese query attacks
+    RewriteCond %{REQUEST_URI} ^/(?:wp-admin|wp-includes|wp-content|xmlrpc\.php|wp-login\.php|wp-cron\.php|wp-json|product|product-category|shop|cart|checkout|tag|author|category|feed|comments|trackback|attachment|goods|item) [NC,OR]
+    RewriteCond %{QUERY_STRING} (?:pharmacy|viagra|cialis|casino|poker|slot|buy-|cheap-|discount-|replica|outlet) [NC,OR]
+    RewriteCond %{QUERY_STRING} (?:[\xd0-\xd3][\x80-\xbf]|[\xe4-\xe9][\x80-\xbf]{2}) [OR]
+    RewriteCond %{QUERY_STRING} (?:^|&)(?:s|search|keyword|page_id|p|cat|tag|author)= [NC]
+    RewriteRule .* - [G,L]
 
     # Subfolder asset fallback rewrite (e.g. /blog/assets/... -> /assets/...)
-    RewriteRule ^(?:blog|services|industries)/assets/(.*)$ assets/$1 [L]
+    RewriteRule ^(?:blog|services|industries|page)/assets/(.*)$ assets/$1 [L]
+
+    # Direct access rewrite/redirect: /blog-single.php?slug=xyz -> /blog/xyz (Clean URL)
+    RewriteCond %{THE_REQUEST} \s/+blog-single(?:\.php)?\?slug=([a-zA-Z0-9_-]+)\s [NC]
+    RewriteRule ^ /blog/%1? [R=301,L]
+
+    # Direct access rewrite/redirect: /page.php?slug=xyz -> /page/xyz (Clean URL)
+    RewriteCond %{THE_REQUEST} \s/+page(?:\.php)?\?slug=([a-zA-Z0-9_-]+)\s [NC]
+    RewriteRule ^ /page/%1? [R=301,L]
 
     # Blog URLs rewrite to blog-single.php template
     RewriteRule ^blog/([a-zA-Z0-9_-]+)/?$ blog-single.php?slug=$1 [QSA,L]
     RewriteRule ^blog/([a-zA-Z0-9_-]+)\.php$ blog-single.php?slug=$1 [QSA,L]
+
+    # Custom Landing Page URLs rewrite to page.php template
+    RewriteRule ^page/([a-zA-Z0-9_-]+)/?$ page.php?slug=$1 [QSA,L]
+    RewriteRule ^page/([a-zA-Z0-9_-]+)\.php$ page.php?slug=$1 [QSA,L]
 
     # Clean URLs: Handle extensions automatically
     RewriteCond %{REQUEST_FILENAME} !-d
@@ -23,15 +82,17 @@
     RewriteRule ^sitemap\.xml$ sitemap.php [L]
 </IfModule>
 
-# Security Headers
+# 6. Global Security Headers (Permits AI, Search & Browser Access)
 <IfModule mod_headers.c>
     Header set X-Content-Type-Options "nosniff"
     Header set X-Frame-Options "SAMEORIGIN"
     Header set X-XSS-Protection "1; mode=block"
     Header set Referrer-Policy "strict-origin-when-cross-origin"
+    Header set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()"
+    Header set X-Permitted-Cross-Domain-Policies "none"
 </IfModule>
 
-# Enable GZIP Compression for Fast Speed
+# 7. Enable GZIP Compression for Fast Speed
 <IfModule mod_deflate.c>
     AddOutputFilterByType DEFLATE text/plain
     AddOutputFilterByType DEFLATE text/html
@@ -45,13 +106,15 @@
     AddOutputFilterByType DEFLATE image/svg+xml
 </IfModule>
 
-# Browser Caching for Assets
+# 8. Browser & Agent Caching for Assets
 <IfModule mod_expires.c>
     ExpiresActive On
+    ExpiresByType text/plain "access plus 1 hour"
     ExpiresByType image/jpg "access plus 1 year"
     ExpiresByType image/jpeg "access plus 1 year"
     ExpiresByType image/gif "access plus 1 year"
     ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/webp "access plus 1 year"
     ExpiresByType image/svg+xml "access plus 1 year"
     ExpiresByType text/css "access plus 1 month"
     ExpiresByType application/pdf "access plus 1 month"

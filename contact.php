@@ -39,6 +39,12 @@ $hubs = $contact_info['hubs'] ?? [
         <div class="card-dark p-8 space-y-6">
           <h2 class="text-2xl font-bold text-[#14151A]"><?php echo htmlspecialchars($cnt_cfg['form_title'] ?? 'Send Us A Direct Message'); ?></h2>
           <form id="direct-contact-form" class="space-y-4" onsubmit="handleContactSubmit(event)">
+            <!-- Anti-Bot Honeypot & Velocity Token -->
+            <div style="position: absolute; left: -9999px; opacity: 0; pointer-events: none;" aria-hidden="true">
+              <input type="text" name="_hp_company_sec" id="contact-hp" tabindex="-1" value="" autocomplete="off">
+              <input type="hidden" id="contact-form-ts" value="<?php echo time(); ?>">
+            </div>
+
             <div>
               <label class="block text-xs font-mono text-[#5B5F6B] mb-1 font-bold">FULL NAME *</label>
               <input type="text" id="contact-name" required placeholder="John Doe" class="w-full bg-[#F6F8FB] border border-[#E4E7EC] rounded-xl px-4 py-3 text-xs text-[#14151A] focus:outline-none focus:border-[#00A8B5]">
@@ -81,6 +87,8 @@ $hubs = $contact_info['hubs'] ?? [
                 phone: document.getElementById('contact-phone').value.trim(),
                 website: document.getElementById('contact-website').value.trim(),
                 message: document.getElementById('contact-message').value.trim(),
+                _hp_company_sec: document.getElementById('contact-hp')?.value || '',
+                form_ts: document.getElementById('contact-form-ts')?.value || '',
                 source: 'Contact Page Form'
               };
 

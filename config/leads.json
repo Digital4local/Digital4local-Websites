@@ -1,5 +1,45 @@
 [
     {
+        "id": "LEAD-20260924-095603-339e84",
+        "name": "Sarah Connor",
+        "email": "sarah@skytechsolar.co.uk",
+        "phone": "+44 20 7946 0912",
+        "company": "SkyTech Solar UK",
+        "website": "https://skytechsolar.co.uk",
+        "industry": "Solar Installers",
+        "message": "Need 5x5 geo grid optimization in London &amp; Birmingham",
+        "ip_address": "127.0.0.1",
+        "date": "2026-09-24 09:56:03",
+        "status": "New",
+        "source": "Contact Form Verification"
+    },
+    {
+        "id": "LEAD-20260910-110931-84f8",
+        "name": "Abhishek Test Lead",
+        "email": "audit-test@digital4local.com",
+        "phone": "+1 512 890 4400",
+        "company": "Apex Dental Clinic",
+        "website": "https://apexdentalexample.com",
+        "industry": "Private Dental Clinics",
+        "message": "Testing lead capture &amp; dispatch to info@digital4local.com",
+        "date": "2026-09-10 11:09:31",
+        "status": "New",
+        "source": "Contact Us QC Test"
+    },
+    {
+        "id": "LEAD-20260910-105538-0b3c",
+        "name": "Abhishek Test Lead",
+        "email": "audit-test@digital4local.com",
+        "phone": "+1 512 890 4400",
+        "company": "Apex Dental Clinic",
+        "website": "https://apexdentalexample.com",
+        "industry": "Private Dental Clinics",
+        "message": "Testing lead capture &amp; dispatch to info@digital4local.com",
+        "date": "2026-09-10 10:55:38",
+        "status": "New",
+        "source": "Contact Us QC Test"
+    },
+    {
         "id": "LEAD-20260902-134812-7599",
         "name": "Abhishek Test Lead",
         "email": "audit-test@digital4local.com",

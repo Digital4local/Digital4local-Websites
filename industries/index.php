@@ -7,12 +7,12 @@ $canonical_url = "https://digital4local.com/industries/";
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
-  <?php include_once '../includes/seo.php'; ?>
+  <?php include_once __DIR__ . '/../includes/seo.php'; ?>
 </head>
 <body class="bg-[#FFFFFF] text-[#14151A] min-h-screen relative font-['Inter',sans-serif] selection:bg-[#00F0FF] selection:text-[#0A0A0F]">
 
   <div class="bg-ambient-glow"></div>
-  <?php include_once '../includes/header.php'; ?>
+  <?php include_once __DIR__ . '/../includes/header.php'; ?>
 
   <main class="relative z-10 pt-28 sm:pt-36 pb-24">
     <!-- Hero -->
@@ -33,7 +33,7 @@ $canonical_url = "https://digital4local.com/industries/";
 
     <!-- Client Trust Marquee -->
     <div class="mb-16">
-      <?php include '../includes/trust-strip.php'; ?>
+      <?php include __DIR__ . '/../includes/trust-strip.php'; ?>
     </div>
 
     <!-- Category 1: Renewable Energy & Clean Tech -->
@@ -330,6 +330,6 @@ $canonical_url = "https://digital4local.com/industries/";
 
   </main>
 
-  <?php include_once '../includes/footer.php'; ?>
+  <?php include_once __DIR__ . '/../includes/footer.php'; ?>
 </body>
 </html>

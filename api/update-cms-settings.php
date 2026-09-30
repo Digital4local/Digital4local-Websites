@@ -1,29 +1,58 @@
 <?php
 /**
  * CMS Settings Update API Endpoint
- * Handles atomic JSON updates for all website pages, custom pages, and blog posts
+ * Hardened with Mandatory Admin Authentication, CSRF Validation, Slug Sanitization,
+ * Path Traversal Defense, and Atomic Thread-Safe Storage.
  */
-header('Content-Type: application/json');
+header('Content-Type: application/json; charset=utf-8');
+require_once __DIR__ . '/../includes/auth-middleware.php';
 
 $settings_file = __DIR__ . '/../config/site_settings.json';
 
-// Only allow POST
+// 1. Mandatory Session Authentication
+if (!is_admin_logged_in()) {
+    http_response_code(401);
+    echo json_encode(['success' => false, 'message' => 'Unauthorized access. You must be signed in to manage CMS content.']);
+    exit;
+}
+
+// 2. Only allow POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
     echo json_encode(['success' => false, 'message' => 'Invalid request method. Only POST is allowed.']);
     exit;
 }
 
-// Read incoming input (JSON or Form Data)
-$raw_input = file_get_contents('php://input');
-$input_data = json_decode($raw_input, true);
+// 3. Read incoming input (JSON or Form Data)
+$raw_input = @file_get_contents('php://input');
+$input_data = @json_decode($raw_input, true);
 
 if (!$input_data && !empty($_POST)) {
     $input_data = $_POST;
 }
 
-if (!$input_data) {
+if (!$input_data || !is_array($input_data)) {
+    http_response_code(400);
     echo json_encode(['success' => false, 'message' => 'No valid payload received.']);
     exit;
+}
+
+// 4. CSRF Token Verification
+$csrf_header = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
+$csrf_param = $input_data['csrf_token'] ?? '';
+$token_to_verify = !empty($csrf_header) ? $csrf_header : $csrf_param;
+
+if (!verify_csrf_token($token_to_verify)) {
+    http_response_code(403);
+    echo json_encode(['success' => false, 'message' => 'Security token invalid or expired (CSRF mismatch). Please reload the dashboard.']);
+    exit;
+}
+
+// Helper to sanitize slug and prevent path traversal
+function sanitize_safe_slug($slug) {
+    $slug = strtolower(preg_replace('/[^a-zA-Z0-9_\-]+/', '-', $slug));
+    $slug = trim($slug, '-');
+    return substr($slug, 0, 80);
 }
 
 // Load existing settings
@@ -37,20 +66,18 @@ if (file_exists($settings_file)) {
 
 // Action 1: Create New Custom Landing Page
 if (isset($input_data['action']) && $input_data['action'] === 'add_custom_page') {
-    $page_title = trim($input_data['new_page_title'] ?? '');
-    $page_slug = trim($input_data['new_page_slug'] ?? '');
+    $page_title = strip_tags(trim($input_data['new_page_title'] ?? ''));
+    $raw_slug = trim($input_data['new_page_slug'] ?? '');
     
     if (empty($page_title)) {
+        http_response_code(422);
         echo json_encode(['success' => false, 'message' => 'Page title is required.']);
         exit;
     }
     
+    $page_slug = sanitize_safe_slug(!empty($raw_slug) ? $raw_slug : $page_title);
     if (empty($page_slug)) {
-        $page_slug = strtolower(preg_replace('/[^a-zA-Z0-9]+/', '-', $page_title));
-        $page_slug = trim($page_slug, '-');
-    } else {
-        $page_slug = strtolower(preg_replace('/[^a-zA-Z0-9]+/', '-', $page_slug));
-        $page_slug = trim($page_slug, '-');
+        $page_slug = 'custom-page-' . time();
     }
     
     $page_key = 'custom_' . $page_slug;
@@ -58,7 +85,7 @@ if (isset($input_data['action']) && $input_data['action'] === 'add_custom_page')
     $new_page_data = [
         'key' => $page_key,
         'title' => $page_title,
-        'url' => 'page.php?slug=' . $page_slug,
+        'url' => 'page/' . $page_slug,
         'status' => 'published',
         'badge' => strtoupper($page_title),
         'hero_title' => $page_title,
@@ -86,17 +113,22 @@ if (isset($input_data['action']) && $input_data['action'] === 'add_custom_page')
     $current_settings['custom_pages'][] = $new_page_data;
     $current_settings['active_page_key'] = $page_key;
     
-    $saved = @file_put_contents($settings_file, json_encode($current_settings, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
-    
+    $saved = @file_put_contents(
+        $settings_file, 
+        json_encode($current_settings, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
+        LOCK_EX
+    );
+
     if ($saved !== false) {
         echo json_encode([
             'success' => true,
             'message' => "New landing page '{$page_title}' created successfully!",
             'page_key' => $page_key,
-            'page_url' => 'page.php?slug=' . $page_slug,
+            'page_url' => 'page/' . $page_slug,
             'page' => $new_page_data
         ]);
     } else {
+        http_response_code(500);
         echo json_encode(['success' => false, 'message' => 'Failed to save new landing page to site_settings.json']);
     }
     exit;
@@ -107,6 +139,7 @@ if (isset($input_data['action']) && $input_data['action'] === 'delete_custom_pag
     $page_key = trim($input_data['page_key'] ?? '');
     
     if (empty($page_key)) {
+        http_response_code(422);
         echo json_encode(['success' => false, 'message' => 'Page key is required to delete.']);
         exit;
     }
@@ -121,7 +154,11 @@ if (isset($input_data['action']) && $input_data['action'] === 'delete_custom_pag
     }
     $current_settings['active_page_key'] = 'index';
     
-    $saved = @file_put_contents($settings_file, json_encode($current_settings, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+    $saved = @file_put_contents(
+        $settings_file, 
+        json_encode($current_settings, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
+        LOCK_EX
+    );
     
     if ($saved !== false) {
         echo json_encode([
@@ -130,6 +167,7 @@ if (isset($input_data['action']) && $input_data['action'] === 'delete_custom_pag
             'page_key' => $page_key
         ]);
     } else {
+        http_response_code(500);
         echo json_encode(['success' => false, 'message' => 'Failed to update site_settings.json upon deletion.']);
     }
     exit;
@@ -137,21 +175,19 @@ if (isset($input_data['action']) && $input_data['action'] === 'delete_custom_pag
 
 // Action 3: Add New Blog Post
 if (isset($input_data['action']) && $input_data['action'] === 'add_blog_post') {
-    $post_title = trim($input_data['new_post_title'] ?? '');
-    $post_slug = trim($input_data['new_post_slug'] ?? '');
-    $category = trim($input_data['new_post_category'] ?? 'Local SEO');
+    $post_title = strip_tags(trim($input_data['new_post_title'] ?? ''));
+    $raw_slug = trim($input_data['new_post_slug'] ?? '');
+    $category = strip_tags(trim($input_data['new_post_category'] ?? 'Local SEO'));
     
     if (empty($post_title)) {
+        http_response_code(422);
         echo json_encode(['success' => false, 'message' => 'Post title is required.']);
         exit;
     }
     
+    $post_slug = sanitize_safe_slug(!empty($raw_slug) ? $raw_slug : $post_title);
     if (empty($post_slug)) {
-        $post_slug = strtolower(preg_replace('/[^a-zA-Z0-9]+/', '-', $post_title));
-        $post_slug = trim($post_slug, '-');
-    } else {
-        $post_slug = strtolower(preg_replace('/[^a-zA-Z0-9]+/', '-', $post_slug));
-        $post_slug = trim($post_slug, '-');
+        $post_slug = 'article-' . time();
     }
     
     $new_post_data = [
@@ -183,17 +219,22 @@ if (isset($input_data['action']) && $input_data['action'] === 'add_blog_post') {
     array_unshift($current_settings['blog_posts'], $new_post_data);
     $current_settings['active_page_key'] = 'blog_' . $post_slug;
     
-    $saved = @file_put_contents($settings_file, json_encode($current_settings, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
-    
+    $saved = @file_put_contents(
+        $settings_file, 
+        json_encode($current_settings, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
+        LOCK_EX
+    );
+
     if ($saved !== false) {
         echo json_encode([
             'success' => true,
             'message' => "New blog post '{$post_title}' published successfully!",
             'post_slug' => $post_slug,
-            'post_url' => 'blog-single.php?slug=' . $post_slug,
+            'post_url' => 'blog/' . $post_slug,
             'post' => $new_post_data
         ]);
     } else {
+        http_response_code(500);
         echo json_encode(['success' => false, 'message' => 'Failed to save new blog post to site_settings.json']);
     }
     exit;
@@ -201,9 +242,10 @@ if (isset($input_data['action']) && $input_data['action'] === 'add_blog_post') {
 
 // Action 4: Delete Blog Post
 if (isset($input_data['action']) && $input_data['action'] === 'delete_blog_post') {
-    $post_slug = trim($input_data['post_slug'] ?? '');
+    $post_slug = sanitize_safe_slug(trim($input_data['post_slug'] ?? ''));
     
     if (empty($post_slug)) {
+        http_response_code(422);
         echo json_encode(['success' => false, 'message' => 'Post slug is required to delete.']);
         exit;
     }
@@ -215,7 +257,11 @@ if (isset($input_data['action']) && $input_data['action'] === 'delete_blog_post'
     }
     $current_settings['active_page_key'] = 'blog';
     
-    $saved = @file_put_contents($settings_file, json_encode($current_settings, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+    $saved = @file_put_contents(
+        $settings_file, 
+        json_encode($current_settings, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
+        LOCK_EX
+    );
     
     if ($saved !== false) {
         echo json_encode([
@@ -224,6 +270,7 @@ if (isset($input_data['action']) && $input_data['action'] === 'delete_blog_post'
             'post_slug' => $post_slug
         ]);
     } else {
+        http_response_code(500);
         echo json_encode(['success' => false, 'message' => 'Failed to delete blog post from site_settings.json']);
     }
     exit;
@@ -232,7 +279,7 @@ if (isset($input_data['action']) && $input_data['action'] === 'delete_blog_post'
 // Action 5: Toggle Page / Post Status
 if (isset($input_data['action']) && $input_data['action'] === 'toggle_page_status') {
     $page_key = trim($input_data['page_key'] ?? '');
-    $new_status = trim($input_data['status'] ?? 'published');
+    $new_status = (trim($input_data['status'] ?? 'published') === 'draft') ? 'draft' : 'published';
     
     if (strpos($page_key, 'blog_') === 0) {
         $slug = substr($page_key, 5);
@@ -248,20 +295,23 @@ if (isset($input_data['action']) && $input_data['action'] === 'toggle_page_statu
         $current_settings['pages'][$page_key]['status'] = $new_status;
     }
     
-    $saved = @file_put_contents($settings_file, json_encode($current_settings, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+    $saved = @file_put_contents(
+        $settings_file, 
+        json_encode($current_settings, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
+        LOCK_EX
+    );
     echo json_encode(['success' => ($saved !== false), 'status' => $new_status]);
     exit;
 }
 
 // Action 6: Save Full CMS Settings / Page / Blog Post Data
-// Merge incoming data recursively
 foreach ($input_data as $key => $value) {
-    if ($key === 'action') continue;
+    if ($key === 'action' || $key === 'csrf_token') continue;
     
     // Check if updating a specific blog post
     if ($key === 'active_blog_post' && is_array($value) && isset($value['slug'])) {
-        $target_slug = trim($value['slug']);
-        $orig_slug = trim($input_data['original_blog_slug'] ?? $input_data['blog_slug'] ?? $target_slug);
+        $target_slug = sanitize_safe_slug($value['slug']);
+        $orig_slug = sanitize_safe_slug($input_data['original_blog_slug'] ?? ($input_data['blog_slug'] ?? $target_slug));
         
         // Handle FAQs if passed as JSON string or array
         if (isset($value['faqs'])) {
@@ -278,7 +328,7 @@ foreach ($input_data as $key => $value) {
             }
         }
 
-        // Handle Highlights if passed as textarea string or array
+        // Handle Highlights
         if (isset($value['highlights_text'])) {
             $h_lines = array_map('trim', explode("\n", $value['highlights_text']));
             $value['highlights'] = array_values(array_filter($h_lines, function($l) {
@@ -296,6 +346,7 @@ foreach ($input_data as $key => $value) {
             $current_settings['blog_posts'] = [];
         }
         
+        $value['slug'] = $target_slug;
         $found = false;
         foreach ($current_settings['blog_posts'] as &$bp) {
             if (($bp['slug'] ?? '') === $orig_slug || ($bp['slug'] ?? '') === $target_slug) {
@@ -305,7 +356,7 @@ foreach ($input_data as $key => $value) {
             }
         }
         if (!$found) {
-            $current_settings['blog_posts'][] = $value;
+            array_unshift($current_settings['blog_posts'], $value);
         }
         
         $current_settings['active_page_key'] = 'blog_' . $target_slug;
@@ -359,9 +410,10 @@ foreach ($input_data as $key => $value) {
 
 // Atomic file write
 $json_encoded = json_encode($current_settings, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-$write_result = @file_put_contents($settings_file, $json_encoded);
+$write_result = @file_put_contents($settings_file, $json_encoded, LOCK_EX);
 
 if ($write_result === false) {
+    http_response_code(500);
     echo json_encode([
         'success' => false,
         'message' => 'Failed to write updated settings to config/site_settings.json. Check file permissions.'

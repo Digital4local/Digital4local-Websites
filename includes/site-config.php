@@ -178,10 +178,19 @@ function get_blog_posts($only_published = false) {
     if (!is_array($posts)) return [];
     
     if ($only_published) {
-        return array_values(array_filter($posts, function($p) {
+        $posts = array_values(array_filter($posts, function($p) {
             return ($p['status'] ?? 'published') === 'published';
         }));
     }
+    
+    // Sort all blog posts by date DESC so newly published articles always appear first
+    usort($posts, function($a, $b) {
+        $timeA = !empty($a['date']) ? strtotime($a['date']) : 0;
+        $timeB = !empty($b['date']) ? strtotime($b['date']) : 0;
+        if ($timeA === $timeB) return 0;
+        return ($timeA > $timeB) ? -1 : 1;
+    });
+    
     return $posts;
 }
 

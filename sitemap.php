@@ -55,7 +55,7 @@ if (isset($site_config['pages'])) {
         if (strpos($k, 'custom_') === 0 && ($p['status'] ?? 'published') === 'published') {
             $slug = str_replace('custom_', '', $k);
             $urls[] = [
-                'loc' => $base_domain . '/page.php?slug=' . urlencode($slug),
+                'loc' => $base_domain . '/page/' . urlencode($slug),
                 'lastmod' => $today,
                 'changefreq' => 'weekly',
                 'priority' => '0.8'
@@ -69,7 +69,7 @@ $published_posts = get_blog_posts(true);
 foreach ($published_posts as $post) {
     if (!empty($post['slug'])) {
         $urls[] = [
-            'loc' => $base_domain . '/blog/' . urlencode($post['slug']) . '.php',
+            'loc' => $base_domain . '/blog/' . urlencode($post['slug']),
             'lastmod' => $post['date'] ?? $today,
             'changefreq' => 'weekly',
             'priority' => '0.85'

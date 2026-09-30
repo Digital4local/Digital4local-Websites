@@ -1,10 +1,153 @@
-User-agent: *
+# ==============================================================================
+# Digital4Local — AI Search, LLM & Web Crawler Directive (robots.txt)
+# Optimized for OpenAI GPTBot, ChatGPT-User, Anthropic Claude, Perplexity & Gemini
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# 1. Dedicated Directives for Large Language Models & AI Search Crawlers
+# ------------------------------------------------------------------------------
+
+# OpenAI ChatGPT Search & Indexing Bots
+User-agent: GPTBot
+User-agent: ChatGPT-User
 Allow: /
+Allow: /llms.txt
+Allow: /llm.txt
+Allow: /llms-full.txt
+Allow: /.well-known/llms.txt
 Disallow: /admin.php
 Disallow: /admin-cms.php
+Disallow: /admin-login.php
+Disallow: /api/
+Disallow: /config/
+
+# Anthropic Claude Search & Web Retrieval Bots
+User-agent: ClaudeBot
+User-agent: Claude-Web
+Allow: /
+Allow: /llms.txt
+Allow: /llm.txt
+Allow: /llms-full.txt
+Allow: /.well-known/llms.txt
+Disallow: /admin.php
+Disallow: /admin-cms.php
+Disallow: /admin-login.php
+Disallow: /api/
+Disallow: /config/
+
+# Perplexity AI Search Crawler
+User-agent: PerplexityBot
+Allow: /
+Allow: /llms.txt
+Allow: /llm.txt
+Allow: /llms-full.txt
+Allow: /.well-known/llms.txt
+Disallow: /admin.php
+Disallow: /admin-cms.php
+Disallow: /admin-login.php
+Disallow: /api/
+Disallow: /config/
+
+# Google Gemini & Extended AI Crawler
+User-agent: Google-Extended
+Allow: /
+Allow: /llms.txt
+Allow: /llm.txt
+Allow: /llms-full.txt
+Allow: /.well-known/llms.txt
+Disallow: /admin.php
+Disallow: /admin-cms.php
+Disallow: /admin-login.php
+Disallow: /api/
+Disallow: /config/
+
+# Apple Intelligence & Search Bot
+User-agent: Applebot
+User-agent: Applebot-Extended
+Allow: /
+Allow: /llms.txt
+Allow: /llm.txt
+Allow: /llms-full.txt
+Disallow: /admin.php
+Disallow: /admin-cms.php
+Disallow: /admin-login.php
+Disallow: /api/
+Disallow: /config/
+
+# Meta & Other Leading AI Agents
+User-agent: Meta-ExternalAgent
+User-agent: Amazonbot
+User-agent: cohere-ai
+User-agent: Bytespider
+User-agent: CCBot
+Allow: /
+Allow: /llms.txt
+Allow: /llm.txt
+Allow: /llms-full.txt
+Disallow: /admin.php
+Disallow: /admin-cms.php
+Disallow: /admin-login.php
+Disallow: /api/
+Disallow: /config/
+
+# ------------------------------------------------------------------------------
+# 2. General Web Crawlers (Googlebot, Bingbot, DuckDuckGo, etc.)
+# ------------------------------------------------------------------------------
+User-agent: *
+Allow: /
+Allow: /llms.txt
+Allow: /llm.txt
+Allow: /llms-full.txt
+Allow: /.well-known/llms.txt
+
+# Administrative Consoles & Backend APIs
+Disallow: /admin.php
+Disallow: /admin-cms.php
+Disallow: /admin-login.php
+Disallow: /admin-logout.php
 Disallow: /api/
 Disallow: /config/
 Disallow: /includes/
+Disallow: /scripts/
 
-Sitemap: https://digital4local.com/sitemap.php
+# Block Parameter Crawls (Spam Query Protection)
+Disallow: /*?s=
+Disallow: /*?*s=
+Disallow: /*?search=
+Disallow: /*?*search=
+Disallow: /*?p=
+Disallow: /*?*p=
+Disallow: /*?q=
+Disallow: /*?*q=
+Disallow: /*?cat=
+Disallow: /*?tag=
+Disallow: /*?author=
+
+# Block Legacy WordPress & eCommerce Footprints
+Disallow: /wp-
+Disallow: /wp-admin/
+Disallow: /wp-includes/
+Disallow: /wp-content/
+Disallow: /product/
+Disallow: /product-category/
+Disallow: /shop/
+Disallow: /cart/
+Disallow: /checkout/
+Disallow: /tag/
+Disallow: /author/
+Disallow: /category/
+Disallow: /feed/
+Disallow: /trackback/
+Disallow: /comments/
+Disallow: /attachment/
+
+# ------------------------------------------------------------------------------
+# 3. Sitemaps & LLM Manifests
+# ------------------------------------------------------------------------------
 Sitemap: https://digital4local.com/sitemap.xml
+Sitemap: https://digital4local.com/sitemap.php
+
+# LLM Context Manifests (https://llmstxt.org)
+# LLM-Summary: https://digital4local.com/llms.txt
+# LLM-Alias: https://digital4local.com/llm.txt
+# LLM-Full: https://digital4local.com/llms-full.txt

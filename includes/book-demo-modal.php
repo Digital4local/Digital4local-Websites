@@ -49,6 +49,12 @@
       </div>
 
       <div class="space-y-3">
+        <!-- Anti-Bot Honeypot & Timestamp -->
+        <div style="position: absolute; left: -9999px; opacity: 0; pointer-events: none;" aria-hidden="true">
+          <input type="text" name="_hp_company_sec" id="demo-hp" tabindex="-1" value="" autocomplete="off">
+          <input type="hidden" id="demo-form-ts" value="<?php echo time(); ?>">
+        </div>
+
         <div>
           <label class="block text-xs font-mono text-[#5B5F6B] mb-1">YOUR FULL NAME *</label>
           <input type="text" id="demo-name" placeholder="Alex Morgan" required class="w-full bg-[#F6F8FB] border border-[#E4E7EC] focus:border-[#00A8B5] rounded-lg px-4 py-2.5 text-sm text-[#14151A] outline-none">

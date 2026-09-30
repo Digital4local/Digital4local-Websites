@@ -533,13 +533,18 @@ $page_description = "Internal side-by-side operational dashboard for Digital4Loc
 
       <form id="change-pwd-form" onsubmit="handlePasswordChange(event)" class="space-y-4">
         <div class="space-y-1">
-          <label class="block text-xs font-mono text-[#475569] font-semibold">NEW PASSWORD</label>
-          <input type="password" id="new-password" required minlength="6" placeholder="Enter new password (min 6 chars)" class="w-full bg-[#F8FAFC] border border-[#CBD5E1] focus:border-[#1B5FAA] rounded-xl px-4 py-2.5 text-sm text-[#14151A] outline-none font-mono">
+          <label class="block text-xs font-mono text-[#475569] font-semibold">CURRENT PASSWORD *</label>
+          <input type="password" id="current-password" required placeholder="Enter current admin password" class="w-full bg-[#F8FAFC] border border-[#CBD5E1] focus:border-[#1B5FAA] rounded-xl px-4 py-2.5 text-sm text-[#14151A] outline-none font-mono">
         </div>
 
         <div class="space-y-1">
-          <label class="block text-xs font-mono text-[#475569] font-semibold">CONFIRM NEW PASSWORD</label>
-          <input type="password" id="confirm-password" required minlength="6" placeholder="Re-type new password" class="w-full bg-[#F8FAFC] border border-[#CBD5E1] focus:border-[#1B5FAA] rounded-xl px-4 py-2.5 text-sm text-[#14151A] outline-none font-mono">
+          <label class="block text-xs font-mono text-[#475569] font-semibold">NEW PASSWORD (MIN 8 CHARS) *</label>
+          <input type="password" id="new-password" required minlength="8" placeholder="Enter new password (min 8 chars, letters & numbers)" class="w-full bg-[#F8FAFC] border border-[#CBD5E1] focus:border-[#1B5FAA] rounded-xl px-4 py-2.5 text-sm text-[#14151A] outline-none font-mono">
+        </div>
+
+        <div class="space-y-1">
+          <label class="block text-xs font-mono text-[#475569] font-semibold">CONFIRM NEW PASSWORD *</label>
+          <input type="password" id="confirm-password" required minlength="8" placeholder="Re-type new password" class="w-full bg-[#F8FAFC] border border-[#CBD5E1] focus:border-[#1B5FAA] rounded-xl px-4 py-2.5 text-sm text-[#14151A] outline-none font-mono">
         </div>
 
         <div class="flex gap-3 pt-2">
@@ -555,12 +560,21 @@ $page_description = "Internal side-by-side operational dashboard for Digital4Loc
   </div>
 
   <script>
+    window.CSRF_TOKEN = <?php echo json_encode(get_csrf_token()); ?>;
+
     async function handlePasswordChange(e) {
       e.preventDefault();
+      const currentPwd = document.getElementById('current-password').value;
       const newPwd = document.getElementById('new-password').value;
       const confirmPwd = document.getElementById('confirm-password').value;
       const msgBox = document.getElementById('pwd-status-msg');
       const btn = document.getElementById('save-pwd-btn');
+
+      if (newPwd.length < 8) {
+        msgBox.className = 'p-3 rounded-xl text-xs font-medium bg-rose-50 text-rose-600 border border-rose-200 block';
+        msgBox.textContent = 'New password must be at least 8 characters.';
+        return;
+      }
 
       if (newPwd !== confirmPwd) {
         msgBox.className = 'p-3 rounded-xl text-xs font-medium bg-rose-50 text-rose-600 border border-rose-200 block';
@@ -574,8 +588,16 @@ $page_description = "Internal side-by-side operational dashboard for Digital4Loc
       try {
         const res = await fetch('api/change-password.php', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ new_password: newPwd, confirm_password: confirmPwd })
+          headers: { 
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': window.CSRF_TOKEN
+          },
+          body: JSON.stringify({ 
+            current_password: currentPwd,
+            new_password: newPwd, 
+            confirm_password: confirmPwd,
+            csrf_token: window.CSRF_TOKEN
+          })
         });
         const data = await res.json();
         
