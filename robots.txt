@@ -7,9 +7,11 @@
 # 1. Dedicated Directives for Large Language Models & AI Search Crawlers
 # ------------------------------------------------------------------------------
 
-# OpenAI ChatGPT Search & Indexing Bots
-User-agent: GPTBot
-User-agent: ChatGPT-User
+# Anthropic Claude Search & Web Retrieval Bots
+User-agent: ClaudeBot
+User-agent: Claude-Web
+User-agent: anthropic-ai
+User-agent: Claude
 Allow: /
 Allow: /llms.txt
 Allow: /llm.txt
@@ -21,9 +23,9 @@ Disallow: /admin-login.php
 Disallow: /api/
 Disallow: /config/
 
-# Anthropic Claude Search & Web Retrieval Bots
-User-agent: ClaudeBot
-User-agent: Claude-Web
+# OpenAI ChatGPT Search & Indexing Bots
+User-agent: GPTBot
+User-agent: ChatGPT-User
 Allow: /
 Allow: /llms.txt
 Allow: /llm.txt

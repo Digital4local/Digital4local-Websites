@@ -27,6 +27,16 @@ ServerSignature Off
     </IfModule>
 </FilesMatch>
 
+# 3.1 Force fresh robots.txt (Prevent CDN / Hostinger Edge from caching stale robots directives)
+<Files "robots.txt">
+    <IfModule mod_headers.c>
+        Header set Cache-Control "no-cache, no-store, must-revalidate, max-age=0"
+        Header set Pragma "no-cache"
+        Header set Expires "0"
+        Header set Access-Control-Allow-Origin "*"
+    </IfModule>
+</Files>
+
 # 4. Block Dangerous HTTP Request Methods (TRACE, TRACK, DELETE, PUT)
 <IfModule mod_rewrite.c>
     RewriteCond %{REQUEST_METHOD} ^(TRACE|TRACK|DELETE|PUT) [NC]
