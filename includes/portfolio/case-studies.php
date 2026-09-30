@@ -1,9 +1,11 @@
 <?php
 /**
- * Case Studies & Proven Results Section Component
+ * Case Studies & Proven Results Section Component for Portfolio Landing Page
+ * Features 3 verified client case studies + Link to /case-studies hub
  */
 $base_path = function_exists('get_base_path') ? get_base_path() : '/';
 $solar_logo = $base_path . 'assets/images/clients/solar4good.png';
+$rkdf_logo = $base_path . 'assets/images/clients/rkdf_university.jpg';
 ?>
 <section class="py-20 sm:py-28 bg-[#FFFFFF] relative overflow-hidden" id="results">
   
@@ -23,7 +25,7 @@ $solar_logo = $base_path . 'assets/images/clients/solar4good.png';
       </p>
     </div>
 
-    <!-- Featured Case Study Card: Solar4Good (UK) -->
+    <!-- Featured Case Study 1: Solar4Good (UK) -->
     <div class="bg-gradient-to-br from-[#F6F8FB] via-[#FFFFFF] to-[#F6F8FB] border-2 border-[#00A8B5] rounded-3xl p-6 sm:p-10 lg:p-12 shadow-xl mb-12 relative overflow-hidden" data-aos="fade-up">
       
       <!-- Top Badge -->
@@ -33,9 +35,9 @@ $solar_logo = $base_path . 'assets/images/clients/solar4good.png';
             <img src="<?php echo $solar_logo; ?>" alt="Solar4Good" class="max-h-10 w-auto object-contain" onerror="this.src='/assets/images/digital4local_logo.png';">
           </div>
           <div>
-            <span class="text-xs font-black tracking-widest text-[#008A94] uppercase">Featured Case Study</span>
+            <span class="text-xs font-black tracking-widest text-[#008A94] uppercase">Featured Case Study #1</span>
             <h3 class="text-2xl font-extrabold text-[#14151A]">Solar4Good (UK)</h3>
-            <span class="text-xs text-[#5B5F6B]">Renewable Energy & Solar Installation</span>
+            <span class="text-xs text-[#5B5F6B]">🇬🇧 Renewable Energy & Solar Installation · UK</span>
           </div>
         </div>
 
@@ -90,90 +92,116 @@ $solar_logo = $base_path . 'assets/images/clients/solar4good.png';
 
       </div>
 
-      <!-- Execution Summary Narrative -->
+      <!-- Execution Summary Narrative & CTA to Full Case Study -->
       <div class="bg-[#F6F8FB] border border-[#E4E7EC] rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <p class="text-xs sm:text-sm text-[#5B5F6B] leading-relaxed max-w-3xl">
-          <strong class="text-[#14151A]">Strategy Executed:</strong> Conducted complete citation NAP harmonization, optimized primary Google Business categories, built local geo-silo content, and deployed an automated review collection flow that pushed the business into the top 3 Google Maps pack.
+        <p class="text-xs sm:text-sm text-[#5B5F6B] leading-relaxed max-w-2xl">
+          <strong class="text-[#14151A]">Strategy Executed:</strong> Conducted complete citation NAP harmonization, optimized primary Google Business categories, built local geo-silo content, and deployed an automated review collection flow.
         </p>
-        <a href="#audit-form" class="btn-primary !py-2.5 !px-5 !text-xs shrink-0 whitespace-nowrap">
-          <span>Get Same Results For Your Business</span>
-          <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
-        </a>
+        <div class="flex items-center gap-3 shrink-0">
+          <a href="<?php echo $base_path; ?>case-studies/solar4good-uk" class="btn-primary !py-2.5 !px-5 !text-xs whitespace-nowrap">
+            <span>Read Full Case Study</span>
+            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+          </a>
+        </div>
       </div>
 
     </div>
 
-    <!-- 2 Clearly Marked Case Study Placeholder Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    <!-- Case Study 2 & 3 Grid: Higher Education Group + Smile Dental Clinic -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
       
-      <!-- Placeholder 1: Healthcare / Clinic -->
-      <div class="bg-[#F6F8FB] border-2 border-dashed border-[#CBD5E1] rounded-2xl p-8 flex flex-col justify-between hover:border-[#00A8B5] transition-colors group" data-aos="fade-up" data-aos-delay="100">
+      <!-- Case Study 2: Higher Education Group Bhopal -->
+      <div class="bg-[#F6F8FB] border-2 border-[#E4E7EC] hover:border-[#00A8B5] rounded-3xl p-7 flex flex-col justify-between shadow-sm hover:shadow-xl transition-all group" data-aos="fade-up" data-aos-delay="100">
         <div>
           <div class="flex items-center justify-between mb-4">
-            <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-white border border-[#E4E7EC] text-[#5B5F6B]">
-              [Add case study]
+            <span class="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-[#00F0FF]/15 text-[#008A94] border border-[#00F0FF]/30">
+              Case Study #2 · 🎓 Higher Education
             </span>
-            <span class="text-xs font-bold text-[#008A94]">Healthcare & Dental</span>
+            <span class="text-xs font-bold text-[#5B5F6B]">🇮🇳 Bhopal, MP</span>
           </div>
-          <h4 class="text-xl font-bold text-[#14151A] mb-2 group-hover:text-[#00A8B5] transition-colors">
-            Bhopal Healthcare & Dental Clinic
-          </h4>
+
+          <h3 class="text-xl font-extrabold text-[#14151A] mb-2 group-hover:text-[#00A8B5] transition-colors">
+            Higher Education Group: SRKU, RKDF & APJ Abdul Kalam University
+          </h3>
+
           <p class="text-xs sm:text-sm text-[#5B5F6B] leading-relaxed mb-6">
-            Slot reserved for upcoming verified client data. Case study details, before/after metrics, and growth graphs will be published here upon client sign-off.
+            Complete website development, localized SEO silos, brand identity, and multi-campus social media campaigns driving 40% growth in student admission enquiries.
           </p>
 
-          <!-- Mock Metric Preview -->
-          <div class="grid grid-cols-2 gap-3 bg-white p-4 rounded-xl border border-[#E4E7EC] text-center mb-4">
+          <!-- Key Metrics -->
+          <div class="grid grid-cols-2 gap-3 bg-white p-4 rounded-xl border border-[#E4E7EC] mb-6">
             <div>
-              <div class="text-[10px] uppercase text-[#5B5F6B] font-bold">Patient Calls</div>
-              <div class="text-lg font-extrabold text-[#16A34A]">+350% Lift</div>
+              <div class="text-[10px] uppercase text-[#5B5F6B] font-bold">Overall Growth</div>
+              <div class="text-xl font-black text-[#16A34A]">40% Growth</div>
+              <div class="text-[10px] text-[#5B5F6B]">Admissions & Search</div>
             </div>
             <div>
-              <div class="text-[10px] uppercase text-[#5B5F6B] font-bold">Google Reviews</div>
-              <div class="text-lg font-extrabold text-[#00A8B5]">18 → 140+</div>
+              <div class="text-[10px] uppercase text-[#5B5F6B] font-bold">Universities Scaled</div>
+              <div class="text-xl font-black text-[#008A94]">3 Campuses</div>
+              <div class="text-[10px] text-[#5B5F6B]">4-Month Retainer</div>
             </div>
           </div>
         </div>
 
-        <div class="text-xs text-slate-400 font-mono text-center pt-2">
-          // Content slot ready for client data update
+        <div class="pt-4 border-t border-[#E4E7EC] flex items-center justify-between">
+          <span class="text-xs text-[#5B5F6B] font-semibold">Web Dev · SEO · Social Media</span>
+          <a href="<?php echo $base_path; ?>case-studies/higher-education-group-bhopal" class="inline-flex items-center gap-1 text-xs font-bold text-[#008A94] hover:text-[#00A8B5] group-hover:underline">
+            <span>Read Case Study</span>
+            <i data-lucide="arrow-right" class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"></i>
+          </a>
         </div>
       </div>
 
-      <!-- Placeholder 2: Showroom / Café -->
-      <div class="bg-[#F6F8FB] border-2 border-dashed border-[#CBD5E1] rounded-2xl p-8 flex flex-col justify-between hover:border-[#00A8B5] transition-colors group" data-aos="fade-up" data-aos-delay="200">
+      <!-- Case Study 3: Smile Dental Clinic Bhopal -->
+      <div class="bg-[#F6F8FB] border-2 border-[#E4E7EC] hover:border-[#00A8B5] rounded-3xl p-7 flex flex-col justify-between shadow-sm hover:shadow-xl transition-all group" data-aos="fade-up" data-aos-delay="200">
         <div>
           <div class="flex items-center justify-between mb-4">
-            <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-white border border-[#E4E7EC] text-[#5B5F6B]">
-              [Add case study]
+            <span class="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-[#16A34A]/10 text-[#16A34A] border border-[#16A34A]/30">
+              Case Study #3 · 🩺 Healthcare
             </span>
-            <span class="text-xs font-bold text-[#8B5CF6]">Retail Showroom & Dining</span>
+            <span class="text-xs font-bold text-[#5B5F6B]">🇮🇳 Bhopal, MP</span>
           </div>
-          <h4 class="text-xl font-bold text-[#14151A] mb-2 group-hover:text-[#00A8B5] transition-colors">
-            Bhopal Retail Showroom & Café
-          </h4>
+
+          <h3 class="text-xl font-extrabold text-[#14151A] mb-2 group-hover:text-[#00A8B5] transition-colors">
+            Smile Dental Clinic: 80% More Patient Leads in 3 Months
+          </h3>
+
           <p class="text-xs sm:text-sm text-[#5B5F6B] leading-relaxed mb-6">
-            Slot reserved for upcoming verified client data. Case study details, before/after metrics, and growth graphs will be published here upon client sign-off.
+            Google Business Profile re-engineering, treatment-specific local keyword ranking, and an automated 5-star review acceleration engine in Bhopal.
           </p>
 
-          <!-- Mock Metric Preview -->
-          <div class="grid grid-cols-2 gap-3 bg-white p-4 rounded-xl border border-[#E4E7EC] text-center mb-4">
+          <!-- Key Metrics -->
+          <div class="grid grid-cols-2 gap-3 bg-white p-4 rounded-xl border border-[#E4E7EC] mb-6">
             <div>
-              <div class="text-[10px] uppercase text-[#5B5F6B] font-bold">Store Walk-ins</div>
-              <div class="text-lg font-extrabold text-[#16A34A]">10x Growth</div>
+              <div class="text-[10px] uppercase text-[#5B5F6B] font-bold">Patient Leads & Sales</div>
+              <div class="text-xl font-black text-[#16A34A]">+80% Leads</div>
+              <div class="text-[10px] text-[#5B5F6B]">In 3 Months</div>
             </div>
             <div>
-              <div class="text-[10px] uppercase text-[#5B5F6B] font-bold">Reel Impressions</div>
-              <div class="text-lg font-extrabold text-[#8B5CF6]">250K+ Views</div>
+              <div class="text-[10px] uppercase text-[#5B5F6B] font-bold">Google Maps Status</div>
+              <div class="text-xl font-black text-[#008A94]">Domination</div>
+              <div class="text-[10px] text-[#5B5F6B]">Top 3 Local Pack</div>
             </div>
           </div>
         </div>
 
-        <div class="text-xs text-slate-400 font-mono text-center pt-2">
-          // Content slot ready for client data update
+        <div class="pt-4 border-t border-[#E4E7EC] flex items-center justify-between">
+          <span class="text-xs text-[#5B5F6B] font-semibold">GMB · Reviews · Local SEO</span>
+          <a href="<?php echo $base_path; ?>case-studies/smile-dental-clinic-bhopal" class="inline-flex items-center gap-1 text-xs font-bold text-[#008A94] hover:text-[#00A8B5] group-hover:underline">
+            <span>Read Case Study</span>
+            <i data-lucide="arrow-right" class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"></i>
+          </a>
         </div>
       </div>
 
+    </div>
+
+    <!-- View All Case Studies Hub Bar -->
+    <div class="text-center pt-4" data-aos="fade-up">
+      <a href="<?php echo $base_path; ?>case-studies" class="btn-secondary !py-3.5 !px-8 !text-sm font-bold shadow-md hover:shadow-xl inline-flex items-center gap-2">
+        <i data-lucide="grid" class="w-4 h-4 text-[#00A8B5]"></i>
+        <span>View all 7 client case studies (Solar, Higher Ed, Healthcare, Hospitality, Retail & PR) →</span>
+      </a>
     </div>
 
   </div>

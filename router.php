@@ -138,6 +138,13 @@ if (preg_match('#^/page/([a-zA-Z0-9_-]+)(?:\.php|/)?$#', $uri, $matches)) {
     return true;
 }
 
+// 9.2 Case Study Single URLs rewrite to case-study-single.php
+if (preg_match('#^/case-studies/([a-zA-Z0-9_-]+)(?:\.php|/)?$#', $uri, $matches)) {
+    $_GET['slug'] = $matches[1];
+    require __DIR__ . '/case-study-single.php';
+    return true;
+}
+
 // 10. Clean URLs: Check if adding .php matches an existing script
 if ($uri !== '/' && file_exists(__DIR__ . $uri . '.php')) {
     require __DIR__ . $uri . '.php';

@@ -16,7 +16,7 @@ zip_dest = os.path.join(source_dir, "digital4local_htdocs.zip")
 
 include_dirs = ['assets', 'includes', 'config', 'api', 'services', 'industries', 'blog', '.well-known']
 include_files = [
-    'index.php', 'portfolio.php', 'bhopal.php', 'services.php', 'pricing.php', 'about.php', 'contact.php',
+    'index.php', 'portfolio.php', 'bhopal.php', 'case-studies.php', 'case-study-single.php', 'services.php', 'pricing.php', 'about.php', 'contact.php',
     'blog.php', 'blog-single.php', 'page.php', 'admin.php', 'admin-cms.php',
     'admin-login.php', 'admin-logout.php', 'sitemap.php', 'robots.txt', 'favicon.ico', 'logo.png', '.htaccess', 'router.php',
     'llms.txt', 'llm.txt', 'llms-full.txt'
