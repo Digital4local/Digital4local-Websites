@@ -8,6 +8,140 @@ $page_description = $index_cfg['meta_description'] ?? $site_config['seo']['meta_
 <html lang="en">
 <head>
   <?php include_once 'includes/seo.php'; ?>
+
+  <!-- Organization / MarketingAgency Schema (JSON-LD) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "MarketingAgency",
+    "name": "Digital4local",
+    "url": "https://digital4local.com/",
+    "telephone": "+91-9131140530",
+    "description": "Digital4local is Bhopal's premier AI-driven digital marketing and SEO agency, built for local businesses, startups, and B2B brands that want to dominate Google Search, Google Maps, and AI answer engines. We specialize in GEO & AEO—getting your business cited directly inside ChatGPT, Gemini, Perplexity, and Google AI Overviews.",
+    "image": "https://digital4local.com/logo.png",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "H.N 90 Priyadarshani Co Operative Society Sant Aasharam Nagar Bagmugaliya",
+      "addressLocality": "Bhopal",
+      "addressRegion": "Madhya Pradesh",
+      "postalCode": "462043",
+      "addressCountry": "IN"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 23.1908003,
+      "longitude": 77.464107
+    },
+    "hasMap": "https://maps.google.com/maps?cid=2147305461476048816",
+    "openingHoursSpecification": {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday"
+      ],
+      "opens": "09:00",
+      "closes": "19:00"
+    },
+    "areaServed": [
+      {
+        "@type": "City",
+        "name": "Indore, Madhya Pradesh"
+      },
+      {
+        "@type": "City",
+        "name": "Jabalpur, Madhya Pradesh"
+      },
+      {
+        "@type": "Place",
+        "name": "Shahpura, Rajasthan 303103"
+      },
+      {
+        "@type": "Place",
+        "name": "Kolar Rd, Bhopal, Madhya Pradesh"
+      },
+      {
+        "@type": "Place",
+        "name": "Govindpura, Bhopal, Madhya Pradesh"
+      },
+      {
+        "@type": "Place",
+        "name": "Bagmugaliya, Bhopal, Madhya Pradesh"
+      },
+      {
+        "@type": "Place",
+        "name": "Arera Colony, Bhopal, Madhya Pradesh"
+      },
+      {
+        "@type": "Place",
+        "name": "Gulmohar Colony, Bhopal, Madhya Pradesh"
+      },
+      {
+        "@type": "Place",
+        "name": "Minal Residency, Bhopal, Madhya Pradesh"
+      },
+      {
+        "@type": "Place",
+        "name": "E-3, Arera Colony, Bhopal, Madhya Pradesh"
+      },
+      {
+        "@type": "Place",
+        "name": "Maharana Pratap Nagar, Bhopal, Madhya Pradesh"
+      },
+      {
+        "@type": "Place",
+        "name": "E-1, Arera Colony, Bhopal, Madhya Pradesh 462016"
+      },
+      {
+        "@type": "Place",
+        "name": "E-2, Arera Colony, Bhopal, Madhya Pradesh 462016"
+      },
+      {
+        "@type": "Place",
+        "name": "Hoshangabad, Misrod, Bhopal, Madhya Pradesh 462047"
+      },
+      {
+        "@type": "Place",
+        "name": "10 No. Stop, Arera Colony, Bhopal, Madhya Pradesh 462016"
+      },
+      {
+        "@type": "Place",
+        "name": "New Market, STT Nagar, TT Nagar, Bhopal, Madhya Pradesh 462003"
+      }
+    ],
+    "knowsAbout": [
+      "SEO",
+      "AI SEO",
+      "Local SEO",
+      "Generative Engine Optimization (GEO)",
+      "AI Answer Engine Optimization (AEO)",
+      "Technical SEO",
+      "Social Media Management",
+      "Content Marketing",
+      "Web Development",
+      "Local Business Marketing",
+      "Solar Company Marketing",
+      "Real Estate Marketing",
+      "Dental Clinic SEO",
+      "Aesthetics Clinic SEO",
+      "Heat Pump Installer Marketing",
+      "EV Charger Installer Marketing",
+      "Roofing Company Marketing",
+      "Kitchen & Bath Remodeling SEO",
+      "Law Firm Marketing",
+      "VC-Backed Startup Growth",
+      "B2B SaaS Growth"
+    ],
+    "sameAs": [
+      "https://in.linkedin.com/company/digital4local",
+      "https://www.instagram.com/_digital4local/",
+      "https://www.trustpilot.com/review/digital4local.com"
+    ]
+  }
+  </script>
 </head>
 <body class="bg-[#FFFFFF] text-[#14151A] min-h-screen relative selection:bg-[#00F0FF] selection:text-[#0A0A0F]">
 
