@@ -206,6 +206,8 @@ $logo_rel_path = ltrim($site_config['brand']['logo_path'], '/');
         </div>
       </div>
 
+      <a href="<?php echo $base_path; ?>portfolio.php" class="text-sm font-semibold text-[#14151A] hover:text-[#00A8B5] transition-colors <?php echo ($current_page == 'portfolio.php') ? 'text-[#00A8B5]' : ''; ?>">Portfolio</a>
+      <a href="<?php echo $base_path; ?>case-studies.php" class="text-sm font-semibold text-[#14151A] hover:text-[#00A8B5] transition-colors <?php echo ($current_page == 'case-studies.php' || $current_page == 'case-study-single.php') ? 'text-[#00A8B5]' : ''; ?>">Case Studies</a>
       <a href="<?php echo $base_path; ?>pricing.php" class="text-sm font-semibold text-[#14151A] hover:text-[#00A8B5] transition-colors <?php echo ($current_page == 'pricing.php') ? 'text-[#00A8B5]' : ''; ?>">Pricing</a>
       <a href="<?php echo $base_path; ?>about.php" class="text-sm font-semibold text-[#14151A] hover:text-[#00A8B5] transition-colors <?php echo ($current_page == 'about.php') ? 'text-[#00A8B5]' : ''; ?>">About</a>
       <a href="<?php echo $base_path; ?>blog.php" class="text-sm font-semibold text-[#14151A] hover:text-[#00A8B5] transition-colors <?php echo ($current_page == 'blog.php' || $current_page == 'blog-single.php') ? 'text-[#00A8B5]' : ''; ?>">Blog</a>
@@ -257,6 +259,8 @@ $logo_rel_path = ltrim($site_config['brand']['logo_path'], '/');
     </div>
 
     <div class="border-t border-[#E4E7EC] pt-3 flex flex-col gap-3">
+      <a href="<?php echo $base_path; ?>portfolio.php" class="text-sm font-semibold text-[#14151A]">Portfolio</a>
+      <a href="<?php echo $base_path; ?>case-studies.php" class="text-sm font-semibold text-[#14151A]">Case Studies</a>
       <a href="<?php echo $base_path; ?>pricing.php" class="text-sm font-semibold text-[#14151A]">Pricing</a>
       <a href="<?php echo $base_path; ?>about.php" class="text-sm font-semibold text-[#14151A]">About</a>
       <a href="<?php echo $base_path; ?>blog.php" class="text-sm font-semibold text-[#14151A]">Blog</a>

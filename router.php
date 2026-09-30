@@ -138,10 +138,15 @@ if (preg_match('#^/page/([a-zA-Z0-9_-]+)(?:\.php|/)?$#', $uri, $matches)) {
     return true;
 }
 
-// 9.2 Case Study Single URLs rewrite to case-study-single.php
-if (preg_match('#^/case-studies/([a-zA-Z0-9_-]+)(?:\.php|/)?$#', $uri, $matches)) {
+// 9.2 Portfolio & Standalone Case Study URLs rewrite
+if (preg_match('#^/(?:portfolio/)?case-studies/([a-zA-Z0-9_-]+)(?:\.php|/)?$#', $uri, $matches)) {
     $_GET['slug'] = $matches[1];
     require __DIR__ . '/case-study-single.php';
+    return true;
+}
+
+if (preg_match('#^/(?:portfolio/)?case-studies(?:\.php|/)?$#', $uri)) {
+    require __DIR__ . '/case-studies.php';
     return true;
 }
 

@@ -69,6 +69,8 @@ $footer_logo_rel_path = ltrim($site_config['brand']['logo_path'], '/');
       <div class="space-y-3">
         <div class="text-xs font-mono text-[#14151A] uppercase tracking-wider font-bold">Platform & Agency</div>
         <ul class="space-y-2 text-[#5B5F6B] text-xs">
+          <li><a href="<?php echo $footer_base_path; ?>portfolio.php" class="hover:text-[#00A8B5] transition-colors font-semibold text-[#00A8B5]">Portfolio & Results</a></li>
+          <li><a href="<?php echo $footer_base_path; ?>case-studies.php" class="hover:text-[#00A8B5] transition-colors font-semibold text-[#00A8B5]">Case Studies Hub</a></li>
           <li><a href="<?php echo $footer_base_path; ?>industries/solar-installers-seo.php" class="hover:text-[#00A8B5] transition-colors">Solar Installers SEO</a></li>
           <li><a href="<?php echo $footer_base_path; ?>industries/dental-clinics-seo.php" class="hover:text-[#00A8B5] transition-colors">Dental Clinics SEO</a></li>
           <li><a href="<?php echo $footer_base_path; ?>industries/aesthetics-clinics-seo.php" class="hover:text-[#00A8B5] transition-colors">Aesthetics Clinics SEO</a></li>

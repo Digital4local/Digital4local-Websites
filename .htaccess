@@ -65,7 +65,7 @@ ServerSignature Off
     RewriteRule .* - [G,L]
 
     # Subfolder asset fallback rewrite (e.g. /blog/assets/... -> /assets/...)
-    RewriteRule ^(?:blog|services|industries|page|case-studies)/assets/(.*)$ assets/$1 [L]
+    RewriteRule ^(?:blog|services|industries|page|case-studies|portfolio)/assets/(.*)$ assets/$1 [L]
 
     # Direct access rewrite/redirect: /blog-single.php?slug=xyz -> /blog/xyz (Clean URL)
     RewriteCond %{THE_REQUEST} \s/+blog-single(?:\.php)?\?slug=([a-zA-Z0-9_-]+)\s [NC]
@@ -87,9 +87,14 @@ ServerSignature Off
     RewriteRule ^page/([a-zA-Z0-9_-]+)/?$ page.php?slug=$1 [QSA,L]
     RewriteRule ^page/([a-zA-Z0-9_-]+)\.php$ page.php?slug=$1 [QSA,L]
 
-    # Case Study URLs rewrite to case-study-single.php template
+    # Portfolio Case Study URLs rewrite (e.g. /portfolio/case-studies/xyz)
+    RewriteRule ^portfolio/case-studies/([a-zA-Z0-9_-]+)/?$ case-study-single.php?slug=$1 [QSA,L]
+    RewriteRule ^portfolio/case-studies/?$ case-studies.php [QSA,L]
+
+    # Standalone Case Study URLs rewrite (e.g. /case-studies/xyz)
     RewriteRule ^case-studies/([a-zA-Z0-9_-]+)/?$ case-study-single.php?slug=$1 [QSA,L]
     RewriteRule ^case-studies/([a-zA-Z0-9_-]+)\.php$ case-study-single.php?slug=$1 [QSA,L]
+    RewriteRule ^case-studies/?$ case-studies.php [QSA,L]
 
     # Clean URLs: Handle extensions automatically
     RewriteCond %{REQUEST_FILENAME} !-d
