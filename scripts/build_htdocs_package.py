@@ -18,7 +18,7 @@ include_dirs = ['assets', 'includes', 'config', 'api', 'services', 'industries',
 include_files = [
     'index.php', 'services.php', 'pricing.php', 'about.php', 'contact.php',
     'blog.php', 'blog-single.php', 'page.php', 'admin.php', 'admin-cms.php',
-    'admin-login.php', 'admin-logout.php', 'sitemap.php', 'robots.txt', 'favicon.ico', '.htaccess', 'router.php',
+    'admin-login.php', 'admin-logout.php', 'sitemap.php', 'robots.txt', 'favicon.ico', 'logo.png', '.htaccess', 'router.php',
     'llms.txt', 'llm.txt', 'llms-full.txt'
 ]
 

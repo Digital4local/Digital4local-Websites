@@ -735,9 +735,21 @@ if (!defined('DIGITAL4LOCAL_SCHEMA_ENGINE_LOADED')) {
                     'url' => $s_info['url'],
                     'availability' => 'https://schema.org/InStock',
                     'seller' => [
-                        '@type' => 'Organization',
+                        '@type' => ['LocalBusiness', 'ProfessionalService', 'MarketingAgency'],
+                        '@id' => 'https://digital4local.com/#localbusiness',
                         'name' => 'Digital4local',
-                        'url' => 'https://digital4local.com/'
+                        'url' => 'https://digital4local.com/',
+                        'image' => 'https://digital4local.com/assets/images/hero_dashboard_light_v2.png',
+                        'telephone' => '+91-9131140530',
+                        'priceRange' => '₹₹',
+                        'address' => [
+                            '@type' => 'PostalAddress',
+                            'streetAddress' => 'H.N 90 Priyadarshani Co Operative Society Sant Aasharam Nagar Bagmugaliya',
+                            'addressLocality' => 'Bhopal',
+                            'addressRegion' => 'Madhya Pradesh',
+                            'postalCode' => '462043',
+                            'addressCountry' => 'IN'
+                        ]
                     ]
                 ];
             }
@@ -750,11 +762,22 @@ if (!defined('DIGITAL4LOCAL_SCHEMA_ENGINE_LOADED')) {
                 'description' => $s_info['description'],
                 'serviceType' => $s_info['service_type'],
                 'provider' => [
-                    '@type' => 'Organization',
+                    '@type' => ['LocalBusiness', 'ProfessionalService', 'MarketingAgency'],
+                    '@id' => 'https://digital4local.com/#localbusiness',
                     'name' => 'Digital4local',
                     'url' => 'https://digital4local.com/',
-                    'logo' => 'https://digital4local.com/logo.png',
-                    'telephone' => '+91-9131140530'
+                    'logo' => 'https://digital4local.com/assets/images/digital4local_logo.png',
+                    'image' => 'https://digital4local.com/assets/images/hero_dashboard_light_v2.png',
+                    'telephone' => '+91-9131140530',
+                    'priceRange' => '₹₹',
+                    'address' => [
+                        '@type' => 'PostalAddress',
+                        'streetAddress' => 'H.N 90 Priyadarshani Co Operative Society Sant Aasharam Nagar Bagmugaliya',
+                        'addressLocality' => 'Bhopal',
+                        'addressRegion' => 'Madhya Pradesh',
+                        'postalCode' => '462043',
+                        'addressCountry' => 'IN'
+                    ]
                 ],
                 'areaServed' => ['India', 'United Kingdom', 'United States', 'Global'],
                 'offers' => $offers_list
@@ -770,11 +793,22 @@ if (!defined('DIGITAL4LOCAL_SCHEMA_ENGINE_LOADED')) {
                 'description' => $ind['direct_answer'] ?? $page_description,
                 'serviceType' => $ind['service_type'] ?? 'Search Engine Optimization & Generative AI Visibility',
                 'provider' => [
-                    '@type' => 'Organization',
+                    '@type' => ['LocalBusiness', 'ProfessionalService', 'MarketingAgency'],
+                    '@id' => 'https://digital4local.com/#localbusiness',
                     'name' => 'Digital4local',
                     'url' => 'https://digital4local.com/',
-                    'logo' => 'https://digital4local.com/logo.png',
-                    'telephone' => '+91-9131140530'
+                    'logo' => 'https://digital4local.com/assets/images/digital4local_logo.png',
+                    'image' => 'https://digital4local.com/assets/images/hero_dashboard_light_v2.png',
+                    'telephone' => '+91-9131140530',
+                    'priceRange' => '₹₹',
+                    'address' => [
+                        '@type' => 'PostalAddress',
+                        'streetAddress' => 'H.N 90 Priyadarshani Co Operative Society Sant Aasharam Nagar Bagmugaliya',
+                        'addressLocality' => 'Bhopal',
+                        'addressRegion' => 'Madhya Pradesh',
+                        'postalCode' => '462043',
+                        'addressCountry' => 'IN'
+                    ]
                 ],
                 'areaServed' => $ind['area_served'] ?? ['India', 'United Kingdom', 'United States', 'Global']
             ];
@@ -830,7 +864,7 @@ if (!defined('DIGITAL4LOCAL_SCHEMA_ENGINE_LOADED')) {
                     'url' => 'https://digital4local.com/',
                     'logo' => [
                         '@type' => 'ImageObject',
-                        'url' => 'https://digital4local.com/logo.png'
+                        'url' => 'https://digital4local.com/assets/images/digital4local_logo.png'
                     ]
                 ]
             ];
@@ -855,7 +889,7 @@ if (!defined('DIGITAL4LOCAL_SCHEMA_ENGINE_LOADED')) {
                     'url' => 'https://digital4local.com/',
                     'logo' => [
                         '@type' => 'ImageObject',
-                        'url' => 'https://digital4local.com/logo.png'
+                        'url' => 'https://digital4local.com/assets/images/digital4local_logo.png'
                     ]
                 ],
                 'datePublished' => $ind['date_published'] ?? '2025-01-15',

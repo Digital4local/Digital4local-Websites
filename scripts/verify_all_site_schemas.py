@@ -122,10 +122,11 @@ def run_site_wide_schema_audit():
 
         types_in_page = []
         for s in p_schemas:
-            st = s.get("@type", "Unknown")
+            raw_st = s.get("@type", "Unknown")
+            st = "/".join(raw_st) if isinstance(raw_st, list) else str(raw_st)
             types_in_page.append(st)
             total_entities_by_type[st] = total_entities_by_type.get(st, 0) + 1
-            if st in ["Review", "AggregateRating"]:
+            if st in ["Review", "AggregateRating"] or (isinstance(raw_st, list) and any(x in ["Review", "AggregateRating"] for x in raw_st)):
                 prohibited_count += 1
 
         print(f"[{'PASS' if p_errors == 0 else 'FAIL'}] {p['file']:<45} -> {len(p_schemas)} Schemas: {', '.join(types_in_page)}")

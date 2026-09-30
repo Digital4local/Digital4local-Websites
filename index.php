@@ -9,16 +9,21 @@ $page_description = $index_cfg['meta_description'] ?? $site_config['seo']['meta_
 <head>
   <?php include_once 'includes/seo.php'; ?>
 
-  <!-- Organization / MarketingAgency Schema (JSON-LD) -->
+  <!-- Organization / MarketingAgency / LocalBusiness Schema (JSON-LD) -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "MarketingAgency",
+    "@type": ["LocalBusiness", "MarketingAgency", "ProfessionalService"],
+    "@id": "https://digital4local.com/#localbusiness",
     "name": "Digital4local",
     "url": "https://digital4local.com/",
     "telephone": "+91-9131140530",
+    "priceRange": "₹₹",
+    "currenciesAccepted": "INR, USD, GBP",
+    "paymentAccepted": "Cash, Credit Card, Bank Transfer, UPI",
     "description": "Digital4local is Bhopal's premier AI-driven digital marketing and SEO agency, built for local businesses, startups, and B2B brands that want to dominate Google Search, Google Maps, and AI answer engines. We specialize in GEO & AEO—getting your business cited directly inside ChatGPT, Gemini, Perplexity, and Google AI Overviews.",
-    "image": "https://digital4local.com/logo.png",
+    "image": "https://digital4local.com/assets/images/hero_dashboard_light_v2.png",
+    "logo": "https://digital4local.com/assets/images/digital4local_logo.png",
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "H.N 90 Priyadarshani Co Operative Society Sant Aasharam Nagar Bagmugaliya",
