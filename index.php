@@ -9,11 +9,12 @@ $page_description = $index_cfg['meta_description'] ?? $site_config['seo']['meta_
 <head>
   <?php include_once 'includes/seo.php'; ?>
 
-  <!-- Organization / MarketingAgency / LocalBusiness Schema (JSON-LD) -->
+  <!-- LocalBusiness / MarketingAgency Schema (JSON-LD) -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": ["LocalBusiness", "MarketingAgency", "ProfessionalService"],
+    "@type": "LocalBusiness",
+    "additionalType": "https://schema.org/MarketingAgency",
     "@id": "https://digital4local.com/#localbusiness",
     "name": "Digital4local",
     "url": "https://digital4local.com/",
@@ -54,6 +55,10 @@ $page_description = $index_cfg['meta_description'] ?? $site_config['seo']['meta_
     "areaServed": [
       {
         "@type": "City",
+        "name": "Bhopal, Madhya Pradesh"
+      },
+      {
+        "@type": "City",
         "name": "Indore, Madhya Pradesh"
       },
       {
@@ -61,60 +66,16 @@ $page_description = $index_cfg['meta_description'] ?? $site_config['seo']['meta_
         "name": "Jabalpur, Madhya Pradesh"
       },
       {
-        "@type": "Place",
-        "name": "Shahpura, Rajasthan 303103"
+        "@type": "Country",
+        "name": "India"
       },
       {
-        "@type": "Place",
-        "name": "Kolar Rd, Bhopal, Madhya Pradesh"
+        "@type": "Country",
+        "name": "United Kingdom"
       },
       {
-        "@type": "Place",
-        "name": "Govindpura, Bhopal, Madhya Pradesh"
-      },
-      {
-        "@type": "Place",
-        "name": "Bagmugaliya, Bhopal, Madhya Pradesh"
-      },
-      {
-        "@type": "Place",
-        "name": "Arera Colony, Bhopal, Madhya Pradesh"
-      },
-      {
-        "@type": "Place",
-        "name": "Gulmohar Colony, Bhopal, Madhya Pradesh"
-      },
-      {
-        "@type": "Place",
-        "name": "Minal Residency, Bhopal, Madhya Pradesh"
-      },
-      {
-        "@type": "Place",
-        "name": "E-3, Arera Colony, Bhopal, Madhya Pradesh"
-      },
-      {
-        "@type": "Place",
-        "name": "Maharana Pratap Nagar, Bhopal, Madhya Pradesh"
-      },
-      {
-        "@type": "Place",
-        "name": "E-1, Arera Colony, Bhopal, Madhya Pradesh 462016"
-      },
-      {
-        "@type": "Place",
-        "name": "E-2, Arera Colony, Bhopal, Madhya Pradesh 462016"
-      },
-      {
-        "@type": "Place",
-        "name": "Hoshangabad, Misrod, Bhopal, Madhya Pradesh 462047"
-      },
-      {
-        "@type": "Place",
-        "name": "10 No. Stop, Arera Colony, Bhopal, Madhya Pradesh 462016"
-      },
-      {
-        "@type": "Place",
-        "name": "New Market, STT Nagar, TT Nagar, Bhopal, Madhya Pradesh 462003"
+        "@type": "Country",
+        "name": "United States"
       }
     ],
     "knowsAbout": [

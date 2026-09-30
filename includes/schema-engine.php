@@ -735,7 +735,8 @@ if (!defined('DIGITAL4LOCAL_SCHEMA_ENGINE_LOADED')) {
                     'url' => $s_info['url'],
                     'availability' => 'https://schema.org/InStock',
                     'seller' => [
-                        '@type' => ['LocalBusiness', 'ProfessionalService', 'MarketingAgency'],
+                        '@type' => 'LocalBusiness',
+                        'additionalType' => 'https://schema.org/MarketingAgency',
                         '@id' => 'https://digital4local.com/#localbusiness',
                         'name' => 'Digital4local',
                         'url' => 'https://digital4local.com/',
@@ -762,7 +763,8 @@ if (!defined('DIGITAL4LOCAL_SCHEMA_ENGINE_LOADED')) {
                 'description' => $s_info['description'],
                 'serviceType' => $s_info['service_type'],
                 'provider' => [
-                    '@type' => ['LocalBusiness', 'ProfessionalService', 'MarketingAgency'],
+                    '@type' => 'LocalBusiness',
+                    'additionalType' => 'https://schema.org/MarketingAgency',
                     '@id' => 'https://digital4local.com/#localbusiness',
                     'name' => 'Digital4local',
                     'url' => 'https://digital4local.com/',
@@ -793,7 +795,8 @@ if (!defined('DIGITAL4LOCAL_SCHEMA_ENGINE_LOADED')) {
                 'description' => $ind['direct_answer'] ?? $page_description,
                 'serviceType' => $ind['service_type'] ?? 'Search Engine Optimization & Generative AI Visibility',
                 'provider' => [
-                    '@type' => ['LocalBusiness', 'ProfessionalService', 'MarketingAgency'],
+                    '@type' => 'LocalBusiness',
+                    'additionalType' => 'https://schema.org/MarketingAgency',
                     '@id' => 'https://digital4local.com/#localbusiness',
                     'name' => 'Digital4local',
                     'url' => 'https://digital4local.com/',
