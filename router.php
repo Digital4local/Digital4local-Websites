@@ -150,15 +150,22 @@ if (preg_match('#^/(?:portfolio/)?case-studies(?:\.php|/)?$#', $uri)) {
     return true;
 }
 
-// 10. Clean URLs: Check if adding .php matches an existing script
-if ($uri !== '/' && file_exists(__DIR__ . $uri . '.php')) {
-    require __DIR__ . $uri . '.php';
+// 10. Clean URLs: Check if adding .php matches an existing script (handling trailing slashes)
+$clean_uri = rtrim($uri, '/');
+if ($clean_uri !== '' && file_exists(__DIR__ . $clean_uri . '.php')) {
+    require __DIR__ . $clean_uri . '.php';
     return true;
 }
 
 // 11. Check if directory has an index.php
 if (is_dir($file_path) && file_exists($file_path . '/index.php')) {
     require $file_path . '/index.php';
+    return true;
+}
+
+$clean_dir = __DIR__ . $clean_uri;
+if (is_dir($clean_dir) && file_exists($clean_dir . '/index.php')) {
+    require $clean_dir . '/index.php';
     return true;
 }
 

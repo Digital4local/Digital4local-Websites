@@ -94,10 +94,15 @@ ServerSignature Off
     RewriteRule ^case-studies/([a-zA-Z0-9_-]+)\.php$ case-study-single.php?slug=$1 [QSA,L]
     RewriteRule ^case-studies/?$ case-studies.php [QSA,L]
 
-    # Clean URLs: Handle extensions automatically
+    # Clean URLs: Map extensionless and trailing-slash URLs to existing PHP files
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{DOCUMENT_ROOT}/$1.php -f
+    RewriteRule ^(.+?)/?$ $1.php [L]
+
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME}\.php -f
     RewriteRule ^(.*)$ $1.php [L]
+
 
     # Sitemap XML rewrite
     RewriteRule ^sitemap\.xml$ sitemap.php [L]
