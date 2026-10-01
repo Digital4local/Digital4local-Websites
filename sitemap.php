@@ -13,17 +13,14 @@ $today = date('Y-m-d');
 $urls = [
     // Core Navigation Hubs
     ['loc' => $base_domain . '/', 'lastmod' => $today, 'changefreq' => 'daily', 'priority' => '1.0'],
-    ['loc' => $base_domain . '/portfolio.php', 'lastmod' => $today, 'changefreq' => 'daily', 'priority' => '0.95'],
-    ['loc' => $base_domain . '/portfolio', 'lastmod' => $today, 'changefreq' => 'daily', 'priority' => '0.95'],
-    ['loc' => $base_domain . '/bhopal.php', 'lastmod' => $today, 'changefreq' => 'daily', 'priority' => '0.95'],
-    ['loc' => $base_domain . '/case-studies.php', 'lastmod' => $today, 'changefreq' => 'daily', 'priority' => '0.95'],
-    ['loc' => $base_domain . '/case-studies', 'lastmod' => $today, 'changefreq' => 'daily', 'priority' => '0.95'],
-    ['loc' => $base_domain . '/portfolio/case-studies', 'lastmod' => $today, 'changefreq' => 'daily', 'priority' => '0.90'],
     ['loc' => $base_domain . '/services.php', 'lastmod' => $today, 'changefreq' => 'weekly', 'priority' => '0.9'],
+    ['loc' => $base_domain . '/portfolio.php', 'lastmod' => $today, 'changefreq' => 'daily', 'priority' => '0.95'],
+    ['loc' => $base_domain . '/case-studies.php', 'lastmod' => $today, 'changefreq' => 'daily', 'priority' => '0.95'],
     ['loc' => $base_domain . '/pricing.php', 'lastmod' => $today, 'changefreq' => 'weekly', 'priority' => '0.9'],
     ['loc' => $base_domain . '/about.php', 'lastmod' => $today, 'changefreq' => 'monthly', 'priority' => '0.8'],
     ['loc' => $base_domain . '/contact.php', 'lastmod' => $today, 'changefreq' => 'monthly', 'priority' => '0.9'],
     ['loc' => $base_domain . '/blog.php', 'lastmod' => $today, 'changefreq' => 'daily', 'priority' => '0.9'],
+    ['loc' => $base_domain . '/bhopal.php', 'lastmod' => $today, 'changefreq' => 'weekly', 'priority' => '0.85'],
     ['loc' => $base_domain . '/industries/index.php', 'lastmod' => $today, 'changefreq' => 'weekly', 'priority' => '0.9'],
 
     // 7 Client Case Studies

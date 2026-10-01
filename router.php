@@ -17,8 +17,8 @@ if (!headers_sent()) {
 
 // 2. HTTP 410 Gone Interceptor for SEO Spam URLs and legacy parameters
 $query_string = $_SERVER['QUERY_STRING'] ?? '';
-$is_spam_path = preg_match('#^/(?:wp-admin|wp-includes|wp-content|xmlrpc\.php|wp-login\.php|wp-cron\.php|wp-json|product|product-category|shop|cart|checkout|tag|author|category|feed|comments|trackback|attachment|goods|item)#i', $uri);
-$is_spam_query = preg_match('#(?:pharmacy|viagra|cialis|casino|poker|slot|buy-|cheap-|discount-|replica|outlet)#i', $query_string) ||
+$is_spam_path = preg_match('#^/(?:wp-admin|wp-includes|wp-content|xmlrpc\.php|wp-login\.php|wp-cron\.php|wp-json|product|product-category|shop|cart|checkout|tag|author|category|feed|comments|trackback|attachment|goods|item|items|cate-|special|comment\.php|pants|shoes|nail-tips|r\d+|s\d+)#i', $uri);
+$is_spam_query = preg_match('#(?:item/|item=|pharmacy|viagra|cialis|casino|poker|slot|buy-|cheap-|discount-|replica|outlet)#i', $query_string) ||
                  preg_match('#(?:[\xd0-\xd3][\x80-\xbf]|[\xe4-\xe9][\x80-\xbf]{2})#', $query_string) ||
                  preg_match('#(?:^|&)(?:s|search|keyword|page_id|p|cat|tag|author)=#i', $query_string);
 

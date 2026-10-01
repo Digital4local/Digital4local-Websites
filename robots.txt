@@ -1,57 +1,5 @@
 User-agent: *
 Allow: /
-
-User-agent: GPTBot
-Allow: /
-
-User-agent: OAI-SearchBot
-Allow: /
-
-User-agent: ChatGPT-User
-Allow: /
-
-User-agent: ClaudeBot
-Allow: /
-
-User-agent: Claude-User
-Allow: /
-
-User-agent: Claude-Web
-Allow: /
-
-User-agent: anthropic-ai
-Allow: /
-
-User-agent: Claude
-Allow: /
-
-User-agent: PerplexityBot
-Allow: /
-
-User-agent: Google-Extended
-Allow: /
-
-User-agent: Applebot
-Allow: /
-
-User-agent: Applebot-Extended
-Allow: /
-
-User-agent: Meta-ExternalAgent
-Allow: /
-
-User-agent: Amazonbot
-Allow: /
-
-User-agent: cohere-ai
-Allow: /
-
-User-agent: Bytespider
-Allow: /
-
-User-agent: CCBot
-Allow: /
-
 Disallow: /admin.php
 Disallow: /admin-cms.php
 Disallow: /admin-login.php
@@ -60,9 +8,16 @@ Disallow: /api/
 Disallow: /config/
 Disallow: /includes/
 Disallow: /scripts/
-Disallow: /wp-admin/
-Disallow: /wp-includes/
-Disallow: /wp-content/
+Disallow: /item/
+Disallow: /items/
+Disallow: /shop/
+Disallow: /comment.php
+Disallow: /*?item/
+Disallow: /cate-
+Disallow: /special/
+Disallow: /pants/
+Disallow: /shoes/
+Disallow: /nail-tips/
 
 Sitemap: https://digital4local.com/sitemap.xml
 Sitemap: https://digital4local.com/sitemap.php

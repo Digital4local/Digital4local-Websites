@@ -72,6 +72,10 @@
   - **Dynamic `BlogPosting` / `Article` Schema**: Generated for blog articles and industry blueprints with headline mapping, ISO dates, author as `Person` "Abhishek Raikwar", and publisher as `Organization` "Digital4local".
   - **Dynamic `FAQPage` Schema**: Automatically detected and extracted on all pages containing FAQs (Services, Industries, Blog, Pricing, Contact, CMS pages) with strict HTML sanitization.
   - **Strict Constraints Enforced**: 0 `Review` / `AggregateRating` schemas generated anywhere, 0 duplicate `LocalBusiness` / `MarketingAgency` on homepage, 100% valid JSON-LD inside `<head>`.
-- [x] **Automated Test Suite (`scripts/test_schema_engine.py`)**: Verified 100% pass rate across all 10 page types.
-- [x] **Rebuilt Deployment Zip & XAMPP Sync**: Updated `digital4local_htdocs.zip` (5.20 MB) and pushed to GitHub `main`.
-
+### Phase 9: Robots.txt Hardening, AI Crawler Remediation & Extended Spam 410 Purge
+- [x] **Consolidated `robots.txt`**: Removed 18 duplicate bot groups and legacy `wp-*` paths. Configured single RFC 9309 `User-agent: *` block allowing root and explicitly disallowing `/admin.php`, `/admin-cms.php`, `/admin-login.php`, `/admin-logout.php`, `/api/`, `/config/`, `/includes/`, `/scripts/`, `/item/`, `/items/`, `/shop/`, `/comment.php`, `/*?item/`, `/cate-`, `/special/`, `/pants/`, `/shoes/`, `/nail-tips/`.
+- [x] **Hardened HTTP 410 Gone Rules in `.htaccess` & `router.php`**: Extended pattern matching to drop `/item/`, `/items/`, `/shop/`, `/cate-*`, `/special/`, `/comment.php`, `?item/`, `/r\d+/`, `/s\d+/`, `/pants/`, `/shoes/`, `/nail-tips/`.
+- [x] **Sanitized Dynamic XML Sitemap (`sitemap.php`)**: Deduplicated hub URLs, outputting 47 clean canonical HTTPS non-www URLs.
+- [x] **Verified Zero Malicious Files / Webshells**: Full codebase scan confirmed zero backdoors, zero eval/gzinflate obfuscation, and zero rogue admin accounts.
+- [x] **Multi-Bot Verification Suite**: Automated curl/HTTP audit confirmed HTTP 200 OK for Default Agent, Googlebot, GPTBot, ClaudeBot, and PerplexityBot on `/`, `/robots.txt`, `/llms.txt`, and `/sitemap.xml`.
+- [x] **Rebuilt Production Package**: Updated `digital4local_htdocs.zip` (5.30 MB) and synchronized `C:\xampp\htdocs\digital4local`.

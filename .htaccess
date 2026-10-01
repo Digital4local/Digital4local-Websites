@@ -53,13 +53,11 @@ ServerSignature Off
     RewriteRule ^\.well-known/llm\.txt$ llm.txt [L]
 
     # Block direct web access to sensitive config, scripts, and includes folders
-    RewriteRule ^config/.*$ - [F,L]
-    RewriteRule ^scripts/.*$ - [F,L]
-    RewriteRule ^includes/.*$ - [F,L]
+    RewriteRule ^(?:config|scripts|includes)(?:/.*)?$ - [F,L]
 
-    # HTTP 410 Gone: Permanently drop WordPress spam endpoints, eCommerce footprints & pharma/Japanese query attacks
-    RewriteCond %{REQUEST_URI} ^/(?:wp-admin|wp-includes|wp-content|xmlrpc\.php|wp-login\.php|wp-cron\.php|wp-json|product|product-category|shop|cart|checkout|tag|author|category|feed|comments|trackback|attachment|goods|item) [NC,OR]
-    RewriteCond %{QUERY_STRING} (?:pharmacy|viagra|cialis|casino|poker|slot|buy-|cheap-|discount-|replica|outlet) [NC,OR]
+    # HTTP 410 Gone: Permanently drop spam injected paths, eCommerce scrapers & pharma/Japanese query attacks
+    RewriteCond %{REQUEST_URI} ^/(?:wp-admin|wp-includes|wp-content|xmlrpc\.php|wp-login\.php|wp-cron\.php|wp-json|product|product-category|shop|cart|checkout|tag|author|category|feed|comments|trackback|attachment|goods|item|items|cate-|special|comment\.php|pants|shoes|nail-tips|r\d+|s\d+) [NC,OR]
+    RewriteCond %{QUERY_STRING} (?:item/|item=|pharmacy|viagra|cialis|casino|poker|slot|buy-|cheap-|discount-|replica|outlet) [NC,OR]
     RewriteCond %{QUERY_STRING} (?:[\xd0-\xd3][\x80-\xbf]|[\xe4-\xe9][\x80-\xbf]{2}) [OR]
     RewriteCond %{QUERY_STRING} (?:^|&)(?:s|search|keyword|page_id|p|cat|tag|author)= [NC]
     RewriteRule .* - [G,L]
