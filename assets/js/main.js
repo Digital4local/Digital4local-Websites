@@ -27,14 +27,69 @@ function initNavbarScroll() {
   });
 }
 
-/* Mobile Menu Drawer Toggle */
+/* Mobile Menu Drawer & Collapsible Sub-menu Accordions */
 function initMobileMenu() {
   const menuBtn = document.getElementById('mobile-menu-btn');
   const menuDrawer = document.getElementById('mobile-menu');
   if (!menuBtn || !menuDrawer) return;
 
-  menuBtn.addEventListener('click', () => {
+  // Toggle main drawer
+  menuBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isClosed = menuDrawer.classList.contains('hidden');
     menuDrawer.classList.toggle('hidden');
+    
+    // Switch icon between hamburger menu and close (X)
+    const icon = menuBtn.querySelector('i');
+    if (icon) {
+      icon.setAttribute('data-lucide', isClosed ? 'x' : 'menu');
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+    }
+  });
+
+  // Handle collapsible sub-menu accordions
+  const subMenuToggles = menuDrawer.querySelectorAll('.mobile-submenu-toggle');
+  subMenuToggles.forEach(toggle => {
+    toggle.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      const targetId = toggle.getAttribute('aria-controls');
+      const targetSubMenu = document.getElementById(targetId);
+      const arrow = toggle.querySelector('.mobile-submenu-arrow');
+      
+      if (!targetSubMenu) return;
+      
+      const isExpanded = !targetSubMenu.classList.contains('hidden');
+
+      // Close sibling submenus for clean accordion UX
+      subMenuToggles.forEach(otherToggle => {
+        if (otherToggle !== toggle) {
+          const otherId = otherToggle.getAttribute('aria-controls');
+          const otherMenu = document.getElementById(otherId);
+          const otherArrow = otherToggle.querySelector('.mobile-submenu-arrow');
+          if (otherMenu) otherMenu.classList.add('hidden');
+          if (otherArrow) otherArrow.classList.remove('rotate-180');
+          otherToggle.setAttribute('aria-expanded', 'false');
+        }
+      });
+      
+      if (isExpanded) {
+        targetSubMenu.classList.add('hidden');
+        if (arrow) arrow.classList.remove('rotate-180');
+        toggle.setAttribute('aria-expanded', 'false');
+      } else {
+        targetSubMenu.classList.remove('hidden');
+        if (arrow) arrow.classList.add('rotate-180');
+        toggle.setAttribute('aria-expanded', 'true');
+      }
+
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+    });
   });
 }
 

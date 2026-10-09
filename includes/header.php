@@ -291,56 +291,101 @@ $logo_rel_path = ltrim($site_config['brand']['logo_path'], '/');
     </button>
   </div>
 
-  <!-- Mobile Drawer Menu -->
-  <div id="mobile-menu" class="hidden lg:hidden mt-3 bg-[#FFFFFF] border border-[#E4E7EC] rounded-2xl p-5 sm:p-6 shadow-2xl space-y-4 max-h-[calc(100vh-5.5rem)] overflow-y-auto overscroll-contain transition-all">
-    <div class="space-y-2">
-      <div class="text-xs font-mono text-[#00A8B5] uppercase tracking-wider mb-2">Services</div>
-      <a href="<?php echo $base_path; ?>services/local-seo.php" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1">Local SEO & Google Maps</a>
-      <a href="<?php echo $base_path; ?>services/geo-aeo.php" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1">GEO & AEO Optimization</a>
-      <a href="<?php echo $base_path; ?>services/technical-seo.php" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1">Technical SEO</a>
-      <a href="<?php echo $base_path; ?>services/link-building-pr.php" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1">Link Building & Digital PR</a>
-      <a href="<?php echo $base_path; ?>services/ai-marketing.php" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1">AI Digital Marketing</a>
-      <a href="<?php echo $base_path; ?>services/social-media.php" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1">Social Media Growth</a>
-      <a href="<?php echo $base_path; ?>services/web-development.php" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1 font-semibold text-[#00A8B5]">Web Development</a>
-      <a href="<?php echo $base_path; ?>services/app-development.php" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1 font-semibold text-[#8B5CF6]">App Development</a>
-    </div>
-
-    <div class="border-t border-[#E4E7EC] pt-3 space-y-2">
-      <div class="text-xs font-mono text-[#00A8B5] uppercase tracking-wider mb-2 flex items-center justify-between">
-        <span>Bhopal Locations Cluster</span>
-        <span class="text-[10px] bg-[#00A8B5]/10 px-2 py-0.5 rounded text-[#00A8B5] font-bold">6 Pages</span>
+  <!-- Mobile Drawer Menu with Collapsible Sub-Menus -->
+  <div id="mobile-menu" class="hidden lg:hidden mt-3 bg-[#FFFFFF] border border-[#E4E7EC] rounded-2xl p-4 sm:p-6 shadow-2xl space-y-3 max-h-[calc(100vh-5.5rem)] overflow-y-auto overscroll-contain transition-all">
+    
+    <!-- 1. Services Accordion Item -->
+    <div class="mobile-menu-item border-b border-[#E4E7EC] pb-3">
+      <button type="button" class="mobile-submenu-toggle w-full flex items-center justify-between py-2 text-sm font-bold text-[#14151A] hover:text-[#00A8B5] transition-colors focus:outline-none" aria-expanded="false" aria-controls="mobile-submenu-services">
+        <span class="flex items-center gap-2">
+          <i data-lucide="layers" class="w-4 h-4 text-[#00A8B5]"></i>
+          <span>Services</span>
+        </span>
+        <div class="flex items-center gap-2">
+          <span class="text-[10px] font-mono bg-[#00A8B5]/10 text-[#00A8B5] px-2 py-0.5 rounded font-bold">8 Services</span>
+          <i data-lucide="chevron-down" class="w-4 h-4 text-[#5B5F6B] mobile-submenu-arrow transition-transform duration-200"></i>
+        </div>
+      </button>
+      <div id="mobile-submenu-services" class="mobile-submenu hidden pt-2 pb-1 pl-3 space-y-1 border-l-2 border-[#00A8B5]/30 ml-2 mt-1">
+        <a href="<?php echo $base_path; ?>services.php" class="block text-xs font-bold text-[#00A8B5] hover:underline py-1.5 flex items-center gap-1.5">
+          <span>Explore All Services</span>
+          <i data-lucide="arrow-right" class="w-3 h-3"></i>
+        </a>
+        <a href="<?php echo $base_path; ?>services/local-seo.php" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1.5">Local SEO & Google Maps</a>
+        <a href="<?php echo $base_path; ?>services/geo-aeo.php" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1.5">GEO & AEO Optimization</a>
+        <a href="<?php echo $base_path; ?>services/technical-seo.php" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1.5">Technical SEO</a>
+        <a href="<?php echo $base_path; ?>services/link-building-pr.php" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1.5">Link Building & Digital PR</a>
+        <a href="<?php echo $base_path; ?>services/ai-marketing.php" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1.5">AI Digital Marketing</a>
+        <a href="<?php echo $base_path; ?>services/social-media.php" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1.5">Social Media Growth</a>
+        <a href="<?php echo $base_path; ?>services/web-development.php" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1.5 font-semibold text-[#00A8B5]">Web Development</a>
+        <a href="<?php echo $base_path; ?>services/app-development.php" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1.5 font-semibold text-[#8B5CF6]">App Development</a>
       </div>
-      <a href="<?php echo $base_path; ?>seo-agency-bhopal/" class="block text-sm font-bold text-[#00A8B5] hover:text-[#008A95] py-1">SEO Agency in Bhopal (Hub) ★</a>
-      <a href="<?php echo $base_path; ?>local-seo-bhopal/" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1">Local SEO in Bhopal</a>
-      <a href="<?php echo $base_path; ?>google-business-profile-optimization-bhopal/" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1">Google Business Profile Optimization</a>
-      <a href="<?php echo $base_path; ?>ai-seo-bhopal/" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1">AI SEO & GEO Services</a>
-      <a href="<?php echo $base_path; ?>digital-marketing-agency-bhopal/" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1">Digital Marketing Agency</a>
-      <a href="<?php echo $base_path; ?>ai-agency-bhopal/" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1">AI Agency & Automation</a>
     </div>
 
-    <div class="border-t border-[#E4E7EC] pt-3 space-y-2">
-      <div class="text-xs font-mono text-[#16A34A] uppercase tracking-wider mb-2">Industries</div>
-      <a href="<?php echo $base_path; ?>industries/solar-installers-seo.php" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1">Solar Installers</a>
-      <a href="<?php echo $base_path; ?>industries/heat-pump-installers-seo.php" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1">Heat Pump Installers</a>
-      <a href="<?php echo $base_path; ?>industries/ev-charger-installers-seo.php" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1">EV Charger Installers</a>
-      <a href="<?php echo $base_path; ?>industries/roofing-companies-seo.php" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1">Roofing Companies</a>
-      <a href="<?php echo $base_path; ?>industries/kitchen-bathroom-renovators-seo.php" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1">Kitchen & Bathroom</a>
-      <a href="<?php echo $base_path; ?>industries/loft-conversion-builders-seo.php" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1">Loft & Extensions</a>
-      <a href="<?php echo $base_path; ?>industries/dental-clinics-seo.php" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1">Private Dental Clinics</a>
-      <a href="<?php echo $base_path; ?>industries/aesthetics-clinics-seo.php" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1">Aesthetics Clinics</a>
-      <a href="<?php echo $base_path; ?>industries/law-firms-seo.php" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1">Law Firms & Solicitors</a>
-      <a href="<?php echo $base_path; ?>industries/startup-seo-agency.php" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1">VC-Backed Startups</a>
-      <a href="<?php echo $base_path; ?>industries/saas-marketing-agency.php" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1">B2B SaaS Companies</a>
-      <a href="<?php echo $base_path; ?>industries/index.php" class="block text-sm font-bold text-[#1B5FAA] hover:text-[#00A8B5] py-1">View All 16 Verticals →</a>
+    <!-- 2. Industries Accordion Item -->
+    <div class="mobile-menu-item border-b border-[#E4E7EC] pb-3">
+      <button type="button" class="mobile-submenu-toggle w-full flex items-center justify-between py-2 text-sm font-bold text-[#14151A] hover:text-[#00A8B5] transition-colors focus:outline-none" aria-expanded="false" aria-controls="mobile-submenu-industries">
+        <span class="flex items-center gap-2">
+          <i data-lucide="briefcase" class="w-4 h-4 text-[#16A34A]"></i>
+          <span>Industries</span>
+        </span>
+        <div class="flex items-center gap-2">
+          <span class="text-[10px] font-mono bg-[#16A34A]/10 text-[#16A34A] px-2 py-0.5 rounded font-bold">11 Verticals</span>
+          <i data-lucide="chevron-down" class="w-4 h-4 text-[#5B5F6B] mobile-submenu-arrow transition-transform duration-200"></i>
+        </div>
+      </button>
+      <div id="mobile-submenu-industries" class="mobile-submenu hidden pt-2 pb-1 pl-3 space-y-1 border-l-2 border-[#16A34A]/30 ml-2 mt-1">
+        <a href="<?php echo $base_path; ?>industries/index.php" class="block text-xs font-bold text-[#1B5FAA] hover:underline py-1.5 flex items-center gap-1.5">
+          <span>View All 16 Industry Blueprints</span>
+          <i data-lucide="arrow-right" class="w-3 h-3"></i>
+        </a>
+        <a href="<?php echo $base_path; ?>industries/solar-installers-seo.php" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1.5">⚡ Solar Installers</a>
+        <a href="<?php echo $base_path; ?>industries/heat-pump-installers-seo.php" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1.5">♨️ Heat Pump Installers</a>
+        <a href="<?php echo $base_path; ?>industries/ev-charger-installers-seo.php" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1.5">🔋 EV Charger Installers</a>
+        <a href="<?php echo $base_path; ?>industries/roofing-companies-seo.php" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1.5">🏠 Roofing Companies</a>
+        <a href="<?php echo $base_path; ?>industries/kitchen-bathroom-renovators-seo.php" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1.5">🚿 Kitchen & Bathroom</a>
+        <a href="<?php echo $base_path; ?>industries/loft-conversion-builders-seo.php" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1.5">🏗️ Loft & Extensions</a>
+        <a href="<?php echo $base_path; ?>industries/dental-clinics-seo.php" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1.5">🦷 Private Dental Clinics</a>
+        <a href="<?php echo $base_path; ?>industries/aesthetics-clinics-seo.php" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1.5">✨ Aesthetics Clinics</a>
+        <a href="<?php echo $base_path; ?>industries/law-firms-seo.php" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1.5">⚖️ Law Firms & Solicitors</a>
+        <a href="<?php echo $base_path; ?>industries/startup-seo-agency.php" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1.5">🚀 VC-Backed Startups</a>
+        <a href="<?php echo $base_path; ?>industries/saas-marketing-agency.php" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1.5">💻 B2B SaaS Companies</a>
+      </div>
     </div>
 
-    <div class="border-t border-[#E4E7EC] pt-3 flex flex-col gap-3">
-      <a href="<?php echo $base_path; ?>portfolio.php" class="text-sm font-semibold text-[#14151A]">Portfolio</a>
-      <a href="<?php echo $base_path; ?>case-studies.php" class="text-sm font-semibold text-[#14151A]">Case Studies</a>
-      <a href="<?php echo $base_path; ?>pricing.php" class="text-sm font-semibold text-[#14151A]">Pricing</a>
-      <a href="<?php echo $base_path; ?>about.php" class="text-sm font-semibold text-[#14151A]">About</a>
-      <a href="<?php echo $base_path; ?>blog.php" class="text-sm font-semibold text-[#14151A]">Blog</a>
-      <a href="<?php echo $base_path; ?>contact.php" class="text-sm font-semibold text-[#14151A]">Contact</a>
+    <!-- 3. Locations Accordion Item -->
+    <div class="mobile-menu-item border-b border-[#E4E7EC] pb-3">
+      <button type="button" class="mobile-submenu-toggle w-full flex items-center justify-between py-2 text-sm font-bold text-[#14151A] hover:text-[#00A8B5] transition-colors focus:outline-none" aria-expanded="false" aria-controls="mobile-submenu-locations">
+        <span class="flex items-center gap-2">
+          <span class="inline-block w-2 h-2 rounded-full bg-[#00A8B5] animate-pulse"></span>
+          <span>Locations (Bhopal)</span>
+        </span>
+        <div class="flex items-center gap-2">
+          <span class="text-[10px] font-mono bg-[#00A8B5]/10 text-[#00A8B5] px-2 py-0.5 rounded font-bold">6 Pages</span>
+          <i data-lucide="chevron-down" class="w-4 h-4 text-[#5B5F6B] mobile-submenu-arrow transition-transform duration-200"></i>
+        </div>
+      </button>
+      <div id="mobile-submenu-locations" class="mobile-submenu hidden pt-2 pb-1 pl-3 space-y-1 border-l-2 border-[#00A8B5]/30 ml-2 mt-1">
+        <a href="<?php echo $base_path; ?>seo-agency-bhopal/" class="block text-sm font-bold text-[#00A8B5] hover:text-[#008A95] py-1.5 flex items-center justify-between">
+          <span>SEO Agency in Bhopal</span>
+          <span class="text-[10px] text-amber-700 bg-amber-100 px-1.5 py-0.2 rounded font-mono">HUB</span>
+        </a>
+        <a href="<?php echo $base_path; ?>local-seo-bhopal/" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1.5">📍 Local SEO in Bhopal</a>
+        <a href="<?php echo $base_path; ?>google-business-profile-optimization-bhopal/" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1.5">🏪 GBP Optimization Bhopal</a>
+        <a href="<?php echo $base_path; ?>ai-seo-bhopal/" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1.5">✨ AI SEO & GEO Services</a>
+        <a href="<?php echo $base_path; ?>digital-marketing-agency-bhopal/" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1.5">📣 Digital Marketing Agency</a>
+        <a href="<?php echo $base_path; ?>ai-agency-bhopal/" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1.5">🤖 AI Agency & Automation</a>
+      </div>
+    </div>
+
+    <!-- 4. Direct Pages & Actions -->
+    <div class="pt-1 flex flex-col gap-2.5">
+      <a href="<?php echo $base_path; ?>portfolio.php" class="text-sm font-semibold text-[#14151A] hover:text-[#00A8B5] py-1 transition-colors">Portfolio</a>
+      <a href="<?php echo $base_path; ?>case-studies.php" class="text-sm font-semibold text-[#14151A] hover:text-[#00A8B5] py-1 transition-colors">Case Studies</a>
+      <a href="<?php echo $base_path; ?>pricing.php" class="text-sm font-semibold text-[#14151A] hover:text-[#00A8B5] py-1 transition-colors">Pricing</a>
+      <a href="<?php echo $base_path; ?>about.php" class="text-sm font-semibold text-[#14151A] hover:text-[#00A8B5] py-1 transition-colors">About</a>
+      <a href="<?php echo $base_path; ?>blog.php" class="text-sm font-semibold text-[#14151A] hover:text-[#00A8B5] py-1 transition-colors">Blog</a>
+      <a href="<?php echo $base_path; ?>contact.php" class="text-sm font-semibold text-[#14151A] hover:text-[#00A8B5] py-1 transition-colors">Contact</a>
       <button class="trigger-book-demo btn-primary w-full text-sm mt-2">
         <i data-lucide="calendar" class="w-4 h-4"></i> Book Demo
       </button>
