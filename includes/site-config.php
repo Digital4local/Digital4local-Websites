@@ -21,7 +21,7 @@ if (!function_exists('get_base_path')) {
         $script = $_SERVER['SCRIPT_NAME'] ?? '';
         $script_dir = dirname($script);
         $script_dir = str_replace('\\', '/', $script_dir);
-        $script_dir = preg_replace('#/(services|industries|blog|api)(/.*)?$#i', '', $script_dir);
+        $script_dir = preg_replace('#/(services|industries|blog|api|case-studies|[a-z0-9_-]+-bhopal|location_[a-z0-9_-]+)(/.*)?$#i', '', $script_dir);
         $script_dir = trim($script_dir, '/');
         
         $base = !empty($script_dir) ? '/' . $script_dir . '/' : '/';

@@ -245,13 +245,13 @@ if (!function_exists('d4l_render_location_page')) {
 
           <!-- Primary Hero Actions -->
           <div class="flex flex-wrap items-center gap-3 pt-2">
-            <a href="<?php echo $wa_url; ?>" target="_blank" rel="noopener noreferrer" class="btn-primary">
+            <a href="<?php echo $wa_url; ?>" target="_blank" rel="noopener noreferrer" class="btn-primary text-sm whitespace-nowrap shadow-md">
               <span><?php echo $cta_btn_text; ?></span>
-              <i data-lucide="arrow-right" class="w-4 h-4"></i>
+              <i data-lucide="arrow-right" class="w-4 h-4 shrink-0"></i>
             </a>
 
-            <a href="<?php echo $call_url; ?>" class="btn-secondary">
-              <i data-lucide="phone" class="w-4 h-4 text-[#00A8B5]"></i>
+            <a href="<?php echo $call_url; ?>" class="btn-secondary text-sm whitespace-nowrap shadow-xs">
+              <i data-lucide="phone" class="w-4 h-4 text-[#00A8B5] shrink-0"></i>
               <span>Call +91 91311 40530</span>
             </a>
           </div>
@@ -511,7 +511,7 @@ if (!function_exists('d4l_render_location_page')) {
     </section>
 
     <!-- 9. Final CTA Band -->
-    <section class="rounded-3xl bg-gradient-to-br from-[#0A0A0F] via-[#14151A] to-[#1E293B] text-white p-8 sm:p-12 relative overflow-hidden shadow-2xl">
+    <section class="rounded-3xl bg-gradient-to-br from-[#0A0A0F] via-[#14151A] to-[#1E293B] text-white p-8 sm:p-12 relative overflow-hidden shadow-2xl border border-slate-800">
       <div class="absolute -right-20 -bottom-20 w-96 h-96 rounded-full bg-[#00F0FF]/15 blur-3xl pointer-events-none"></div>
       
       <div class="max-w-3xl mx-auto text-center space-y-6 relative z-10">
@@ -528,12 +528,12 @@ if (!function_exists('d4l_render_location_page')) {
         </p>
 
         <div class="flex flex-wrap items-center justify-center gap-4 pt-2">
-          <a href="<?php echo $wa_url; ?>" target="_blank" rel="noopener noreferrer" class="btn-primary text-sm shadow-lg shadow-[#00F0FF]/30">
+          <a href="<?php echo $wa_url; ?>" target="_blank" rel="noopener noreferrer" class="btn-primary text-sm shadow-xl shadow-[#00F0FF]/25 whitespace-nowrap">
             <span>Message Abhishek on WhatsApp</span>
-            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            <i data-lucide="arrow-right" class="w-4 h-4 shrink-0"></i>
           </a>
-          <a href="<?php echo $call_url; ?>" class="btn-secondary bg-white/10 hover:bg-white/20 text-white border-white/20 text-sm">
-            <i data-lucide="phone" class="w-4 h-4 text-[#00F0FF]"></i>
+          <a href="<?php echo $call_url; ?>" class="btn-glass-white text-sm whitespace-nowrap">
+            <i data-lucide="phone" class="w-4 h-4 text-[#00F0FF] shrink-0"></i>
             <span>Call +91 91311 40530</span>
           </a>
         </div>
@@ -546,11 +546,18 @@ if (!function_exists('d4l_render_location_page')) {
 
   </main>
 
+  <!-- Sticky Mobile Bottom Bar -->
+  <?php echo d4l_render_sticky_contact_bar($cta_wa_text); ?>
+
   <!-- Shared Global Footer -->
   <?php require __DIR__ . '/../footer.php'; ?>
 
-  <!-- Sticky Mobile Bottom Bar -->
-  <?php echo d4l_render_sticky_contact_bar($cta_wa_text); ?>
+  <!-- Lucide Icons Re-Init -->
+  <script>
+    if (typeof lucide !== 'undefined') {
+      lucide.createIcons();
+    }
+  </script>
 
 </body>
 </html>
