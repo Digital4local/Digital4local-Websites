@@ -154,8 +154,10 @@ if (!function_exists('require_admin_login')) {
     }
 }
 
+require_once __DIR__ . '/db.php';
+
 /**
- * Rate Limiting and Brute Force Defense Store
+ * Rate Limiting and Brute Force Defense Store (Database + JSON Sync)
  */
 if (!function_exists('_get_rate_limit_file')) {
     function _get_rate_limit_file() {
@@ -165,34 +167,42 @@ if (!function_exists('_get_rate_limit_file')) {
 
 if (!function_exists('check_login_bruteforce')) {
     function check_login_bruteforce($ip, $identifier) {
-        $file = _get_rate_limit_file();
-        if (!file_exists($file)) {
+        try {
+            return db_check_login_bruteforce($ip, $identifier);
+        } catch (Exception $e) {
+            $file = _get_rate_limit_file();
+            if (!file_exists($file)) {
+                return ['allowed' => true, 'remaining_seconds' => 0];
+            }
+            $content = @file_get_contents($file);
+            $data = $content ? @json_decode($content, true) : [];
+            if (!is_array($data)) $data = [];
+
+            $key = md5(strtolower(trim($identifier)) . '_' . $ip);
+            $record = $data[$key] ?? null;
+
+            if ($record && isset($record['attempts'], $record['last_attempt'])) {
+                $window = 15 * 60; // 15-minute lock window
+                $elapsed = time() - $record['last_attempt'];
+                if ($elapsed < $window && $record['attempts'] >= 5) {
+                    return [
+                        'allowed' => false,
+                        'remaining_seconds' => $window - $elapsed,
+                        'attempts' => $record['attempts']
+                    ];
+                }
+            }
             return ['allowed' => true, 'remaining_seconds' => 0];
         }
-        $content = @file_get_contents($file);
-        $data = $content ? @json_decode($content, true) : [];
-        if (!is_array($data)) $data = [];
-
-        $key = md5(strtolower(trim($identifier)) . '_' . $ip);
-        $record = $data[$key] ?? null;
-
-        if ($record && isset($record['attempts'], $record['last_attempt'])) {
-            $window = 15 * 60; // 15-minute lock window
-            $elapsed = time() - $record['last_attempt'];
-            if ($elapsed < $window && $record['attempts'] >= 5) {
-                return [
-                    'allowed' => false,
-                    'remaining_seconds' => $window - $elapsed,
-                    'attempts' => $record['attempts']
-                ];
-            }
-        }
-        return ['allowed' => true, 'remaining_seconds' => 0];
     }
 }
 
 if (!function_exists('record_failed_login_attempt')) {
     function record_failed_login_attempt($ip, $identifier) {
+        try {
+            db_record_failed_login($ip, $identifier);
+        } catch (Exception $e) {}
+
         $file = _get_rate_limit_file();
         $data = [];
         if (file_exists($file)) {
@@ -225,6 +235,10 @@ if (!function_exists('record_failed_login_attempt')) {
 
 if (!function_exists('clear_login_lockout')) {
     function clear_login_lockout($ip, $identifier) {
+        try {
+            db_clear_login_lockout($ip, $identifier);
+        } catch (Exception $e) {}
+
         $file = _get_rate_limit_file();
         if (!file_exists($file)) return;
         $content = @file_get_contents($file);
@@ -244,35 +258,39 @@ if (!function_exists('clear_login_lockout')) {
  */
 if (!function_exists('check_lead_submission_rate_limit')) {
     function check_lead_submission_rate_limit($ip, $max_submissions = 5, $window_seconds = 600) {
-        $file = _get_rate_limit_file();
-        $data = [];
-        if (file_exists($file)) {
-            $content = @file_get_contents($file);
-            $data = $content ? @json_decode($content, true) : [];
-            if (!is_array($data)) $data = [];
-        }
-
-        $now = time();
-        $key = 'lead_' . md5($ip);
-        $lead_data = $data[$key] ?? ['count' => 0, 'first_time' => $now];
-
-        if ($now - $lead_data['first_time'] > $window_seconds) {
-            $lead_data = ['count' => 1, 'first_time' => $now];
-        } else {
-            $lead_data['count'] = ($lead_data['count'] ?? 0) + 1;
-            if ($lead_data['count'] > $max_submissions) {
-                return false; // Rate limit exceeded
+        try {
+            return db_check_lead_rate_limit($ip, $max_submissions, $window_seconds);
+        } catch (Exception $e) {
+            $file = _get_rate_limit_file();
+            $data = [];
+            if (file_exists($file)) {
+                $content = @file_get_contents($file);
+                $data = $content ? @json_decode($content, true) : [];
+                if (!is_array($data)) $data = [];
             }
-        }
 
-        $data[$key] = $lead_data;
-        @file_put_contents($file, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
-        return true;
+            $now = time();
+            $key = 'lead_' . md5($ip);
+            $lead_data = $data[$key] ?? ['count' => 0, 'first_time' => $now];
+
+            if ($now - $lead_data['first_time'] > $window_seconds) {
+                $lead_data = ['count' => 1, 'first_time' => $now];
+            } else {
+                $lead_data['count'] = ($lead_data['count'] ?? 0) + 1;
+                if ($lead_data['count'] > $max_submissions) {
+                    return false; // Rate limit exceeded
+                }
+            }
+
+            $data[$key] = $lead_data;
+            @file_put_contents($file, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+            return true;
+        }
     }
 }
 
 /**
- * Authenticate credentials against config/admin_auth.json with Brute-Force lockout
+ * Authenticate credentials against Database (with admin_auth.json fallback) and Brute-Force lockout
  */
 if (!function_exists('authenticate_admin')) {
     function authenticate_admin($identifier, $password) {
@@ -294,23 +312,39 @@ if (!function_exists('authenticate_admin')) {
             ];
         }
         
-        $auth_file = __DIR__ . '/../config/admin_auth.json';
-        if (!file_exists($auth_file)) {
-            return ['success' => false, 'message' => 'Authentication system configuration missing.'];
-        }
-        
-        $auth_json = @file_get_contents($auth_file);
-        $auth_data = @json_decode($auth_json, true);
-        
-        if (!$auth_data || !isset($auth_data['users']) || !is_array($auth_data['users'])) {
-            return ['success' => false, 'message' => 'Corrupt authentication record.'];
-        }
-        
         $matched_user = null;
-        foreach ($auth_data['users'] as $user) {
-            if (strcasecmp($user['username'], $identifier) === 0 || strcasecmp($user['email'], $identifier) === 0) {
-                $matched_user = $user;
-                break;
+
+        // 1. Try Database authentication
+        try {
+            $db_user = db_get_admin_by_identifier($identifier);
+            if ($db_user && !empty($db_user['password_hash'])) {
+                $matched_user = [
+                    'id' => $db_user['admin_id'] ?? $db_user['id'],
+                    'username' => $db_user['username'],
+                    'name' => $db_user['name'],
+                    'email' => $db_user['email'],
+                    'role' => $db_user['role'],
+                    'password_hash' => $db_user['password_hash']
+                ];
+            }
+        } catch (Exception $e) {
+            // Fallback to JSON
+        }
+
+        // 2. Fallback to JSON authentication if DB user not found
+        if (!$matched_user) {
+            $auth_file = __DIR__ . '/../config/admin_auth.json';
+            if (file_exists($auth_file)) {
+                $auth_json = @file_get_contents($auth_file);
+                $auth_data = @json_decode($auth_json, true);
+                if ($auth_data && isset($auth_data['users']) && is_array($auth_data['users'])) {
+                    foreach ($auth_data['users'] as $user) {
+                        if (strcasecmp($user['username'], $identifier) === 0 || strcasecmp($user['email'], $identifier) === 0) {
+                            $matched_user = $user;
+                            break;
+                        }
+                    }
+                }
             }
         }
         
@@ -324,15 +358,17 @@ if (!function_exists('authenticate_admin')) {
 
         // Start session and store auth state
         start_admin_session();
-        session_regenerate_id(true);
+        if (session_status() === PHP_SESSION_ACTIVE && php_sapi_name() !== 'cli') {
+            @session_regenerate_id(true);
+        }
         
         $ua = $_SERVER['HTTP_USER_AGENT'] ?? '';
         $_SESSION['admin_logged_in'] = true;
-        $_SESSION['admin_user_id'] = $matched_user['id'];
+        $_SESSION['admin_user_id'] = $matched_user['id'] ?? 'USR-001';
         $_SESSION['admin_username'] = $matched_user['username'];
-        $_SESSION['admin_name'] = $matched_user['name'];
+        $_SESSION['admin_name'] = $matched_user['name'] ?? 'Admin';
         $_SESSION['admin_email'] = $matched_user['email'];
-        $_SESSION['admin_role'] = $matched_user['role'];
+        $_SESSION['admin_role'] = $matched_user['role'] ?? 'Super Admin';
         $_SESSION['admin_login_time'] = time();
         $_SESSION['admin_ua_hash'] = md5($ua);
         $_SESSION['admin_ip'] = $client_ip;

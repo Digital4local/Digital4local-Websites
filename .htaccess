@@ -27,7 +27,15 @@ ServerSignature Off
     </IfModule>
 </FilesMatch>
 
-# 3.1 Force fresh robots.txt (Prevent CDN / Hostinger Edge from caching stale robots directives)
+# 3.1 Force fresh dynamic PHP/HTML and robots.txt (Prevent CDN / Hostinger Edge / Cloudflare from caching stale CMS changes)
+<FilesMatch "\.(php|html)$">
+    <IfModule mod_headers.c>
+        Header set Cache-Control "no-cache, no-store, must-revalidate, max-age=0"
+        Header set Pragma "no-cache"
+        Header set Expires "0"
+    </IfModule>
+</FilesMatch>
+
 <Files "robots.txt">
     <IfModule mod_headers.c>
         Header set Cache-Control "no-cache, no-store, must-revalidate, max-age=0"
@@ -132,9 +140,10 @@ ServerSignature Off
     AddOutputFilterByType DEFLATE image/svg+xml
 </IfModule>
 
-# 8. Browser & Agent Caching for Assets
+# 8. Browser & Agent Caching for Assets (HTML is never cached)
 <IfModule mod_expires.c>
     ExpiresActive On
+    ExpiresByType text/html "access plus 0 seconds"
     ExpiresByType text/plain "access plus 1 hour"
     ExpiresByType image/jpg "access plus 1 year"
     ExpiresByType image/jpeg "access plus 1 year"
@@ -147,5 +156,4 @@ ServerSignature Off
     ExpiresByType text/x-javascript "access plus 1 month"
     ExpiresByType application/javascript "access plus 1 month"
     ExpiresByType image/x-icon "access plus 1 year"
-    ExpiresDefault "access plus 2 days"
 </IfModule>

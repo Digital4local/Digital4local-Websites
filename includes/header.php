@@ -206,6 +206,69 @@ $logo_rel_path = ltrim($site_config['brand']['logo_path'], '/');
         </div>
       </div>
 
+      <!-- Locations Dropdown (Bhopal Hub Cluster) -->
+      <div class="relative group py-2">
+        <a href="<?php echo $base_path; ?>seo-agency-bhopal/" class="flex items-center gap-1.5 text-sm font-semibold text-[#14151A] hover:text-[#00A8B5] transition-colors <?php echo (strpos($_SERVER['REQUEST_URI'] ?? '', 'bhopal') !== false) ? 'text-[#00A8B5]' : ''; ?>">
+          <span class="inline-block w-2 h-2 rounded-full bg-[#00A8B5] animate-pulse"></span>
+          Locations
+          <i data-lucide="chevron-down" class="w-4 h-4 text-[#5B5F6B] group-hover:rotate-180 transition-transform duration-200"></i>
+        </a>
+        <div class="absolute top-full left-1/2 -translate-x-1/2 w-[380px] bg-[#FFFFFF] border border-[#E4E7EC] rounded-2xl p-3 shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform group-hover:translate-y-1">
+          <div class="px-2 py-1.5 mb-1 border-b border-[#E4E7EC] flex items-center justify-between">
+            <span class="text-[11px] font-mono font-bold uppercase tracking-wider text-[#00A8B5]">Bhopal Agency Hub</span>
+            <span class="text-[10px] font-mono bg-[#00F0FF]/15 text-[#00A8B5] px-2 py-0.5 rounded font-bold">6 Connected Services</span>
+          </div>
+
+          <a href="<?php echo $base_path; ?>seo-agency-bhopal/" class="flex items-start gap-2.5 p-2 rounded-lg bg-[#00A8B5]/5 hover:bg-[#00A8B5]/10 text-[#14151A] transition-colors border border-[#00A8B5]/20 mb-1">
+            <div class="w-7 h-7 rounded-lg bg-[#00A8B5] text-white flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold">★</div>
+            <div>
+              <div class="text-xs font-bold text-[#00A8B5]">SEO Agency in Bhopal <span class="text-[10px] text-amber-700 bg-amber-100 px-1.5 py-0.2 rounded font-mono ml-1">HUB</span></div>
+              <div class="text-[10px] text-[#5B5F6B]">Full-funnel search & AI growth engine</div>
+            </div>
+          </a>
+
+          <a href="<?php echo $base_path; ?>local-seo-bhopal/" class="flex items-start gap-2.5 p-2 rounded-lg hover:bg-[#F6F8FB] transition-colors">
+            <div class="w-7 h-7 rounded-lg bg-[#00F0FF]/15 text-[#00A8B5] flex items-center justify-center shrink-0 mt-0.5 text-xs">📍</div>
+            <div>
+              <div class="text-xs font-semibold text-[#14151A]">Local SEO in Bhopal</div>
+              <div class="text-[10px] text-[#5B5F6B]">Dominate "near me" local queries</div>
+            </div>
+          </a>
+
+          <a href="<?php echo $base_path; ?>google-business-profile-optimization-bhopal/" class="flex items-start gap-2.5 p-2 rounded-lg hover:bg-[#F6F8FB] transition-colors">
+            <div class="w-7 h-7 rounded-lg bg-[#16A34A]/15 text-[#16A34A] flex items-center justify-center shrink-0 mt-0.5 text-xs">🏪</div>
+            <div>
+              <div class="text-xs font-semibold text-[#14151A]">GBP Optimization Bhopal</div>
+              <div class="text-[10px] text-[#5B5F6B]">Rank #1 on Google Maps 3-Pack</div>
+            </div>
+          </a>
+
+          <a href="<?php echo $base_path; ?>ai-seo-bhopal/" class="flex items-start gap-2.5 p-2 rounded-lg hover:bg-[#F6F8FB] transition-colors">
+            <div class="w-7 h-7 rounded-lg bg-[#8B5CF6]/15 text-[#8B5CF6] flex items-center justify-center shrink-0 mt-0.5 text-xs">✨</div>
+            <div>
+              <div class="text-xs font-semibold text-[#14151A]">AI SEO & GEO Services</div>
+              <div class="text-[10px] text-[#5B5F6B]">ChatGPT & Perplexity citations</div>
+            </div>
+          </a>
+
+          <a href="<?php echo $base_path; ?>digital-marketing-agency-bhopal/" class="flex items-start gap-2.5 p-2 rounded-lg hover:bg-[#F6F8FB] transition-colors">
+            <div class="w-7 h-7 rounded-lg bg-[#EC4899]/15 text-[#EC4899] flex items-center justify-center shrink-0 mt-0.5 text-xs">📣</div>
+            <div>
+              <div class="text-xs font-semibold text-[#14151A]">Digital Marketing Agency</div>
+              <div class="text-[10px] text-[#5B5F6B]">Performance ads & lead funnels</div>
+            </div>
+          </a>
+
+          <a href="<?php echo $base_path; ?>ai-agency-bhopal/" class="flex items-start gap-2.5 p-2 rounded-lg hover:bg-[#F6F8FB] transition-colors">
+            <div class="w-7 h-7 rounded-lg bg-[#00A8B5]/15 text-[#00A8B5] flex items-center justify-center shrink-0 mt-0.5 text-xs">🤖</div>
+            <div>
+              <div class="text-xs font-semibold text-[#14151A]">AI Agency & Automation</div>
+              <div class="text-[10px] text-[#5B5F6B]">AI agents & sub-60s workflows</div>
+            </div>
+          </a>
+        </div>
+      </div>
+
       <a href="<?php echo $base_path; ?>portfolio.php" class="text-sm font-semibold text-[#14151A] hover:text-[#00A8B5] transition-colors <?php echo ($current_page == 'portfolio.php') ? 'text-[#00A8B5]' : ''; ?>">Portfolio</a>
       <a href="<?php echo $base_path; ?>case-studies.php" class="text-sm font-semibold text-[#14151A] hover:text-[#00A8B5] transition-colors <?php echo ($current_page == 'case-studies.php' || $current_page == 'case-study-single.php') ? 'text-[#00A8B5]' : ''; ?>">Case Studies</a>
       <a href="<?php echo $base_path; ?>pricing.php" class="text-sm font-semibold text-[#14151A] hover:text-[#00A8B5] transition-colors <?php echo ($current_page == 'pricing.php') ? 'text-[#00A8B5]' : ''; ?>">Pricing</a>
@@ -229,7 +292,7 @@ $logo_rel_path = ltrim($site_config['brand']['logo_path'], '/');
   </div>
 
   <!-- Mobile Drawer Menu -->
-  <div id="mobile-menu" class="hidden lg:hidden mt-4 bg-[#FFFFFF] border border-[#E4E7EC] rounded-2xl p-6 shadow-xl space-y-4">
+  <div id="mobile-menu" class="hidden lg:hidden mt-3 bg-[#FFFFFF] border border-[#E4E7EC] rounded-2xl p-5 sm:p-6 shadow-2xl space-y-4 max-h-[calc(100vh-5.5rem)] overflow-y-auto overscroll-contain transition-all">
     <div class="space-y-2">
       <div class="text-xs font-mono text-[#00A8B5] uppercase tracking-wider mb-2">Services</div>
       <a href="<?php echo $base_path; ?>services/local-seo.php" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1">Local SEO & Google Maps</a>
@@ -240,6 +303,19 @@ $logo_rel_path = ltrim($site_config['brand']['logo_path'], '/');
       <a href="<?php echo $base_path; ?>services/social-media.php" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1">Social Media Growth</a>
       <a href="<?php echo $base_path; ?>services/web-development.php" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1 font-semibold text-[#00A8B5]">Web Development</a>
       <a href="<?php echo $base_path; ?>services/app-development.php" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1 font-semibold text-[#8B5CF6]">App Development</a>
+    </div>
+
+    <div class="border-t border-[#E4E7EC] pt-3 space-y-2">
+      <div class="text-xs font-mono text-[#00A8B5] uppercase tracking-wider mb-2 flex items-center justify-between">
+        <span>Bhopal Locations Cluster</span>
+        <span class="text-[10px] bg-[#00A8B5]/10 px-2 py-0.5 rounded text-[#00A8B5] font-bold">6 Pages</span>
+      </div>
+      <a href="<?php echo $base_path; ?>seo-agency-bhopal/" class="block text-sm font-bold text-[#00A8B5] hover:text-[#008A95] py-1">SEO Agency in Bhopal (Hub) ★</a>
+      <a href="<?php echo $base_path; ?>local-seo-bhopal/" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1">Local SEO in Bhopal</a>
+      <a href="<?php echo $base_path; ?>google-business-profile-optimization-bhopal/" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1">Google Business Profile Optimization</a>
+      <a href="<?php echo $base_path; ?>ai-seo-bhopal/" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1">AI SEO & GEO Services</a>
+      <a href="<?php echo $base_path; ?>digital-marketing-agency-bhopal/" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1">Digital Marketing Agency</a>
+      <a href="<?php echo $base_path; ?>ai-agency-bhopal/" class="block text-sm text-[#14151A] hover:text-[#00A8B5] py-1">AI Agency & Automation</a>
     </div>
 
     <div class="border-t border-[#E4E7EC] pt-3 space-y-2">

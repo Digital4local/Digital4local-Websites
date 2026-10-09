@@ -177,6 +177,15 @@ $target_file = $upload_dir . $unique_filename;
 
 if (@file_put_contents($target_file, $uploaded_content, LOCK_EX) !== false) {
     @chmod($target_file, 0644);
+    
+    // Automatically sync to XAMPP htdocs if directory exists
+    $xampp_upload_dir = 'C:/xampp/htdocs/digital4local/assets/images/uploads/';
+    if (is_dir('C:/xampp/htdocs/digital4local')) {
+        if (!is_dir($xampp_upload_dir)) @mkdir($xampp_upload_dir, 0755, true);
+        @file_put_contents($xampp_upload_dir . $unique_filename, $uploaded_content, LOCK_EX);
+        @chmod($xampp_upload_dir . $unique_filename, 0644);
+    }
+
     $relative_url = 'assets/images/uploads/' . $unique_filename;
     echo json_encode([
         'success' => true,

@@ -23,6 +23,14 @@ $urls = [
     ['loc' => $base_domain . '/bhopal.php', 'lastmod' => $today, 'changefreq' => 'weekly', 'priority' => '0.85'],
     ['loc' => $base_domain . '/industries/index.php', 'lastmod' => $today, 'changefreq' => 'weekly', 'priority' => '0.9'],
 
+    // Bhopal Location Cluster (6 Connected Landing Pages)
+    ['loc' => $base_domain . '/seo-agency-bhopal/', 'lastmod' => $today, 'changefreq' => 'daily', 'priority' => '0.95'],
+    ['loc' => $base_domain . '/local-seo-bhopal/', 'lastmod' => $today, 'changefreq' => 'weekly', 'priority' => '0.9'],
+    ['loc' => $base_domain . '/google-business-profile-optimization-bhopal/', 'lastmod' => $today, 'changefreq' => 'weekly', 'priority' => '0.9'],
+    ['loc' => $base_domain . '/ai-seo-bhopal/', 'lastmod' => $today, 'changefreq' => 'weekly', 'priority' => '0.9'],
+    ['loc' => $base_domain . '/digital-marketing-agency-bhopal/', 'lastmod' => $today, 'changefreq' => 'weekly', 'priority' => '0.9'],
+    ['loc' => $base_domain . '/ai-agency-bhopal/', 'lastmod' => $today, 'changefreq' => 'weekly', 'priority' => '0.9'],
+
     // 7 Client Case Studies
     ['loc' => $base_domain . '/case-studies/higher-education-group-bhopal', 'lastmod' => $today, 'changefreq' => 'weekly', 'priority' => '0.9'],
     ['loc' => $base_domain . '/case-studies/solarforyou-uk', 'lastmod' => $today, 'changefreq' => 'weekly', 'priority' => '0.9'],

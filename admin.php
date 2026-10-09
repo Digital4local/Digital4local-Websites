@@ -43,7 +43,10 @@ $page_description = "Internal side-by-side operational dashboard for Digital4Loc
         <div class="flex items-center gap-1.5 bg-[#F6F8FB] border border-[#E4E7EC] px-3 py-1.5 rounded-lg text-xs font-mono font-bold text-[#8B5CF6]">
           <span class="w-2 h-2 rounded-full bg-[#8B5CF6]"></span> Bhopal, India
         </div>
-        <a href="admin-cms.php?page=blog_top-10-digital-marketing-companies-india" class="btn-secondary text-xs py-2 px-3 flex items-center gap-1.5 text-emerald-700 hover:text-emerald-900 border-emerald-300">
+        <a href="admin-cms.php?mode=locations" class="btn-secondary text-xs py-2 px-3 flex items-center gap-1.5 text-cyan-700 hover:text-cyan-900 border-cyan-300">
+          <i data-lucide="map-pin" class="w-3.5 h-3.5 text-[#00A8B5]"></i> Location Pages CMS (6)
+        </a>
+        <a href="admin-cms.php?mode=blogs" class="btn-secondary text-xs py-2 px-3 flex items-center gap-1.5 text-emerald-700 hover:text-emerald-900 border-emerald-300">
           <i data-lucide="book-open" class="w-3.5 h-3.5 text-emerald-600"></i> Manage Blogs (CKEditor)
         </a>
         <a href="admin-cms.php" class="btn-primary text-xs py-2 px-3 flex items-center gap-1.5">
@@ -72,7 +75,11 @@ $page_description = "Internal side-by-side operational dashboard for Digital4Loc
               <span class="flex items-center gap-2.5"><i data-lucide="layout-dashboard" class="w-4 h-4"></i> Overview & Metrics</span>
               <span class="w-2 h-2 rounded-full bg-[#00A8B5]"></span>
             </a>
-            <a href="admin-cms.php?page=blog_top-10-digital-marketing-companies-india" class="flex items-center justify-between p-3 rounded-xl text-[#5B5F6B] hover:text-[#14151A] hover:bg-[#F6F8FB] transition-colors">
+            <a href="admin-cms.php?mode=locations" class="flex items-center justify-between p-3 rounded-xl text-[#5B5F6B] hover:text-[#14151A] hover:bg-[#F6F8FB] transition-colors">
+              <span class="flex items-center gap-2.5"><i data-lucide="map-pin" class="w-4 h-4 text-[#00A8B5]"></i> Location Pages CMS</span>
+              <span class="px-2 py-0.5 bg-cyan-100 text-cyan-800 rounded-full text-[10px] font-bold">6 Bhopal Pages</span>
+            </a>
+            <a href="admin-cms.php?mode=blogs" class="flex items-center justify-between p-3 rounded-xl text-[#5B5F6B] hover:text-[#14151A] hover:bg-[#F6F8FB] transition-colors">
               <span class="flex items-center gap-2.5"><i data-lucide="book-open" class="w-4 h-4 text-emerald-600"></i> Blog & Playbooks CMS</span>
               <span class="px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded-full text-[10px] font-bold">CKEditor</span>
             </a>
@@ -189,14 +196,23 @@ $page_description = "Internal side-by-side operational dashboard for Digital4Loc
               <span class="pulse-badge py-0.5 px-2 text-[11px]">LIVE</span>
             </div>
 
-            <!-- Dynamic Lead List Items from config/leads.json -->
+            <!-- Dynamic Lead List Items from Database (with config/leads.json fallback) -->
             <?php
-            $admin_leads_file = __DIR__ . '/config/leads.json';
             $admin_leads = [];
-            if (file_exists($admin_leads_file)) {
-                $leads_raw = @file_get_contents($admin_leads_file);
-                if ($leads_raw) {
-                    $admin_leads = @json_decode($leads_raw, true) ?: [];
+            try {
+                $db_leads = db_get_leads(20);
+                if (!empty($db_leads)) {
+                    $admin_leads = $db_leads;
+                }
+            } catch (Exception $e) {}
+
+            if (empty($admin_leads)) {
+                $admin_leads_file = __DIR__ . '/config/leads.json';
+                if (file_exists($admin_leads_file)) {
+                    $leads_raw = @file_get_contents($admin_leads_file);
+                    if ($leads_raw) {
+                        $admin_leads = @json_decode($leads_raw, true) ?: [];
+                    }
                 }
             }
             if (empty($admin_leads)) {
@@ -422,6 +438,165 @@ $page_description = "Internal side-by-side operational dashboard for Digital4Loc
             </div>
           </div>
 
+        </div>
+
+        <!-- SECTION 3.5: BHOPAL LOCATION CLUSTERS CMS SUITE -->
+        <div id="location-clusters" class="card-dark p-6 sm:p-8 space-y-6 border border-[#00F0FF]/40 bg-gradient-to-br from-[#FFFFFF] via-[#F8FAFC] to-[#F0FDFA] shadow-lg">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E4E7EC] pb-4">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="pulse-badge py-0.5 px-2 text-[10px]">BHOPAL CLUSTER</span>
+                <span class="text-xs font-mono text-[#00A8B5] font-bold">6 LANDING PAGES · DYNAMIC CMS & DB CONNECTED</span>
+              </div>
+              <h2 class="text-xl font-bold text-[#14151A] mt-1">
+                Location Cluster Landing Pages
+              </h2>
+              <p class="text-xs text-[#5B5F6B]">
+                All 6 Bhopal landing pages are stored in Central DB (MySQL/SQLite) and dynamically customizable with visual section editors.
+              </p>
+            </div>
+            <a href="admin-cms.php?mode=locations" class="btn-primary text-xs py-2 px-4 flex items-center gap-1.5 shrink-0 self-start sm:self-auto shadow-md">
+              <i data-lucide="edit-3" class="w-4 h-4"></i>
+              <span>Open Location CMS Studio</span>
+            </a>
+          </div>
+
+          <!-- 6 Cluster Page Cards -->
+          <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 text-xs">
+            
+            <!-- Page 1: Hub -->
+            <div class="p-4 bg-white border-2 border-[#00A8B5]/40 hover:border-[#00A8B5] rounded-2xl shadow-xs transition-all flex flex-col justify-between space-y-3">
+              <div>
+                <div class="flex items-center justify-between mb-1.5">
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-100 text-amber-800 border border-amber-300">
+                    PARENT CLUSTER HUB
+                  </span>
+                  <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                </div>
+                <h3 class="font-bold text-sm text-[#14151A]">SEO Agency in Bhopal</h3>
+                <p class="text-[11px] text-[#5B5F6B] mt-1 font-mono">/seo-agency-bhopal/</p>
+              </div>
+              <div class="flex items-center gap-2 pt-2 border-t border-slate-100">
+                <a href="admin-cms.php?page=location_seo-agency-bhopal" class="btn-secondary text-[11px] py-1.5 px-3 flex-1 flex items-center justify-center gap-1 text-[#00A8B5] font-bold hover:bg-[#00F0FF]/10">
+                  <i data-lucide="edit" class="w-3.5 h-3.5"></i> Edit in CMS
+                </a>
+                <a href="seo-agency-bhopal/" target="_blank" class="p-1.5 text-slate-400 hover:text-[#14151A] rounded hover:bg-slate-100" title="Open live URL">
+                  <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                </a>
+              </div>
+            </div>
+
+            <!-- Page 2 -->
+            <div class="p-4 bg-white border border-[#E4E7EC] hover:border-[#00A8B5] rounded-2xl shadow-xs transition-all flex flex-col justify-between space-y-3">
+              <div>
+                <div class="flex items-center justify-between mb-1.5">
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-cyan-100 text-cyan-800">
+                    LOCAL SPOKE
+                  </span>
+                  <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                </div>
+                <h3 class="font-bold text-sm text-[#14151A]">Local SEO Services Bhopal</h3>
+                <p class="text-[11px] text-[#5B5F6B] mt-1 font-mono">/local-seo-bhopal/</p>
+              </div>
+              <div class="flex items-center gap-2 pt-2 border-t border-slate-100">
+                <a href="admin-cms.php?page=location_local-seo-bhopal" class="btn-secondary text-[11px] py-1.5 px-3 flex-1 flex items-center justify-center gap-1 text-[#00A8B5] font-bold hover:bg-[#00F0FF]/10">
+                  <i data-lucide="edit" class="w-3.5 h-3.5"></i> Edit in CMS
+                </a>
+                <a href="local-seo-bhopal/" target="_blank" class="p-1.5 text-slate-400 hover:text-[#14151A] rounded hover:bg-slate-100" title="Open live URL">
+                  <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                </a>
+              </div>
+            </div>
+
+            <!-- Page 3 -->
+            <div class="p-4 bg-white border border-[#E4E7EC] hover:border-[#00A8B5] rounded-2xl shadow-xs transition-all flex flex-col justify-between space-y-3">
+              <div>
+                <div class="flex items-center justify-between mb-1.5">
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-blue-100 text-blue-800">
+                    MAPS / GBP SPOKE
+                  </span>
+                  <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                </div>
+                <h3 class="font-bold text-sm text-[#14151A]">Google Business Profile Bhopal</h3>
+                <p class="text-[11px] text-[#5B5F6B] mt-1 font-mono truncate">/google-business-profile-optimization-bhopal/</p>
+              </div>
+              <div class="flex items-center gap-2 pt-2 border-t border-slate-100">
+                <a href="admin-cms.php?page=location_google-business-profile-optimization-bhopal" class="btn-secondary text-[11px] py-1.5 px-3 flex-1 flex items-center justify-center gap-1 text-[#00A8B5] font-bold hover:bg-[#00F0FF]/10">
+                  <i data-lucide="edit" class="w-3.5 h-3.5"></i> Edit in CMS
+                </a>
+                <a href="google-business-profile-optimization-bhopal/" target="_blank" class="p-1.5 text-slate-400 hover:text-[#14151A] rounded hover:bg-slate-100" title="Open live URL">
+                  <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                </a>
+              </div>
+            </div>
+
+            <!-- Page 4 -->
+            <div class="p-4 bg-white border border-[#E4E7EC] hover:border-[#00A8B5] rounded-2xl shadow-xs transition-all flex flex-col justify-between space-y-3">
+              <div>
+                <div class="flex items-center justify-between mb-1.5">
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-purple-100 text-purple-800">
+                    AI SEARCH / GEO SPOKE
+                  </span>
+                  <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                </div>
+                <h3 class="font-bold text-sm text-[#14151A]">AI SEO Services Bhopal</h3>
+                <p class="text-[11px] text-[#5B5F6B] mt-1 font-mono">/ai-seo-bhopal/</p>
+              </div>
+              <div class="flex items-center gap-2 pt-2 border-t border-slate-100">
+                <a href="admin-cms.php?page=location_ai-seo-bhopal" class="btn-secondary text-[11px] py-1.5 px-3 flex-1 flex items-center justify-center gap-1 text-[#00A8B5] font-bold hover:bg-[#00F0FF]/10">
+                  <i data-lucide="edit" class="w-3.5 h-3.5"></i> Edit in CMS
+                </a>
+                <a href="ai-seo-bhopal/" target="_blank" class="p-1.5 text-slate-400 hover:text-[#14151A] rounded hover:bg-slate-100" title="Open live URL">
+                  <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                </a>
+              </div>
+            </div>
+
+            <!-- Page 5 -->
+            <div class="p-4 bg-white border border-[#E4E7EC] hover:border-[#00A8B5] rounded-2xl shadow-xs transition-all flex flex-col justify-between space-y-3">
+              <div>
+                <div class="flex items-center justify-between mb-1.5">
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-indigo-100 text-indigo-800">
+                    FULL-FUNNEL SPOKE
+                  </span>
+                  <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                </div>
+                <h3 class="font-bold text-sm text-[#14151A]">Digital Marketing Agency Bhopal</h3>
+                <p class="text-[11px] text-[#5B5F6B] mt-1 font-mono">/digital-marketing-agency-bhopal/</p>
+              </div>
+              <div class="flex items-center gap-2 pt-2 border-t border-slate-100">
+                <a href="admin-cms.php?page=location_digital-marketing-agency-bhopal" class="btn-secondary text-[11px] py-1.5 px-3 flex-1 flex items-center justify-center gap-1 text-[#00A8B5] font-bold hover:bg-[#00F0FF]/10">
+                  <i data-lucide="edit" class="w-3.5 h-3.5"></i> Edit in CMS
+                </a>
+                <a href="digital-marketing-agency-bhopal/" target="_blank" class="p-1.5 text-slate-400 hover:text-[#14151A] rounded hover:bg-slate-100" title="Open live URL">
+                  <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                </a>
+              </div>
+            </div>
+
+            <!-- Page 6 -->
+            <div class="p-4 bg-white border border-[#E4E7EC] hover:border-[#00A8B5] rounded-2xl shadow-xs transition-all flex flex-col justify-between space-y-3">
+              <div>
+                <div class="flex items-center justify-between mb-1.5">
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-violet-100 text-violet-800">
+                    AI AGENTS / AUTOMATION
+                  </span>
+                  <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                </div>
+                <h3 class="font-bold text-sm text-[#14151A]">AI Agency in Bhopal</h3>
+                <p class="text-[11px] text-[#5B5F6B] mt-1 font-mono">/ai-agency-bhopal/</p>
+              </div>
+              <div class="flex items-center gap-2 pt-2 border-t border-slate-100">
+                <a href="admin-cms.php?page=location_ai-agency-bhopal" class="btn-secondary text-[11px] py-1.5 px-3 flex-1 flex items-center justify-center gap-1 text-[#00A8B5] font-bold hover:bg-[#00F0FF]/10">
+                  <i data-lucide="edit" class="w-3.5 h-3.5"></i> Edit in CMS
+                </a>
+                <a href="ai-agency-bhopal/" target="_blank" class="p-1.5 text-slate-400 hover:text-[#14151A] rounded hover:bg-slate-100" title="Open live URL">
+                  <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                </a>
+              </div>
+            </div>
+
+          </div>
         </div>
 
         <!-- SECTION 4: LIVE SITE MANAGEMENT & CMS CONTROL SUITE -->

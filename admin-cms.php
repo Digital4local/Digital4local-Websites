@@ -4,13 +4,36 @@ require_admin_login();
 $admin_user = get_logged_in_admin();
 
 require_once __DIR__ . '/includes/site-config.php';
+require_once __DIR__ . '/includes/location/LocationServicePage.php';
+
+// Fetch all location pages & blogs for navigation
+$blog_posts_list = get_blog_posts();
+$location_pages = d4l_get_all_location_pages();
 
 // Fetch active page or default to index
 $active_key = $_GET['page'] ?? ($site_config['active_page_key'] ?? 'index');
-$active_blog_slug = '';
+$mode = $_GET['mode'] ?? '';
 
+if ($mode === 'blogs' || $active_key === 'blogs' || $active_key === 'blog_list') {
+    if (!empty($blog_posts_list)) {
+        $active_key = 'blog_' . ($blog_posts_list[0]['slug'] ?? '');
+    }
+}
+if ($mode === 'locations' || $active_key === 'locations' || $active_key === 'location_list') {
+    if (!empty($location_pages)) {
+        $first_loc_key = array_key_first($location_pages);
+        $active_key = $first_loc_key;
+    }
+}
+
+$active_blog_slug = '';
 $is_blog_item = false;
 $active_blog_post = null;
+
+$active_location_slug = '';
+$is_location_item = false;
+$location_data = null;
+$location_city = 'bhopal';
 
 if (strpos($active_key, 'blog_') === 0) {
     $is_blog_item = true;
@@ -35,6 +58,12 @@ if (strpos($active_key, 'blog_') === 0) {
             'content_html' => '<h2>1. Introduction</h2><p>Write or paste your article body content here...</p>'
         ];
     }
+} elseif (strpos($active_key, 'location_') === 0 || isset($location_pages[$active_key])) {
+    $is_location_item = true;
+    $loc_item = $location_pages[$active_key] ?? null;
+    $active_location_slug = $loc_item['slug'] ?? str_replace('location_', '', $active_key);
+    $location_city = $loc_item['city'] ?? 'bhopal';
+    $location_data = d4l_get_location_page_data($active_location_slug, $location_city);
 }
 
 // All standard and custom pages list
@@ -103,16 +132,19 @@ if (isset($site_config['custom_pages']) && is_array($site_config['custom_pages']
     }
 }
 
-$blog_posts_list = get_blog_posts();
-
 // Resolve active item data
 if ($is_blog_item) {
     $active_title = $active_blog_post['title'] ?? 'Blog Article';
     $active_url = 'blog/' . urlencode($active_blog_slug);
     $active_status = $active_blog_post['status'] ?? 'published';
     $active_type = 'Blog Article';
+} elseif ($is_location_item) {
+    $active_title = $location_data['h1'] ?? ($loc_item['title'] ?? 'Location Page');
+    $active_url = $active_location_slug . '/';
+    $active_status = 'published';
+    $active_type = 'Location Cluster (' . ucfirst($location_city) . ')';
 } else {
-    $all_registered = array_merge($core_pages, $service_pages, $industry_pages, $custom_pages);
+    $all_registered = array_merge($core_pages, $service_pages, $industry_pages, $custom_pages, $location_pages);
     $active_item = $all_registered[$active_key] ?? ['title' => 'Home Page', 'url' => 'index.php', 'type' => 'Core'];
     $active_title = $active_item['title'];
     $active_url = $active_item['url'];
@@ -290,13 +322,16 @@ $page_cfg = get_page_config($active_key);
         </button>
       </div>
 
-      <!-- Quick Action: Add New Page or Blog -->
-      <div class="p-2.5 border-b border-[#1F2937] flex gap-2">
-        <button onclick="openModal('add-page-modal')" class="flex-1 py-1.5 px-2.5 bg-[#1F2937] hover:bg-[#374151] text-[#00F0FF] rounded-lg text-xs font-semibold flex items-center justify-center gap-1 border border-[#374151] transition-all">
-          <i data-lucide="plus" class="w-3.5 h-3.5"></i> + Landing Page
+      <!-- Quick Action: Add New Location, Page or Blog -->
+      <div class="p-2.5 border-b border-[#1F2937] flex gap-1.5">
+        <button onclick="openModal('add-location-modal')" class="flex-1 py-1.5 px-2 bg-[#00F0FF]/15 hover:bg-[#00F0FF]/25 text-[#00F0FF] rounded-lg text-xs font-semibold flex items-center justify-center gap-1 border border-[#00F0FF]/30 transition-all" title="Add Location Cluster Landing Page">
+          <i data-lucide="map-pin" class="w-3.5 h-3.5 text-[#00F0FF]"></i> + Location
         </button>
-        <button onclick="openModal('add-blog-modal')" class="flex-1 py-1.5 px-2.5 bg-[#10B981]/15 hover:bg-[#10B981]/25 text-[#10B981] rounded-lg text-xs font-semibold flex items-center justify-center gap-1 border border-[#10B981]/30 transition-all">
-          <i data-lucide="file-plus" class="w-3.5 h-3.5"></i> + New Blog
+        <button onclick="openModal('add-page-modal')" class="flex-1 py-1.5 px-2 bg-[#1F2937] hover:bg-[#374151] text-[#E2E8F0] rounded-lg text-xs font-semibold flex items-center justify-center gap-1 border border-[#374151] transition-all">
+          <i data-lucide="plus" class="w-3.5 h-3.5"></i> + Page
+        </button>
+        <button onclick="openModal('add-blog-modal')" class="flex-1 py-1.5 px-2 bg-[#10B981]/15 hover:bg-[#10B981]/25 text-[#10B981] rounded-lg text-xs font-semibold flex items-center justify-center gap-1 border border-[#10B981]/30 transition-all">
+          <i data-lucide="file-plus" class="w-3.5 h-3.5"></i> + Blog
         </button>
       </div>
 
@@ -305,11 +340,31 @@ $page_cfg = get_page_config($active_key);
         
         <!-- PAGES MODE CONTAINER -->
         <div id="tree-pages-mode" class="space-y-3 <?php echo $is_blog_item ? 'hidden' : ''; ?>">
+          
+          <!-- Location Cluster Pages (Bhopal & Multi-city) -->
+          <div class="space-y-0.5">
+            <div class="px-2 py-1 text-[10px] font-mono uppercase tracking-wider text-[#00F0FF] font-bold flex justify-between items-center">
+              <span class="flex items-center gap-1.5"><i data-lucide="map-pin" class="w-3 h-3 text-[#00F0FF]"></i> Location Clusters</span>
+              <span class="text-[#00F0FF] font-bold"><?php echo count($location_pages); ?></span>
+            </div>
+            <?php foreach ($location_pages as $k => $item): 
+              $is_act = ($is_location_item && $active_location_slug === ($item['slug'] ?? ''));
+            ?>
+            <a href="admin-cms.php?page=<?php echo urlencode($k); ?>" class="page-nav-item <?php echo $is_act ? 'active' : ''; ?> px-2.5 py-1.5 rounded-md flex items-center justify-between text-xs text-[#D1D5DB] hover:bg-[#1F2937] transition-all">
+              <span class="flex items-center gap-2 truncate">
+                <i data-lucide="map-pin" class="w-3.5 h-3.5 <?php echo !empty($item['is_hub']) ? 'text-amber-400' : 'text-[#00A8B5]'; ?> shrink-0"></i>
+                <span class="truncate"><?php echo htmlspecialchars($item['title']); ?></span>
+              </span>
+              <span class="w-2 h-2 rounded-full bg-[#10B981] shrink-0"></span>
+            </a>
+            <?php endforeach; ?>
+          </div>
+
           <!-- Core Pages -->
           <div class="space-y-0.5">
             <div class="px-2 py-1 text-[10px] font-mono uppercase tracking-wider text-[#6B7280] font-bold">Core Pages</div>
             <?php foreach ($core_pages as $k => $item): 
-              $is_act = (!$is_blog_item && $active_key === $k);
+              $is_act = (!$is_blog_item && !$is_location_item && $active_key === $k);
               $p_status = get_page_status($k);
             ?>
             <a href="admin-cms.php?page=<?php echo urlencode($k); ?>" class="page-nav-item <?php echo $is_act ? 'active' : ''; ?> px-2.5 py-1.5 rounded-md flex items-center justify-between text-xs text-[#D1D5DB] hover:bg-[#1F2937] transition-all">
@@ -326,7 +381,7 @@ $page_cfg = get_page_config($active_key);
           <div class="space-y-0.5">
             <div class="px-2 py-1 text-[10px] font-mono uppercase tracking-wider text-[#6B7280] font-bold">Services Suite</div>
             <?php foreach ($service_pages as $k => $item): 
-              $is_act = (!$is_blog_item && $active_key === $k);
+              $is_act = (!$is_blog_item && !$is_location_item && $active_key === $k);
               $p_status = get_page_status($k);
             ?>
             <a href="admin-cms.php?page=<?php echo urlencode($k); ?>" class="page-nav-item <?php echo $is_act ? 'active' : ''; ?> px-2.5 py-1.5 rounded-md flex items-center justify-between text-xs text-[#D1D5DB] hover:bg-[#1F2937] transition-all">
@@ -480,32 +535,408 @@ $page_cfg = get_page_config($active_key);
 
       <!-- Editor Tab Navigation -->
       <div class="flex items-center gap-1 px-3 pt-2 bg-[#111827] border-b border-[#1F2937] overflow-x-auto">
-        <button onclick="switchEditorTab('body')" class="editor-tab-btn active px-3.5 py-2 rounded-t-lg text-xs flex items-center gap-1.5 transition-all">
-          <i data-lucide="file-edit" class="w-3.5 h-3.5"></i> Body (CKEditor)
-        </button>
-        <button onclick="switchEditorTab('hero')" class="editor-tab-btn px-3.5 py-2 rounded-t-lg text-[#9CA3AF] hover:text-white text-xs flex items-center gap-1.5 transition-all">
-          <i data-lucide="type" class="w-3.5 h-3.5"></i> <?php echo $is_blog_item ? 'Article Details' : 'Hero & Details'; ?>
-        </button>
-        <button onclick="switchEditorTab('media')" class="editor-tab-btn px-3.5 py-2 rounded-t-lg text-[#9CA3AF] hover:text-white text-xs flex items-center gap-1.5 transition-all">
-          <i data-lucide="image" class="w-3.5 h-3.5"></i> Featured Image
-        </button>
-        <button onclick="switchEditorTab('faqs')" class="editor-tab-btn px-3.5 py-2 rounded-t-lg text-[#9CA3AF] hover:text-white text-xs flex items-center gap-1.5 transition-all">
-          <i data-lucide="help-circle" class="w-3.5 h-3.5 text-[#00F0FF]"></i> FAQs (Accordion)
-        </button>
-        <button onclick="switchEditorTab('seo')" class="editor-tab-btn px-3.5 py-2 rounded-t-lg text-[#9CA3AF] hover:text-white text-xs flex items-center gap-1.5 transition-all">
-          <i data-lucide="search" class="w-3.5 h-3.5"></i> SEO & Schema
-        </button>
-        <button onclick="switchEditorTab('features')" class="editor-tab-btn px-3.5 py-2 rounded-t-lg text-[#9CA3AF] hover:text-white text-xs flex items-center gap-1.5 transition-all">
-          <i data-lucide="sliders" class="w-3.5 h-3.5"></i> Global Config
-        </button>
+        <?php if ($is_location_item): ?>
+          <button onclick="switchEditorTab('loc_hero')" id="tab-btn-loc_hero" class="editor-tab-btn active px-3.5 py-2 rounded-t-lg text-xs flex items-center gap-1.5 transition-all">
+            <i data-lucide="type" class="w-3.5 h-3.5 text-[#00F0FF]"></i> Hero & Direct Answer
+          </button>
+          <button onclick="switchEditorTab('loc_sections')" id="tab-btn-loc_sections" class="editor-tab-btn px-3.5 py-2 rounded-t-lg text-[#9CA3AF] hover:text-white text-xs flex items-center gap-1.5 transition-all">
+            <i data-lucide="layout-grid" class="w-3.5 h-3.5 text-[#8B5CF6]"></i> Dynamic Sections (<?php echo count($location_data['sections'] ?? []); ?>)
+          </button>
+          <button onclick="switchEditorTab('faqs')" id="tab-btn-faqs" class="editor-tab-btn px-3.5 py-2 rounded-t-lg text-[#9CA3AF] hover:text-white text-xs flex items-center gap-1.5 transition-all">
+            <i data-lucide="help-circle" class="w-3.5 h-3.5 text-[#00F0FF]"></i> FAQs Accordion (<?php echo count($location_data['faqs'] ?? []); ?>)
+          </button>
+          <button onclick="switchEditorTab('loc_seo')" id="tab-btn-loc_seo" class="editor-tab-btn px-3.5 py-2 rounded-t-lg text-[#9CA3AF] hover:text-white text-xs flex items-center gap-1.5 transition-all">
+            <i data-lucide="search" class="w-3.5 h-3.5 text-[#10B981]"></i> SEO & Schema
+          </button>
+          <button onclick="switchEditorTab('loc_author')" id="tab-btn-loc_author" class="editor-tab-btn px-3.5 py-2 rounded-t-lg text-[#9CA3AF] hover:text-white text-xs flex items-center gap-1.5 transition-all">
+            <i data-lucide="user-check" class="w-3.5 h-3.5 text-[#F59E0B]"></i> Author & CTA
+          </button>
+        <?php else: ?>
+          <button onclick="switchEditorTab('body')" id="tab-btn-body" class="editor-tab-btn active px-3.5 py-2 rounded-t-lg text-xs flex items-center gap-1.5 transition-all">
+            <i data-lucide="file-edit" class="w-3.5 h-3.5"></i> Body (CKEditor)
+          </button>
+          <button onclick="switchEditorTab('hero')" id="tab-btn-hero" class="editor-tab-btn px-3.5 py-2 rounded-t-lg text-[#9CA3AF] hover:text-white text-xs flex items-center gap-1.5 transition-all">
+            <i data-lucide="type" class="w-3.5 h-3.5"></i> <?php echo $is_blog_item ? 'Article Details' : 'Hero & Details'; ?>
+          </button>
+          <button onclick="switchEditorTab('media')" id="tab-btn-media" class="editor-tab-btn px-3.5 py-2 rounded-t-lg text-[#9CA3AF] hover:text-white text-xs flex items-center gap-1.5 transition-all">
+            <i data-lucide="image" class="w-3.5 h-3.5"></i> Featured Image
+          </button>
+          <button onclick="switchEditorTab('faqs')" id="tab-btn-faqs" class="editor-tab-btn px-3.5 py-2 rounded-t-lg text-[#9CA3AF] hover:text-white text-xs flex items-center gap-1.5 transition-all">
+            <i data-lucide="help-circle" class="w-3.5 h-3.5 text-[#00F0FF]"></i> FAQs (Accordion)
+          </button>
+          <button onclick="switchEditorTab('seo')" id="tab-btn-seo" class="editor-tab-btn px-3.5 py-2 rounded-t-lg text-[#9CA3AF] hover:text-white text-xs flex items-center gap-1.5 transition-all">
+            <i data-lucide="search" class="w-3.5 h-3.5"></i> SEO & Schema
+          </button>
+          <button onclick="switchEditorTab('features')" id="tab-btn-features" class="editor-tab-btn px-3.5 py-2 rounded-t-lg text-[#9CA3AF] hover:text-white text-xs flex items-center gap-1.5 transition-all">
+            <i data-lucide="sliders" class="w-3.5 h-3.5"></i> Global Config
+          </button>
+        <?php endif; ?>
       </div>
 
       <!-- Editor Form Container -->
       <form id="cms-editor-form" class="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-5" onsubmit="event.preventDefault(); saveCmsSettings();">
         <input type="hidden" name="active_page_key" id="form-active-page-key" value="<?php echo htmlspecialchars($active_key); ?>">
         <input type="hidden" name="is_blog_post" id="form-is-blog-post" value="<?php echo $is_blog_item ? '1' : '0'; ?>">
+        <input type="hidden" name="is_location_page" id="form-is-location-page" value="<?php echo $is_location_item ? '1' : '0'; ?>">
         <input type="hidden" name="blog_slug" id="form-blog-slug" value="<?php echo htmlspecialchars($active_blog_slug); ?>">
         <input type="hidden" name="original_blog_slug" id="form-orig-blog-slug" value="<?php echo htmlspecialchars($active_blog_slug); ?>">
+        <input type="hidden" name="location_slug" id="form-location-slug" value="<?php echo htmlspecialchars($active_location_slug); ?>">
+        <input type="hidden" name="location_city" id="form-location-city" value="<?php echo htmlspecialchars($location_city); ?>">
+
+        <?php if ($is_location_item): ?>
+        <!-- ========================================================================= -->
+        <!-- LOCATION CLUSTER TAB 1: HERO & DIRECT ANSWER (AEO / GEO) -->
+        <!-- ========================================================================= -->
+        <div id="tab-pane-loc_hero" class="space-y-4">
+          <div class="card-dark p-4 space-y-4 bg-[#111827] border border-[#1F2937] rounded-xl shadow-lg">
+            <div class="flex items-center justify-between border-b border-[#1F2937] pb-2">
+              <h3 class="text-xs font-mono uppercase font-bold text-[#00F0FF] flex items-center gap-1.5">
+                <i data-lucide="type" class="w-4 h-4 text-[#00F0FF]"></i>
+                Hero Typography & AEO Direct Answer
+              </h3>
+              <span class="bg-[#00F0FF]/15 text-[#00F0FF] text-[10px] font-mono px-2 py-0.5 rounded font-bold">
+                <?php echo ucfirst($location_city); ?> Hub
+              </span>
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-mono text-[#9CA3AF] mb-1 font-bold">PRIMARY H1 HEADLINE (Single H1 per Page) *</label>
+              <input type="text" id="loc-h1-input" value="<?php echo htmlspecialchars($location_data['h1'] ?? ''); ?>" class="w-full bg-[#1F2937] border border-[#374151] rounded-lg px-3 py-2 text-xs text-white focus:border-[#00A8B5] outline-none font-bold" placeholder="e.g. SEO Agency in Bhopal">
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-[11px] font-mono text-[#9CA3AF] mb-1 font-bold">HERO TOP BADGE</label>
+                <input type="text" id="loc-badge-input" value="<?php echo htmlspecialchars($location_data['badge'] ?? strtoupper($location_city) . ' AGENCY HUB'); ?>" class="w-full bg-[#1F2937] border border-[#374151] rounded-lg px-3 py-2 text-xs text-[#00F0FF] font-mono focus:border-[#00A8B5] outline-none font-bold">
+              </div>
+              <div>
+                <label class="block text-[11px] font-mono text-[#9CA3AF] mb-1 font-bold">HERO MOTIF WIDGET</label>
+                <select id="loc-hero-motif-input" class="w-full bg-[#1F2937] border border-[#374151] rounded-lg px-3 py-2 text-xs text-white focus:border-[#00A8B5] outline-none font-semibold">
+                  <?php 
+                  $motifs = [
+                    'combined' => 'Combined (5x5 Geo-Grid + Live Scan)',
+                    'map-pin' => 'Google Maps 5x5 Matrix Pin Tracker',
+                    'ai-chat' => 'ChatGPT & Gemini Answer Simulator',
+                    'workflow-nodes' => 'n8n AI Workflow Automation Nodes',
+                    'profile-card' => 'Verified Entity Profile Card',
+                    'channels' => '4-Channel Search Overview'
+                  ];
+                  $cur_motif = $location_data['heroMotif'] ?? 'combined';
+                  foreach ($motifs as $mk => $mv): ?>
+                    <option value="<?php echo $mk; ?>" <?php echo $cur_motif === $mk ? 'selected' : ''; ?>><?php echo $mv; ?></option>
+                  <?php endforeach; ?>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <label class="text-[11px] font-mono text-[#00F0FF] font-bold">40–60 WORD DIRECT ANSWER (AEO / GEO Summary Box)</label>
+                <span class="text-[10px] text-[#9CA3AF] font-mono">Supports [[VERIFY: ...]] chips</span>
+              </div>
+              <textarea rows="4" id="loc-hero-direct-answer-input" class="w-full bg-[#1F2937] border border-[#374151] rounded-lg px-3 py-2 text-xs text-white focus:border-[#00A8B5] outline-none leading-relaxed"><?php echo htmlspecialchars($location_data['heroDirectAnswer'] ?? ''); ?></textarea>
+              <p class="text-[10px] text-[#9CA3AF] mt-1">This paragraph directly answers local search intent for Google AI Overviews, Gemini, and ChatGPT.</p>
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-mono text-[#9CA3AF] mb-1 font-bold">HERO SUBTITLE / SECONDARY VALUE PROP</label>
+              <textarea rows="2" id="loc-hero-subtitle-input" class="w-full bg-[#1F2937] border border-[#374151] rounded-lg px-3 py-2 text-xs text-[#CBD5E1] focus:border-[#00A8B5] outline-none leading-relaxed"><?php echo htmlspecialchars($location_data['heroSubtitle'] ?? ''); ?></textarea>
+            </div>
+
+            <div class="grid grid-cols-4 gap-3 pt-1">
+              <div>
+                <label class="block text-[10px] font-mono text-[#9CA3AF] mb-1 font-bold">CITY</label>
+                <input type="text" id="loc-city-input" value="<?php echo htmlspecialchars($location_data['city'] ?? ucfirst($location_city)); ?>" class="w-full bg-[#1F2937] border border-[#374151] rounded-lg px-2.5 py-1.5 text-xs text-white font-mono focus:border-[#00A8B5] outline-none">
+              </div>
+              <div>
+                <label class="block text-[10px] font-mono text-[#9CA3AF] mb-1 font-bold">STATE</label>
+                <input type="text" id="loc-state-input" value="<?php echo htmlspecialchars($location_data['state'] ?? 'Madhya Pradesh'); ?>" class="w-full bg-[#1F2937] border border-[#374151] rounded-lg px-2.5 py-1.5 text-xs text-white font-mono focus:border-[#00A8B5] outline-none">
+              </div>
+              <div>
+                <label class="block text-[10px] font-mono text-[#9CA3AF] mb-1 font-bold">COUNTRY</label>
+                <input type="text" id="loc-country-input" value="<?php echo htmlspecialchars($location_data['country'] ?? 'India'); ?>" class="w-full bg-[#1F2937] border border-[#374151] rounded-lg px-2.5 py-1.5 text-xs text-white font-mono focus:border-[#00A8B5] outline-none">
+              </div>
+              <div>
+                <label class="block text-[10px] font-mono text-[#9CA3AF] mb-1 font-bold">LAST UPDATED</label>
+                <input type="text" id="loc-last-updated-input" value="<?php echo htmlspecialchars($location_data['lastUpdated'] ?? date('F Y')); ?>" class="w-full bg-[#1F2937] border border-[#374151] rounded-lg px-2.5 py-1.5 text-xs text-white font-mono focus:border-[#00A8B5] outline-none">
+              </div>
+            </div>
+
+            <div class="pt-2 border-t border-[#1F2937] flex items-center justify-between">
+              <label class="flex items-center gap-2 cursor-pointer text-xs text-[#E2E8F0] font-semibold">
+                <input type="checkbox" id="loc-is-hub-input" class="rounded bg-[#1F2937] border-[#374151] text-[#00A8B5] focus:ring-0" <?php echo !empty($location_data['isHub']) ? 'checked' : ''; ?>>
+                <span>Is Cluster Hub Page (Parent of Spoke Pages)?</span>
+              </label>
+              <div class="text-[10px] font-mono text-[#9CA3AF]">
+                URL: <span class="text-[#00F0FF]">/<?php echo htmlspecialchars($active_location_slug); ?>/</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ========================================================================= -->
+        <!-- LOCATION CLUSTER TAB 2: DYNAMIC SECTIONS & STRUCTURED CONTENT BLOCKS -->
+        <!-- ========================================================================= -->
+        <div id="tab-pane-loc_sections" class="space-y-4 hidden">
+          <div class="card-dark p-4 sm:p-5 space-y-4 bg-[#111827] border border-[#1F2937] rounded-xl shadow-lg">
+            
+            <!-- Tab 2 Header with Visual/Code Mode Switcher & Add Section Button -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#1F2937] pb-3.5">
+              <div>
+                <h3 class="text-xs font-mono uppercase font-bold text-[#8B5CF6] flex items-center gap-1.5">
+                  <i data-lucide="layout-grid" class="w-4 h-4 text-[#8B5CF6]"></i>
+                  Dynamic Page Sections Studio (100% Dynamic Engine)
+                </h3>
+                <p class="text-[11px] text-[#9CA3AF]">Customizable Section Cards: Content Blocks, 90-Day Timelines, Comparison Tables, Honest Promises, Localities Grids & Pricing Tiers.</p>
+              </div>
+
+              <div class="flex flex-wrap items-center gap-2">
+                <!-- Mode Switcher -->
+                <div class="bg-[#0B0F19] p-1 rounded-lg border border-[#1F2937] flex items-center gap-1">
+                  <button type="button" onclick="setLocSectionsMode('visual')" id="loc-sec-mode-btn-visual" class="px-2.5 py-1 rounded text-xs font-bold transition-all bg-[#00A8B5] text-[#0F172A] flex items-center gap-1">
+                    <i data-lucide="layout" class="w-3.5 h-3.5"></i> Visual Form Cards
+                  </button>
+                  <button type="button" onclick="setLocSectionsMode('code')" id="loc-sec-mode-btn-code" class="px-2.5 py-1 rounded text-xs font-mono text-[#9CA3AF] hover:text-white transition-all flex items-center gap-1">
+                    <i data-lucide="code-2" class="w-3.5 h-3.5"></i> Raw JSON Code
+                  </button>
+                </div>
+
+                <!-- Add Section Dropdown Button -->
+                <div class="relative">
+                  <button type="button" onclick="toggleAddSectionDropdown()" id="btn-add-section-dropdown" class="px-3 py-1.5 bg-gradient-to-r from-[#8B5CF6] to-[#00A8B5] hover:from-[#7C3AED] hover:to-[#00F0FF] text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-md transition-all">
+                    <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
+                    <span>+ Add Section</span>
+                    <i data-lucide="chevron-down" class="w-3 h-3 ml-0.5"></i>
+                  </button>
+
+                  <!-- Add Section Popup Menu -->
+                  <div id="add-section-menu" class="hidden absolute right-0 mt-2 w-56 bg-[#1F2937] border border-[#374151] rounded-xl shadow-2xl z-50 p-1.5 space-y-1 text-xs">
+                    <div class="px-2 py-1 text-[10px] font-mono uppercase text-[#9CA3AF] font-bold border-b border-[#374151]">Select Section Type:</div>
+                    <button type="button" onclick="addNewLocationSection('content_block')" class="w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-[#374151] text-white flex items-center gap-2">
+                      <span class="w-2 h-2 rounded-full bg-blue-400"></span>
+                      <span>Standard Content Block</span>
+                    </button>
+                    <button type="button" onclick="addNewLocationSection('timeline')" class="w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-[#374151] text-white flex items-center gap-2">
+                      <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                      <span>90-Day Sprint Timeline</span>
+                    </button>
+                    <button type="button" onclick="addNewLocationSection('comparison_table')" class="w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-[#374151] text-white flex items-center gap-2">
+                      <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+                      <span>Competitor Comparison Table</span>
+                    </button>
+                    <button type="button" onclick="addNewLocationSection('honest_promises')" class="w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-[#374151] text-white flex items-center gap-2">
+                      <span class="w-2 h-2 rounded-full bg-rose-400"></span>
+                      <span>Honest Promises (Do / Don't)</span>
+                    </button>
+                    <button type="button" onclick="addNewLocationSection('locality_grid')" class="w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-[#374151] text-white flex items-center gap-2">
+                      <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                      <span>Localities & Areas Grid</span>
+                    </button>
+                    <button type="button" onclick="addNewLocationSection('pricing_table')" class="w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-[#374151] text-white flex items-center gap-2">
+                      <span class="w-2 h-2 rounded-full bg-purple-400"></span>
+                      <span>Transparent Pricing Tiers</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- CONTAINER A: INTERACTIVE VISUAL FORM CARDS BUILDER -->
+            <div id="loc-sections-visual-container" class="space-y-4">
+              <div id="loc-sections-cards-list" class="space-y-4">
+                <!-- Dynamically populated by renderLocationSectionsVisualBuilder() -->
+              </div>
+            </div>
+
+            <!-- CONTAINER B: RAW JSON CODE VIEW (Hidden by Default) -->
+            <div id="loc-sections-code-container" class="space-y-3 hidden">
+              <div class="flex items-center justify-between">
+                <label class="text-[11px] font-mono text-[#00A8B5] font-bold flex items-center gap-1.5">
+                  <i data-lucide="file-code" class="w-3.5 h-3.5"></i> SECTIONS JSON SCHEMA (Advanced High-Performance Editor)
+                </label>
+                <div class="flex items-center gap-2">
+                  <span id="loc-json-status" class="text-[10px] font-mono text-[#10B981] font-bold">● Valid JSON</span>
+                  <button type="button" onclick="formatLocationSectionsJson()" class="px-2 py-0.5 bg-[#1F2937] hover:bg-[#374151] text-[#00F0FF] rounded text-[10px] font-mono font-bold border border-[#374151]">
+                    Format JSON
+                  </button>
+                  <button type="button" onclick="validateLocationSectionsJson()" class="px-2 py-0.5 bg-[#10B981]/20 hover:bg-[#10B981]/30 text-[#10B981] rounded text-[10px] font-mono font-bold border border-[#10B981]/30">
+                    Validate
+                  </button>
+                </div>
+              </div>
+              <textarea id="loc-sections-json" rows="20" class="w-full p-3 bg-[#050811] text-[#00F0FF] font-mono text-xs border border-[#1F2937] rounded-xl outline-none focus:border-[#00A8B5] transition-colors leading-relaxed selection:bg-[#00F0FF]/30 selection:text-white" oninput="liveValidateSectionsJson(this.value)"><?php 
+                echo htmlspecialchars(json_encode($location_data['sections'] ?? [], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)); 
+              ?></textarea>
+            </div>
+
+            <!-- Cheatsheet & Dynamic Status Footer -->
+            <div class="p-3 bg-[#0B0F19] rounded-xl border border-[#1F2937] flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] text-[#9CA3AF]">
+              <div class="flex items-center gap-2 font-mono text-[10px]">
+                <span class="text-white font-bold uppercase">Section Types:</span>
+                <span class="text-blue-400">content_block</span> · 
+                <span class="text-amber-400">timeline</span> · 
+                <span class="text-cyan-400">comparison_table</span> · 
+                <span class="text-rose-400">honest_promises</span> · 
+                <span class="text-emerald-400">locality_grid</span> · 
+                <span class="text-purple-400">pricing_table</span>
+              </div>
+              <div class="text-[10px] font-mono text-[#00A8B5] font-bold">
+                Total Sections: <span id="loc-sections-count-badge">0</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ========================================================================= -->
+        <!-- LOCATION CLUSTER TAB 4: SEO & SCHEMAS -->
+        <!-- ========================================================================= -->
+        <div id="tab-pane-loc_seo" class="space-y-4 hidden">
+          <div class="card-dark p-4 space-y-4 bg-[#111827] border border-[#1F2937] rounded-xl shadow-lg">
+            <div class="flex items-center justify-between border-b border-[#1F2937] pb-2">
+              <h3 class="text-xs font-mono uppercase font-bold text-[#10B981] flex items-center gap-1.5">
+                <i data-lucide="search" class="w-4 h-4 text-[#10B981]"></i>
+                Location SEO, Canonical & Schema.org Configuration
+              </h3>
+              <span class="bg-[#10B981]/20 text-[#10B981] px-2 py-0.5 rounded text-[10px] font-mono font-bold">100% Schema Validated</span>
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-mono text-[#9CA3AF] mb-1 font-bold">PRIMARY KEYWORD (Core Search Query) *</label>
+              <input type="text" id="loc-primary-keyword-input" value="<?php echo htmlspecialchars($location_data['primaryKeyword'] ?? ''); ?>" placeholder="e.g. SEO Agency in Bhopal" class="w-full bg-[#1F2937] border border-[#374151] rounded-lg px-3 py-2 text-xs text-[#00F0FF] font-bold focus:border-[#00A8B5] outline-none">
+            </div>
+
+            <div>
+              <div class="flex justify-between items-center mb-1">
+                <label class="text-[11px] font-mono text-[#9CA3AF] font-bold">META TITLE</label>
+                <span class="text-[10px] font-mono text-[#9CA3AF]"><span id="loc-meta-title-length"><?php echo strlen($location_data['metaTitle'] ?? ''); ?></span> / 60 chars</span>
+              </div>
+              <input type="text" id="loc-meta-title-input" value="<?php echo htmlspecialchars($location_data['metaTitle'] ?? ''); ?>" class="w-full bg-[#1F2937] border border-[#374151] rounded-lg px-3 py-2 text-xs text-white focus:border-[#00A8B5] outline-none font-medium" oninput="updateLocSeoPreview()">
+            </div>
+
+            <div>
+              <div class="flex justify-between items-center mb-1">
+                <label class="text-[11px] font-mono text-[#9CA3AF] font-bold">META DESCRIPTION</label>
+                <span class="text-[10px] font-mono text-[#9CA3AF]"><span id="loc-meta-desc-length"><?php echo strlen($location_data['metaDescription'] ?? ''); ?></span> / 160 chars</span>
+              </div>
+              <textarea rows="3" id="loc-meta-desc-input" class="w-full bg-[#1F2937] border border-[#374151] rounded-lg px-3 py-2 text-xs text-white focus:border-[#00A8B5] outline-none leading-relaxed" oninput="updateLocSeoPreview()"><?php echo htmlspecialchars($location_data['metaDescription'] ?? ''); ?></textarea>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-[11px] font-mono text-[#9CA3AF] mb-1 font-bold">SCHEMA TYPE</label>
+                <select id="loc-schema-type-input" class="w-full bg-[#1F2937] border border-[#374151] rounded-lg px-3 py-2 text-xs text-white focus:border-[#00A8B5] outline-none font-semibold">
+                  <option value="ProfessionalService" <?php echo ($location_data['schemaType'] ?? '') === 'ProfessionalService' ? 'selected' : ''; ?>>ProfessionalService</option>
+                  <option value="LocalBusiness" <?php echo ($location_data['schemaType'] ?? '') === 'LocalBusiness' ? 'selected' : ''; ?>>LocalBusiness</option>
+                  <option value="Organization" <?php echo ($location_data['schemaType'] ?? '') === 'Organization' ? 'selected' : ''; ?>>Organization</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-[11px] font-mono text-[#9CA3AF] mb-1 font-bold">URL SLUG</label>
+                <input type="text" id="loc-slug-input" value="<?php echo htmlspecialchars($location_data['slug'] ?? $active_location_slug); ?>" class="w-full bg-[#1F2937] border border-[#374151] rounded-lg px-3 py-2 text-xs text-[#00F0FF] font-mono focus:border-[#00A8B5] outline-none">
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-mono text-[#9CA3AF] mb-1 font-bold">CONNECTED CLUSTER SPOKE SLUGS (Comma-separated)</label>
+              <input type="text" id="loc-related-slugs-input" value="<?php echo htmlspecialchars(implode(', ', $location_data['relatedSlugs'] ?? [])); ?>" placeholder="local-seo-bhopal, google-business-profile-optimization-bhopal, ai-seo-bhopal" class="w-full bg-[#1F2937] border border-[#374151] rounded-lg px-3 py-2 text-xs text-white font-mono focus:border-[#00A8B5] outline-none">
+              <p class="text-[10px] text-[#9CA3AF] mt-1 font-mono">Powers the "Related Services in <?php echo ucfirst($location_city); ?>" hub-and-spoke recommendation grid.</p>
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-mono text-[#9CA3AF] mb-1 font-bold">RECENT INSIGHTS TAGS (Comma-separated)</label>
+              <input type="text" id="loc-insights-tags-input" value="<?php echo htmlspecialchars(implode(', ', $location_data['recentInsightsTags'] ?? [])); ?>" placeholder="local-seo, ai-search, technical-seo" class="w-full bg-[#1F2937] border border-[#374151] rounded-lg px-3 py-2 text-xs text-white font-mono focus:border-[#00A8B5] outline-none">
+            </div>
+
+            <!-- SERP Preview -->
+            <div class="bg-[#1F2937] p-4 rounded-xl border border-[#374151] space-y-2">
+              <div class="text-[10px] font-mono text-[#9CA3AF] font-bold uppercase">Google SERP & AI Citation Preview</div>
+              <div class="bg-white p-3.5 rounded-lg text-left shadow-sm space-y-1">
+                <div class="text-[11px] text-[#202124] flex items-center gap-1 font-sans">
+                  <span>https://digital4local.com</span> › <span class="text-[#5F6368]"><?php echo htmlspecialchars($active_location_slug); ?>/</span>
+                </div>
+                <div id="loc-serp-preview-title" class="text-sm font-semibold text-[#1A0DAB] hover:underline cursor-pointer">
+                  <?php echo htmlspecialchars($location_data['metaTitle'] ?? $location_data['h1'] ?? 'Location Page Title'); ?>
+                </div>
+                <div id="loc-serp-preview-desc" class="text-xs text-[#4D5156] leading-snug">
+                  <?php echo htmlspecialchars($location_data['metaDescription'] ?? 'Meta description snippet appears here.'); ?>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ========================================================================= -->
+        <!-- LOCATION CLUSTER TAB 5: AUTHOR & CTA CONVERSIONS -->
+        <!-- ========================================================================= -->
+        <div id="tab-pane-loc_author" class="space-y-4 hidden">
+          <div class="card-dark p-4 space-y-4 bg-[#111827] border border-[#1F2937] rounded-xl shadow-lg">
+            <h3 class="text-xs font-mono uppercase font-bold text-[#F59E0B] flex items-center gap-1.5 border-b border-[#1F2937] pb-2">
+              <i data-lucide="target" class="w-4 h-4 text-[#F59E0B]"></i>
+              Call to Action & Conversion Hooks
+            </h3>
+
+            <?php $cta = $location_data['cta'] ?? []; ?>
+            <div>
+              <label class="block text-[11px] font-mono text-[#9CA3AF] mb-1 font-bold">CTA HEADLINE / LABEL</label>
+              <input type="text" id="loc-cta-label-input" value="<?php echo htmlspecialchars($cta['label'] ?? ''); ?>" placeholder="e.g. Get a free SEO audit for your Bhopal business" class="w-full bg-[#1F2937] border border-[#374151] rounded-lg px-3 py-2 text-xs text-white focus:border-[#00A8B5] outline-none font-bold">
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-mono text-[#9CA3AF] mb-1 font-bold">CTA SUBLABEL / PROMISE</label>
+              <textarea rows="2" id="loc-cta-sublabel-input" class="w-full bg-[#1F2937] border border-[#374151] rounded-lg px-3 py-2 text-xs text-white focus:border-[#00A8B5] outline-none"><?php echo htmlspecialchars($cta['sublabel'] ?? ''); ?></textarea>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-[11px] font-mono text-[#9CA3AF] mb-1 font-bold">CTA BUTTON TEXT</label>
+                <input type="text" id="loc-cta-btn-text-input" value="<?php echo htmlspecialchars($cta['buttonText'] ?? 'Get a free SEO audit'); ?>" class="w-full bg-[#1F2937] border border-[#374151] rounded-lg px-3 py-2 text-xs text-white focus:border-[#00A8B5] outline-none">
+              </div>
+              <div>
+                <label class="block text-[11px] font-mono text-[#9CA3AF] mb-1 font-bold">WHATSAPP PRE-FILLED TEXT</label>
+                <input type="text" id="loc-cta-wa-text-input" value="<?php echo htmlspecialchars($cta['whatsappText'] ?? ''); ?>" class="w-full bg-[#1F2937] border border-[#374151] rounded-lg px-3 py-2 text-xs text-white focus:border-[#00A8B5] outline-none font-mono">
+              </div>
+            </div>
+
+            <h3 class="text-xs font-mono uppercase font-bold text-[#10B981] flex items-center gap-1.5 border-t border-[#1F2937] pt-4">
+              <i data-lucide="user-check" class="w-4 h-4 text-[#10B981]"></i>
+              E-E-A-T Author Profile Box
+            </h3>
+
+            <?php $auth = $location_data['author'] ?? []; ?>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-[11px] font-mono text-[#9CA3AF] mb-1 font-bold">AUTHOR NAME</label>
+                <input type="text" id="loc-author-name-input" value="<?php echo htmlspecialchars($auth['name'] ?? 'Abhishek Raikwar'); ?>" class="w-full bg-[#1F2937] border border-[#374151] rounded-lg px-3 py-2 text-xs text-white focus:border-[#00A8B5] outline-none font-bold">
+              </div>
+              <div>
+                <label class="block text-[11px] font-mono text-[#9CA3AF] mb-1 font-bold">AUTHOR ROLE</label>
+                <input type="text" id="loc-author-role-input" value="<?php echo htmlspecialchars($auth['role'] ?? 'Founder, Digital4Local'); ?>" class="w-full bg-[#1F2937] border border-[#374151] rounded-lg px-3 py-2 text-xs text-white focus:border-[#00A8B5] outline-none">
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-mono text-[#9CA3AF] mb-1 font-bold">AUTHOR BIO</label>
+              <textarea rows="3" id="loc-author-bio-input" class="w-full bg-[#1F2937] border border-[#374151] rounded-lg px-3 py-2 text-xs text-white focus:border-[#00A8B5] outline-none leading-relaxed"><?php echo htmlspecialchars($auth['bio'] ?? ''); ?></textarea>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-[11px] font-mono text-[#9CA3AF] mb-1 font-bold">PHOTO PATH</label>
+                <input type="text" id="loc-author-photo-input" value="<?php echo htmlspecialchars($auth['photo'] ?? '/assets/images/abhishek-raikwar.jpg'); ?>" class="w-full bg-[#1F2937] border border-[#374151] rounded-lg px-3 py-2 text-xs text-white font-mono focus:border-[#00A8B5] outline-none">
+              </div>
+              <div>
+                <label class="block text-[11px] font-mono text-[#9CA3AF] mb-1 font-bold">LINKEDIN PROFILE</label>
+                <input type="text" id="loc-author-linkedin-input" value="<?php echo htmlspecialchars($auth['linkedin'] ?? 'https://www.linkedin.com/in/abhishek-raikwar-seo/'); ?>" class="w-full bg-[#1F2937] border border-[#374151] rounded-lg px-3 py-2 text-xs text-white font-mono focus:border-[#00A8B5] outline-none">
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <?php else: ?>
 
         <!-- ========================================== -->
         <!-- TAB 1: CKEDITOR 5 BODY CONTENT EDITOR -->
@@ -516,7 +947,8 @@ $page_cfg = get_page_config($active_key);
             <!-- CKEditor Container -->
             <div id="ckeditor-wrapper" class="p-0">
               <textarea id="ck-content-editor" name="<?php echo $is_blog_item ? 'active_blog_post[content_html]' : 'pages['.$active_key.'][content_html]'; ?>" class="hidden"><?php 
-                echo htmlspecialchars($is_blog_item ? ($active_blog_post['content_html'] ?? '<h2>1. Article Introduction</h2><p>Start writing your dynamic article body content here...</p>') : ($page_cfg['content_html'] ?? '<h2>Dynamic Section Content</h2><p>Edit or paste your rich body content here...</p>')); 
+                $raw_body = $is_blog_item ? ($active_blog_post['content_html'] ?? '<h2>1. Article Introduction</h2><p>Start writing your dynamic article body content here...</p>') : ($page_cfg['content_html'] ?? '<h2>Dynamic Section Content</h2><p>Edit or paste your rich body content here...</p>');
+                echo htmlspecialchars(d4l_resolve_content_images($raw_body, $base_path)); 
               ?></textarea>
             </div>
 
@@ -666,11 +1098,13 @@ $page_cfg = get_page_config($active_key);
           </div>
         </div>
 
+        <?php endif; ?>
+
         <!-- ========================================== -->
-        <!-- TAB 4: DYNAMIC FAQS & ACCORDION BUILDER -->
+        <!-- TAB 4: DYNAMIC FAQS & ACCORDION BUILDER (SHARED BY ALL) -->
         <!-- ========================================== -->
         <div id="tab-pane-faqs" class="space-y-4 hidden">
-          <div class="card-dark p-4 space-y-4 bg-[#111827] border border-[#1F2937] rounded-xl">
+          <div class="card-dark p-4 space-y-4 bg-[#111827] border border-[#1F2937] rounded-xl shadow-lg">
             <div class="flex items-center justify-between border-b border-[#1F2937] pb-3">
               <div>
                 <h3 class="text-xs font-mono uppercase font-bold text-[#00F0FF] flex items-center gap-1.5">
@@ -691,6 +1125,8 @@ $page_cfg = get_page_config($active_key);
               $existing_faqs = [];
               if ($is_blog_item && isset($active_blog_post['faqs']) && is_array($active_blog_post['faqs'])) {
                   $existing_faqs = $active_blog_post['faqs'];
+              } elseif ($is_location_item && isset($location_data['faqs']) && is_array($location_data['faqs'])) {
+                  $existing_faqs = $location_data['faqs'];
               } elseif (isset($page_cfg['faqs']) && is_array($page_cfg['faqs'])) {
                   $existing_faqs = $page_cfg['faqs'];
               }
@@ -698,7 +1134,7 @@ $page_cfg = get_page_config($active_key);
             </div>
 
             <!-- Hidden JSON Field for form submission -->
-            <input type="hidden" name="<?php echo $is_blog_item ? 'active_blog_post[faqs]' : 'pages['.$active_key.'][faqs]'; ?>" id="faq-json-payload" value="<?php echo htmlspecialchars(json_encode($existing_faqs)); ?>">
+            <input type="hidden" name="<?php echo $is_blog_item ? 'active_blog_post[faqs]' : ($is_location_item ? 'loc_faqs' : 'pages['.$active_key.'][faqs]'); ?>" id="faq-json-payload" value="<?php echo htmlspecialchars(json_encode($existing_faqs)); ?>">
 
             <!-- Live Accordion Interactive Preview -->
             <div class="pt-4 border-t border-[#1F2937] space-y-2">
@@ -714,8 +1150,9 @@ $page_cfg = get_page_config($active_key);
           </div>
         </div>
 
+        <?php if (!$is_location_item): ?>
         <!-- ========================================== -->
-        <!-- TAB 5: SEO & AEO OPTIMIZATION SUITE -->
+        <!-- TAB 5: SEO & AEO OPTIMIZATION SUITE (STANDARD & BLOGS) -->
         <!-- ========================================== -->
         <div id="tab-pane-seo" class="space-y-4 hidden">
           <div class="card-dark p-4 space-y-4 bg-[#111827] border border-[#1F2937] rounded-xl">
@@ -797,6 +1234,7 @@ $page_cfg = get_page_config($active_key);
             </div>
           </div>
         </div>
+        <?php endif; ?>
 
       </form>
     </main>
@@ -912,14 +1350,67 @@ $page_cfg = get_page_config($active_key);
           <label class="block font-mono text-[#9CA3AF] mb-1 font-bold">URL SLUG</label>
           <div class="flex items-center bg-[#1F2937] border border-[#374151] rounded-lg px-3 py-2">
             <span class="text-[#6B7280] font-mono">blog/</span>
-            <input type="text" id="new-post-slug-input" placeholder="ai-search-optimization-blueprint-2026" class="bg-transparent border-none text-[#10B981] font-mono outline-none flex-1">
+            <input type="text" id="new-post-slug-input" placeholder="ai-search-optimization-blueprint-2026" class="bg-transparent border-none text-[#10B981] font-mono outline-none flex-1" onkeydown="if(event.key==='Enter') submitCreateBlogPost()">
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2 pt-3 border-t border-[#1F2937]">
+        <button type="button" onclick="closeModal('add-blog-modal')" class="px-4 py-2 bg-[#1F2937] hover:bg-[#374151] text-[#9CA3AF] hover:text-white rounded-lg text-xs font-semibold transition-colors">Cancel</button>
+        <button type="button" onclick="submitCreateBlogPost()" class="px-5 py-2 bg-gradient-to-r from-[#10B981] to-[#00A8B5] hover:from-[#059669] hover:to-[#00F0FF] text-[#0F172A] font-bold rounded-lg text-xs shadow-lg flex items-center gap-1.5 transition-all transform hover:-translate-y-0.5">
+          <i data-lucide="sparkles" class="w-4 h-4"></i>
+          <span>Create & Start Writing</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL 3: ADD NEW LOCATION CLUSTER PAGE -->
+  <!-- ========================================================================= -->
+  <div id="add-location-modal" class="fixed inset-0 z-50 bg-[#0F172A]/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-[#111827] border border-[#1F2937] rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+      <div class="flex items-center justify-between border-b border-[#1F2937] pb-3">
+        <h3 class="font-bold text-white text-sm flex items-center gap-2">
+          <i data-lucide="map-pin" class="w-4 h-4 text-[#00F0FF]"></i>
+          Create Location Cluster Landing Page
+        </h3>
+        <button onclick="closeModal('add-location-modal')" class="text-[#9CA3AF] hover:text-white p-1">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+      
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block font-mono text-[#9CA3AF] mb-1 font-bold">PAGE TITLE / H1 *</label>
+          <input type="text" id="new-loc-title-input" placeholder="e.g. E-Commerce SEO Agency in Bhopal" class="w-full bg-[#1F2937] border border-[#374151] focus:border-[#00F0FF] rounded-lg px-3 py-2 text-white outline-none font-bold" oninput="autoGenerateLocSlug(this.value)">
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-mono text-[#9CA3AF] mb-1 font-bold">CITY / CLUSTER</label>
+            <input type="text" id="new-loc-city-input" value="Bhopal" class="w-full bg-[#1F2937] border border-[#374151] rounded-lg px-3 py-2 text-white outline-none">
+          </div>
+          <div>
+            <label class="block font-mono text-[#9CA3AF] mb-1 font-bold">CLUSTER TYPE</label>
+            <select id="new-loc-type-select" class="w-full bg-[#1F2937] border border-[#374151] rounded-lg px-3 py-2 text-white outline-none">
+              <option value="spoke">Cluster Spoke Page</option>
+              <option value="hub">Cluster Parent Hub</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="block font-mono text-[#9CA3AF] mb-1 font-bold">URL SLUG</label>
+          <div class="flex items-center bg-[#1F2937] border border-[#374151] rounded-lg px-3 py-2">
+            <span class="text-[#6B7280] font-mono">/</span>
+            <input type="text" id="new-loc-slug-input" placeholder="e-commerce-seo-bhopal" class="bg-transparent border-none text-[#00F0FF] font-mono outline-none flex-1">
+            <span class="text-[#6B7280] font-mono">/</span>
           </div>
         </div>
       </div>
 
       <div class="flex justify-end gap-2 pt-2 border-t border-[#1F2937]">
-        <button type="button" onclick="closeModal('add-blog-modal')" class="px-4 py-2 bg-[#1F2937] text-[#9CA3AF] hover:text-white rounded-lg text-xs">Cancel</button>
-        <button type="button" onclick="submitCreateBlogPost()" class="px-5 py-2 bg-gradient-to-r from-[#10B981] to-[#00A8B5] text-[#0F172A] font-bold rounded-lg text-xs">Publish Article</button>
+        <button type="button" onclick="closeModal('add-location-modal')" class="px-4 py-2 bg-[#1F2937] text-[#9CA3AF] hover:text-white rounded-lg text-xs">Cancel</button>
+        <button type="button" onclick="submitCreateLocationPage()" class="px-5 py-2 bg-gradient-to-r from-[#00F0FF] to-[#00A8B5] text-[#0F172A] font-bold rounded-lg text-xs">Create Location Page</button>
       </div>
     </div>
   </div>
@@ -929,45 +1420,48 @@ $page_cfg = get_page_config($active_key);
 
   <!-- Scripts -->
   <script>
+    window.CSRF_TOKEN = '<?php echo htmlspecialchars(get_csrf_token()); ?>';
+    window.BASE_PATH = '<?php echo htmlspecialchars($base_path); ?>';
     if (typeof lucide !== 'undefined') lucide.createIcons();
 
-    // 1. CKEditor 5 Initialization
+    // 1. CKEditor 5 Initialization (Only for standard & blog pages)
     let editorInstance = null;
     let isSourceMode = false;
 
-    ClassicEditor
-      .create(document.querySelector('#ck-content-editor'), {
-        toolbar: [
-          'heading', '|',
-          'bold', 'italic', 'underline', 'strikethrough', '|',
-          'link', 'bulletedList', 'numberedList', 'blockQuote', '|',
-          'insertTable', '|',
-          'undo', 'redo'
-        ],
-        heading: {
-          options: [
-            { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
-            { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' },
-            { model: 'heading3', view: 'h3', title: 'Heading 3', class: 'ck-heading_heading3' },
-            { model: 'heading4', view: 'h4', title: 'Heading 4', class: 'ck-heading_heading4' }
-          ]
-        }
-      })
-      .then(editor => {
-        editorInstance = editor;
-        
-        // Initial word count
-        updateWordStatsFromCk();
-
-        editor.model.document.on('change:data', () => {
+    if (document.querySelector('#ck-content-editor')) {
+      ClassicEditor
+        .create(document.querySelector('#ck-content-editor'), {
+          toolbar: [
+            'heading', '|',
+            'bold', 'italic', 'underline', 'strikethrough', '|',
+            'link', 'bulletedList', 'numberedList', 'blockQuote', '|',
+            'insertTable', '|',
+            'undo', 'redo'
+          ],
+          heading: {
+            options: [
+              { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
+              { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' },
+              { model: 'heading3', view: 'h3', title: 'Heading 3', class: 'ck-heading_heading3' },
+              { model: 'heading4', view: 'h4', title: 'Heading 4', class: 'ck-heading_heading4' }
+            ]
+          }
+        })
+        .then(editor => {
+          editorInstance = editor;
+          
           updateWordStatsFromCk();
-          const rawTextarea = document.getElementById('raw-html-textarea');
-          if (rawTextarea) rawTextarea.value = editor.getData();
+
+          editor.model.document.on('change:data', () => {
+            updateWordStatsFromCk();
+            const rawTextarea = document.getElementById('raw-html-textarea');
+            if (rawTextarea) rawTextarea.value = editor.getData();
+          });
+        })
+        .catch(error => {
+          console.warn('CKEditor not mounted or running in location mode:', error);
         });
-      })
-      .catch(error => {
-        console.error('CKEditor initialization error:', error);
-      });
+    }
 
     function updateWordStatsFromCk() {
       if (!editorInstance) return;
@@ -976,8 +1470,10 @@ $page_cfg = get_page_config($active_key);
       tmp.innerHTML = html;
       const text = tmp.textContent || tmp.innerText || '';
       const words = text.trim() ? text.trim().split(/\s+/).length : 0;
-      document.getElementById('word-count').textContent = words;
-      document.getElementById('char-count').textContent = text.length;
+      const wEl = document.getElementById('word-count');
+      const cEl = document.getElementById('char-count');
+      if (wEl) wEl.textContent = words;
+      if (cEl) cEl.textContent = text.length;
     }
 
     function toggleHtmlSourceMode() {
@@ -1036,15 +1532,23 @@ $page_cfg = get_page_config($active_key);
 
     // 3. Editor Tab Switcher
     function switchEditorTab(tab) {
-      document.querySelectorAll('.editor-tab-btn').forEach(b => b.classList.remove('active'));
-      event.currentTarget.classList.add('active');
+      document.querySelectorAll('.editor-tab-btn').forEach(b => {
+        b.classList.remove('active');
+        b.classList.add('text-[#9CA3AF]');
+      });
+      if (event && event.currentTarget) {
+        event.currentTarget.classList.add('active');
+        event.currentTarget.classList.remove('text-[#9CA3AF]');
+      }
 
-      document.getElementById('tab-pane-body').classList.add('hidden');
-      document.getElementById('tab-pane-hero').classList.add('hidden');
-      document.getElementById('tab-pane-media').classList.add('hidden');
-      if (document.getElementById('tab-pane-faqs')) document.getElementById('tab-pane-faqs').classList.add('hidden');
-      document.getElementById('tab-pane-seo').classList.add('hidden');
-      document.getElementById('tab-pane-features').classList.add('hidden');
+      const allPanes = [
+        'tab-pane-loc_hero', 'tab-pane-loc_sections', 'tab-pane-loc_seo', 'tab-pane-loc_author',
+        'tab-pane-body', 'tab-pane-hero', 'tab-pane-media', 'tab-pane-faqs', 'tab-pane-seo', 'tab-pane-features'
+      ];
+      allPanes.forEach(p => {
+        const el = document.getElementById(p);
+        if (el) el.classList.add('hidden');
+      });
 
       const target = document.getElementById('tab-pane-' + tab);
       if (target) target.classList.remove('hidden');
@@ -1066,7 +1570,8 @@ $page_cfg = get_page_config($active_key);
       if (faqsData.length === 0) {
         container.innerHTML = '<div class="p-4 rounded-xl bg-[#1F2937]/50 border border-dashed border-[#374151] text-center text-xs text-[#9CA3AF]">No FAQ questions added yet. Click "+ Add Question" above to add interactive accordions.</div>';
         previewBox.innerHTML = '<div class="p-3 text-center text-xs text-[#6B7280]">Accordion preview will appear here when FAQs are added.</div>';
-        document.getElementById('faq-json-payload').value = JSON.stringify([]);
+        const payloadInput = document.getElementById('faq-json-payload');
+        if (payloadInput) payloadInput.value = JSON.stringify([]);
         return;
       }
 
@@ -1109,7 +1614,8 @@ $page_cfg = get_page_config($active_key);
         previewBox.appendChild(previewItem);
       });
 
-      document.getElementById('faq-json-payload').value = JSON.stringify(faqsData);
+      const payloadInput = document.getElementById('faq-json-payload');
+      if (payloadInput) payloadInput.value = JSON.stringify(faqsData);
       if (typeof lucide !== 'undefined') lucide.createIcons();
     }
 
@@ -1118,7 +1624,6 @@ $page_cfg = get_page_config($active_key);
       const icon = btn.querySelector('.preview-icon');
       const isClosed = ans.classList.contains('hidden');
       
-      // Close other preview items
       document.querySelectorAll('#faq-accordion-preview-box .preview-ans').forEach(a => a.classList.add('hidden'));
       document.querySelectorAll('#faq-accordion-preview-box .preview-icon').forEach(i => { i.textContent = '+'; });
       
@@ -1153,14 +1658,16 @@ $page_cfg = get_page_config($active_key);
     function updateFaqQuestion(index, val) {
       if (faqsData[index]) {
         faqsData[index].q = val;
-        document.getElementById('faq-json-payload').value = JSON.stringify(faqsData);
+        const p = document.getElementById('faq-json-payload');
+        if (p) p.value = JSON.stringify(faqsData);
       }
     }
 
     function updateFaqAnswer(index, val) {
       if (faqsData[index]) {
         faqsData[index].a = val;
-        document.getElementById('faq-json-payload').value = JSON.stringify(faqsData);
+        const p = document.getElementById('faq-json-payload');
+        if (p) p.value = JSON.stringify(faqsData);
       }
     }
 
@@ -1169,25 +1676,842 @@ $page_cfg = get_page_config($active_key);
 
     window.CSRF_TOKEN = <?php echo json_encode(get_csrf_token()); ?>;
 
-    // 5. Inline & Featured Image Upload Handler
+    // =========================================================================
+    // 5. LOCATION CLUSTER DYNAMIC SECTIONS VISUAL BUILDER ENGINE
+    // =========================================================================
+    let locationSectionsData = <?php echo json_encode($location_data['sections'] ?? []); ?>;
+    if (!Array.isArray(locationSectionsData)) locationSectionsData = [];
+    let locSectionsMode = 'visual';
+
+    function setLocSectionsMode(mode) {
+      locSectionsMode = mode;
+      const visualContainer = document.getElementById('loc-sections-visual-container');
+      const codeContainer = document.getElementById('loc-sections-code-container');
+      const visualBtn = document.getElementById('loc-sec-mode-btn-visual');
+      const codeBtn = document.getElementById('loc-sec-mode-btn-code');
+
+      if (mode === 'visual') {
+        // Sync from JSON textarea back to data array before showing visual
+        const jsonText = document.getElementById('loc-sections-json')?.value || '[]';
+        try {
+          const parsed = JSON.parse(jsonText);
+          if (Array.isArray(parsed)) {
+            locationSectionsData = parsed;
+          }
+        } catch (e) {}
+        
+        renderLocationSectionsVisualBuilder();
+
+        visualContainer?.classList.remove('hidden');
+        codeContainer?.classList.add('hidden');
+
+        visualBtn?.classList.add('bg-[#00A8B5]', 'text-[#0F172A]');
+        visualBtn?.classList.remove('text-[#9CA3AF]');
+        codeBtn?.classList.remove('bg-[#00A8B5]', 'text-[#0F172A]');
+        codeBtn?.classList.add('text-[#9CA3AF]');
+      } else {
+        // Sync from data array to JSON textarea
+        const textarea = document.getElementById('loc-sections-json');
+        if (textarea) {
+          textarea.value = JSON.stringify(locationSectionsData, null, 2);
+          liveValidateSectionsJson(textarea.value);
+        }
+
+        visualContainer?.classList.add('hidden');
+        codeContainer?.classList.remove('hidden');
+
+        codeBtn?.classList.add('bg-[#00A8B5]', 'text-[#0F172A]');
+        codeBtn?.classList.remove('text-[#9CA3AF]');
+        visualBtn?.classList.remove('bg-[#00A8B5]', 'text-[#0F172A]');
+        visualBtn?.classList.add('text-[#9CA3AF]');
+      }
+    }
+
+    function toggleAddSectionDropdown() {
+      const menu = document.getElementById('add-section-menu');
+      if (menu) menu.classList.toggle('hidden');
+    }
+
+    // Close dropdown on outside click
+    document.addEventListener('click', function(e) {
+      const btn = document.getElementById('btn-add-section-dropdown');
+      const menu = document.getElementById('add-section-menu');
+      if (menu && btn && !btn.contains(e.target) && !menu.contains(e.target)) {
+        menu.classList.add('hidden');
+      }
+    });
+
+    function syncLocationSectionsToJson() {
+      const textarea = document.getElementById('loc-sections-json');
+      if (textarea) {
+        textarea.value = JSON.stringify(locationSectionsData, null, 2);
+        liveValidateSectionsJson(textarea.value);
+      }
+      const countBadge = document.getElementById('loc-sections-count-badge');
+      if (countBadge) countBadge.textContent = locationSectionsData.length;
+    }
+
+    function renderLocationSectionsVisualBuilder() {
+      const container = document.getElementById('loc-sections-cards-list');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const countBadge = document.getElementById('loc-sections-count-badge');
+      if (countBadge) countBadge.textContent = locationSectionsData.length;
+
+      if (locationSectionsData.length === 0) {
+        container.innerHTML = `
+          <div class="p-8 text-center rounded-2xl bg-[#0B0F19] border-2 border-dashed border-[#1F2937] space-y-3">
+            <div class="w-12 h-12 rounded-2xl bg-[#8B5CF6]/15 text-[#8B5CF6] flex items-center justify-center mx-auto">
+              <i data-lucide="layout-grid" class="w-6 h-6"></i>
+            </div>
+            <div class="font-bold text-white text-sm">No dynamic sections added yet</div>
+            <p class="text-xs text-[#9CA3AF] max-w-md mx-auto">Click "+ Add Section" above to insert Timelines, Comparison Tables, Honest Promises, Localities Grids or Content Blocks.</p>
+          </div>
+        `;
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+        syncLocationSectionsToJson();
+        return;
+      }
+
+      locationSectionsData.forEach((sec, idx) => {
+        const type = sec.type || 'content_block';
+        let badgeColor = 'bg-blue-500/20 text-blue-300 border-blue-500/40';
+        let typeName = 'Standard Content Block';
+        if (type === 'timeline') {
+          badgeColor = 'bg-amber-500/20 text-amber-300 border-amber-500/40';
+          typeName = '90-Day Sprint Timeline';
+        } else if (type === 'comparison_table') {
+          badgeColor = 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40';
+          typeName = 'Comparison Matrix Table';
+        } else if (type === 'honest_promises') {
+          badgeColor = 'bg-rose-500/20 text-rose-300 border-rose-500/40';
+          typeName = 'Honest Promises (Do / Don\'t)';
+        } else if (type === 'locality_grid') {
+          badgeColor = 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40';
+          typeName = 'Localities & Neighborhoods Grid';
+        } else if (type === 'pricing_table') {
+          badgeColor = 'bg-purple-500/20 text-purple-300 border-purple-500/40';
+          typeName = 'Transparent Pricing Tiers';
+        }
+
+        const card = document.createElement('div');
+        card.className = 'bg-[#0F172A] border border-[#1F2937] hover:border-[#374151] rounded-2xl p-4 sm:p-5 space-y-4 shadow-md transition-all';
+        
+        // Header
+        let html = `
+          <div class="flex items-center justify-between border-b border-[#1F2937] pb-3">
+            <div class="flex items-center gap-2.5 truncate">
+              <span class="w-6 h-6 rounded-lg bg-[#1F2937] text-white flex items-center justify-center font-mono font-bold text-xs shrink-0">
+                #${idx + 1}
+              </span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold border ${badgeColor} shrink-0">
+                ${typeName}
+              </span>
+              <span class="text-xs font-bold text-white truncate max-w-[200px] sm:max-w-[300px]">
+                ${escapeHtml(sec.title || sec.tag || 'Untitled Section')}
+              </span>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex items-center gap-1 shrink-0">
+              ${idx > 0 ? `<button type="button" onclick="moveLocationSection(${idx}, -1)" class="p-1.5 hover:bg-[#1F2937] text-[#9CA3AF] hover:text-white rounded-lg transition-colors" title="Move Section Up"><i data-lucide="arrow-up" class="w-3.5 h-3.5"></i></button>` : ''}
+              ${idx < locationSectionsData.length - 1 ? `<button type="button" onclick="moveLocationSection(${idx}, 1)" class="p-1.5 hover:bg-[#1F2937] text-[#9CA3AF] hover:text-white rounded-lg transition-colors" title="Move Section Down"><i data-lucide="arrow-down" class="w-3.5 h-3.5"></i></button>` : ''}
+              <button type="button" onclick="duplicateLocationSection(${idx})" class="p-1.5 hover:bg-[#1F2937] text-[#00F0FF] rounded-lg transition-colors" title="Duplicate Section"><i data-lucide="copy" class="w-3.5 h-3.5"></i></button>
+              <button type="button" onclick="removeLocationSection(${idx})" class="p-1.5 text-[#EF4444] hover:bg-[#EF4444]/20 rounded-lg transition-colors" title="Delete Section"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+            </div>
+          </div>
+        `;
+
+        // Section Core Controls
+        html += `
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label class="block text-[10px] font-mono text-[#9CA3AF] mb-1 font-bold">SECTION TYPE</label>
+              <select class="w-full bg-[#111827] border border-[#374151] rounded-lg px-2.5 py-1.5 text-xs text-white outline-none focus:border-[#00A8B5]" onchange="changeSectionType(${idx}, this.value)">
+                <option value="content_block" ${type === 'content_block' ? 'selected' : ''}>Standard Content Block</option>
+                <option value="timeline" ${type === 'timeline' ? 'selected' : ''}>90-Day Sprint Timeline</option>
+                <option value="comparison_table" ${type === 'comparison_table' ? 'selected' : ''}>Comparison Matrix Table</option>
+                <option value="honest_promises" ${type === 'honest_promises' ? 'selected' : ''}>Honest Promises (Do / Don't)</option>
+                <option value="locality_grid" ${type === 'locality_grid' ? 'selected' : ''}>Localities Grid</option>
+                <option value="pricing_table" ${type === 'pricing_table' ? 'selected' : ''}>Transparent Pricing Tiers</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[10px] font-mono text-[#9CA3AF] mb-1 font-bold">SECTION HTML ID</label>
+              <input type="text" class="w-full bg-[#111827] border border-[#374151] rounded-lg px-2.5 py-1.5 text-xs text-[#00F0FF] font-mono outline-none focus:border-[#00A8B5]" value="${escapeHtml(sec.id || '')}" oninput="updateSectionField(${idx}, 'id', this.value)" placeholder="e.g. why-choose">
+            </div>
+            <div>
+              <label class="block text-[10px] font-mono text-[#9CA3AF] mb-1 font-bold">TAG / TOP BADGE</label>
+              <input type="text" class="w-full bg-[#111827] border border-[#374151] rounded-lg px-2.5 py-1.5 text-xs text-amber-300 font-mono outline-none focus:border-[#00A8B5]" value="${escapeHtml(sec.tag || '')}" oninput="updateSectionField(${idx}, 'tag', this.value)" placeholder="e.g. 90-DAY ROADMAP">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-[10px] font-mono text-[#9CA3AF] mb-1 font-bold">SECTION TITLE (H2/H3 HEADLINE) *</label>
+            <input type="text" class="w-full bg-[#111827] border border-[#374151] rounded-lg px-3 py-2 text-xs text-white font-bold outline-none focus:border-[#00A8B5]" value="${escapeHtml(sec.title || '')}" oninput="updateSectionField(${idx}, 'title', this.value)" placeholder="e.g. Why Bhopal Businesses Choose Us">
+          </div>
+
+          <div>
+            <label class="block text-[10px] font-mono text-[#9CA3AF] mb-1 font-bold">SUBTITLE / OVERVIEW TEXT</label>
+            <textarea rows="2" class="w-full bg-[#111827] border border-[#374151] rounded-lg px-3 py-2 text-xs text-[#CBD5E1] outline-none focus:border-[#00A8B5] leading-relaxed" oninput="updateSectionField(${idx}, 'subtitle', this.value)" placeholder="Section overview and contextual explanation...">${escapeHtml(sec.subtitle || '')}</textarea>
+          </div>
+        `;
+
+        // Body Paragraphs (For standard content blocks or intro text)
+        if (type === 'content_block' || (sec.paragraphs && sec.paragraphs.length > 0)) {
+          const paraText = Array.isArray(sec.paragraphs) ? sec.paragraphs.join('\n\n') : (sec.paragraphs || '');
+          html += `
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <label class="text-[10px] font-mono text-[#9CA3AF] font-bold">BODY PARAGRAPHS (Separate multiple paragraphs with blank lines)</label>
+                <span class="text-[10px] text-[#00F0FF] font-mono">Supports [[VERIFY:...]]</span>
+              </div>
+              <textarea rows="4" class="w-full bg-[#111827] border border-[#374151] rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-[#00A8B5] leading-relaxed" oninput="updateSectionParagraphs(${idx}, this.value)" placeholder="Enter paragraph copy here...">${escapeHtml(paraText)}</textarea>
+            </div>
+          `;
+        }
+
+        // Highlights List (Bullet Chips)
+        if (sec.highlights && Array.isArray(sec.highlights)) {
+          html += `
+            <div class="space-y-2 pt-1 border-t border-[#1F2937]">
+              <div class="flex items-center justify-between">
+                <label class="text-[10px] font-mono text-[#00A8B5] font-bold uppercase">Key Highlights / Features List (${sec.highlights.length}):</label>
+                <button type="button" onclick="addSectionHighlight(${idx})" class="text-[10px] text-[#00F0FF] hover:underline font-mono font-bold">+ Add Item</button>
+              </div>
+              <div class="space-y-1.5">
+                ${sec.highlights.map((hl, hIdx) => `
+                  <div class="flex items-center gap-2">
+                    <input type="text" class="flex-1 bg-[#111827] border border-[#374151] rounded-lg px-2.5 py-1 text-xs text-[#E2E8F0] outline-none focus:border-[#00A8B5]" value="${escapeHtml(hl)}" oninput="updateSectionHighlight(${idx}, ${hIdx}, this.value)" placeholder="Bullet point item...">
+                    <button type="button" onclick="removeSectionHighlight(${idx}, ${hIdx})" class="p-1 text-[#EF4444] hover:bg-[#EF4444]/20 rounded"><i data-lucide="x" class="w-3.5 h-3.5"></i></button>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          `;
+        } else if (type === 'content_block') {
+          html += `
+            <div class="pt-1">
+              <button type="button" onclick="initSectionHighlights(${idx})" class="text-[11px] text-[#00A8B5] hover:underline font-mono font-bold">+ Add Highlights / Bullet Points List</button>
+            </div>
+          `;
+        }
+
+        // ==========================================
+        // TYPE-SPECIFIC EDITORS
+        // ==========================================
+
+        // 1. TIMELINE PHASES
+        if (type === 'timeline') {
+          const phases = sec.phases || [];
+          html += `
+            <div class="space-y-3 pt-3 border-t border-[#1F2937]">
+              <div class="flex items-center justify-between">
+                <label class="text-[11px] font-mono text-amber-400 font-bold uppercase flex items-center gap-1.5">
+                  <i data-lucide="clock" class="w-3.5 h-3.5"></i> Timeline Sprint Phases (${phases.length}):
+                </label>
+                <button type="button" onclick="addTimelinePhase(${idx})" class="px-2 py-0.5 bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 rounded text-xs font-mono font-bold border border-amber-500/30">
+                  + Add Phase
+                </button>
+              </div>
+              <div class="space-y-3">
+                ${phases.map((ph, pIdx) => `
+                  <div class="p-3 bg-[#111827] border border-[#374151] rounded-xl space-y-2">
+                    <div class="flex items-center justify-between border-b border-[#374151]/60 pb-1.5">
+                      <span class="text-[10px] font-mono font-bold text-amber-300">Phase #${pIdx + 1}</span>
+                      <button type="button" onclick="removeTimelinePhase(${idx}, ${pIdx})" class="p-1 text-[#EF4444] hover:bg-[#EF4444]/20 rounded"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                      <div>
+                        <label class="block text-[9px] font-mono text-[#9CA3AF]">PHASE LABEL</label>
+                        <input type="text" class="w-full bg-[#0B0F19] border border-[#374151] rounded px-2 py-1 text-xs text-white" value="${escapeHtml(ph.phase || '')}" oninput="updateTimelinePhaseField(${idx}, ${pIdx}, 'phase', this.value)" placeholder="e.g. Phase 1">
+                      </div>
+                      <div>
+                        <label class="block text-[9px] font-mono text-[#9CA3AF]">TIMEFRAME</label>
+                        <input type="text" class="w-full bg-[#0B0F19] border border-[#374151] rounded px-2 py-1 text-xs text-amber-300 font-mono" value="${escapeHtml(ph.weeks || '')}" oninput="updateTimelinePhaseField(${idx}, ${pIdx}, 'weeks', this.value)" placeholder="e.g. Weeks 1–2">
+                      </div>
+                    </div>
+                    <div>
+                      <label class="block text-[9px] font-mono text-[#9CA3AF]">PHASE TITLE</label>
+                      <input type="text" class="w-full bg-[#0B0F19] border border-[#374151] rounded px-2 py-1 text-xs text-white font-bold" value="${escapeHtml(ph.title || '')}" oninput="updateTimelinePhaseField(${idx}, ${pIdx}, 'title', this.value)" placeholder="e.g. Technical Foundation & Entity Audit">
+                    </div>
+                    <div>
+                      <label class="block text-[9px] font-mono text-[#9CA3AF]">DESCRIPTION</label>
+                      <textarea rows="2" class="w-full bg-[#0B0F19] border border-[#374151] rounded px-2 py-1 text-xs text-[#CBD5E1]" oninput="updateTimelinePhaseField(${idx}, ${pIdx}, 'description', this.value)">${escapeHtml(ph.description || '')}</textarea>
+                    </div>
+                    <div>
+                      <label class="block text-[9px] font-mono text-[#9CA3AF]">KEY DELIVERABLE</label>
+                      <input type="text" class="w-full bg-[#0B0F19] border border-[#374151] rounded px-2 py-1 text-xs text-[#00F0FF] font-mono" value="${escapeHtml(ph.deliverable || '')}" oninput="updateTimelinePhaseField(${idx}, ${pIdx}, 'deliverable', this.value)" placeholder="e.g. 25-Point Fix Checklist + Live GBP Verification">
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          `;
+        }
+
+        // 2. COMPARISON TABLE
+        if (type === 'comparison_table') {
+          const rows = sec.rows || [];
+          html += `
+            <div class="space-y-3 pt-3 border-t border-[#1F2937]">
+              <div class="flex items-center justify-between">
+                <label class="text-[11px] font-mono text-cyan-400 font-bold uppercase flex items-center gap-1.5">
+                  <i data-lucide="table" class="w-3.5 h-3.5"></i> Comparison Rows Matrix (${rows.length}):
+                </label>
+                <button type="button" onclick="addComparisonRow(${idx})" class="px-2 py-0.5 bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/30 rounded text-xs font-mono font-bold border border-cyan-500/30">
+                  + Add Row
+                </button>
+              </div>
+              <div class="space-y-2">
+                ${rows.map((rw, rIdx) => `
+                  <div class="p-3 bg-[#111827] border border-[#374151] rounded-xl space-y-2">
+                    <div class="flex items-center justify-between border-b border-[#374151]/60 pb-1">
+                      <input type="text" class="w-1/2 bg-[#0B0F19] border border-[#374151] rounded px-2 py-1 text-xs text-white font-bold" value="${escapeHtml(rw.feature || '')}" oninput="updateComparisonRowField(${idx}, ${rIdx}, 'feature', this.value)" placeholder="Feature / Metric Name">
+                      <button type="button" onclick="removeComparisonRow(${idx}, ${rIdx})" class="p-1 text-[#EF4444] hover:bg-[#EF4444]/20 rounded"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                      <div>
+                        <label class="block text-[9px] font-mono text-[#00F0FF] font-bold">DIGITAL4LOCAL VALUE</label>
+                        <textarea rows="2" class="w-full bg-[#0B0F19] border border-[#374151] rounded px-2 py-1 text-xs text-emerald-300" oninput="updateComparisonRowField(${idx}, ${rIdx}, 'd4l', this.value)">${escapeHtml(rw.d4l || '')}</textarea>
+                      </div>
+                      <div>
+                        <label class="block text-[9px] font-mono text-rose-400 font-bold">TRADITIONAL AGENCIES</label>
+                        <textarea rows="2" class="w-full bg-[#0B0F19] border border-[#374151] rounded px-2 py-1 text-xs text-slate-400" oninput="updateComparisonRowField(${idx}, ${rIdx}, 'competitor', this.value)">${escapeHtml(rw.competitor || '')}</textarea>
+                      </div>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          `;
+        }
+
+        // 3. HONEST PROMISES
+        if (type === 'honest_promises') {
+          const doList = sec.whatWeDo || [];
+          const dontList = sec.whatWeNeverDo || [];
+          html += `
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t border-[#1F2937]">
+              <!-- What We Do -->
+              <div class="p-3 bg-[#111827] border border-emerald-500/30 rounded-xl space-y-2">
+                <div class="flex items-center justify-between border-b border-emerald-500/20 pb-1.5">
+                  <span class="text-[10px] font-mono text-emerald-400 font-bold">✓ WHAT WE DO (${doList.length})</span>
+                  <button type="button" onclick="addPromiseItem(${idx}, 'whatWeDo')" class="text-[10px] text-emerald-400 hover:underline font-mono font-bold">+ Add</button>
+                </div>
+                <div class="space-y-1.5">
+                  ${doList.map((item, pIdx) => `
+                    <div class="flex items-center gap-1.5">
+                      <input type="text" class="flex-1 bg-[#0B0F19] border border-[#374151] rounded px-2 py-1 text-xs text-emerald-300" value="${escapeHtml(item)}" oninput="updatePromiseItem(${idx}, 'whatWeDo', ${pIdx}, this.value)">
+                      <button type="button" onclick="removePromiseItem(${idx}, 'whatWeDo', ${pIdx})" class="p-1 text-[#EF4444] hover:bg-[#EF4444]/20 rounded"><i data-lucide="x" class="w-3 h-3"></i></button>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+
+              <!-- What We Never Do -->
+              <div class="p-3 bg-[#111827] border border-rose-500/30 rounded-xl space-y-2">
+                <div class="flex items-center justify-between border-b border-rose-500/20 pb-1.5">
+                  <span class="text-[10px] font-mono text-rose-400 font-bold">✕ WHAT WE NEVER DO (${dontList.length})</span>
+                  <button type="button" onclick="addPromiseItem(${idx}, 'whatWeNeverDo')" class="text-[10px] text-rose-400 hover:underline font-mono font-bold">+ Add</button>
+                </div>
+                <div class="space-y-1.5">
+                  ${dontList.map((item, pIdx) => `
+                    <div class="flex items-center gap-1.5">
+                      <input type="text" class="flex-1 bg-[#0B0F19] border border-[#374151] rounded px-2 py-1 text-xs text-rose-300" value="${escapeHtml(item)}" oninput="updatePromiseItem(${idx}, 'whatWeNeverDo', ${pIdx}, this.value)">
+                      <button type="button" onclick="removePromiseItem(${idx}, 'whatWeNeverDo', ${pIdx})" class="p-1 text-[#EF4444] hover:bg-[#EF4444]/20 rounded"><i data-lucide="x" class="w-3 h-3"></i></button>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            </div>
+          `;
+        }
+
+        // 4. LOCALITY GRID
+        if (type === 'locality_grid') {
+          const locs = sec.localities || [];
+          html += `
+            <div class="space-y-3 pt-3 border-t border-[#1F2937]">
+              <div class="flex items-center justify-between">
+                <label class="text-[11px] font-mono text-emerald-400 font-bold uppercase flex items-center gap-1.5">
+                  <i data-lucide="map-pin" class="w-3.5 h-3.5"></i> City Neighborhoods & Localities (${locs.length}):
+                </label>
+                <button type="button" onclick="addLocalityCard(${idx})" class="px-2 py-0.5 bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 rounded text-xs font-mono font-bold border border-emerald-500/30">
+                  + Add Neighborhood
+                </button>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                ${locs.map((loc, lIdx) => `
+                  <div class="p-2.5 bg-[#111827] border border-[#374151] rounded-xl flex items-center justify-between gap-2">
+                    <div class="flex-1 space-y-1">
+                      <input type="text" class="w-full bg-[#0B0F19] border border-[#374151] rounded px-2 py-0.5 text-xs text-white font-bold" value="${escapeHtml(loc.name || '')}" oninput="updateLocalityCardField(${idx}, ${lIdx}, 'name', this.value)" placeholder="Locality Name (e.g. MP Nagar)">
+                      <div class="grid grid-cols-2 gap-1.5">
+                        <input type="text" class="w-full bg-[#0B0F19] border border-[#374151] rounded px-1.5 py-0.5 text-[11px] text-[#9CA3AF]" value="${escapeHtml(loc.tag || '')}" oninput="updateLocalityCardField(${idx}, ${lIdx}, 'tag', this.value)" placeholder="Commercial / Hub">
+                        <input type="text" class="w-full bg-[#0B0F19] border border-[#374151] rounded px-1.5 py-0.5 text-[11px] text-[#00F0FF] font-mono" value="${escapeHtml(loc.pincode || '')}" oninput="updateLocalityCardField(${idx}, ${lIdx}, 'pincode', this.value)" placeholder="PIN: 462011">
+                      </div>
+                    </div>
+                    <button type="button" onclick="removeLocalityCard(${idx}, ${lIdx})" class="p-1 text-[#EF4444] hover:bg-[#EF4444]/20 rounded shrink-0"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          `;
+        }
+
+        // 5. PRICING TABLE
+        if (type === 'pricing_table') {
+          const plans = sec.plans || [];
+          html += `
+            <div class="space-y-3 pt-3 border-t border-[#1F2937]">
+              <div class="flex items-center justify-between">
+                <label class="text-[11px] font-mono text-purple-400 font-bold uppercase flex items-center gap-1.5">
+                  <i data-lucide="tag" class="w-3.5 h-3.5"></i> Pricing Tiers & Retainers (${plans.length}):
+                </label>
+                <button type="button" onclick="addPricingPlan(${idx})" class="px-2 py-0.5 bg-purple-500/20 text-purple-300 hover:bg-purple-500/30 rounded text-xs font-mono font-bold border border-purple-500/30">
+                  + Add Plan
+                </button>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                ${plans.map((pl, plIdx) => `
+                  <div class="p-3 bg-[#111827] border border-[#374151] rounded-xl space-y-2">
+                    <div class="flex items-center justify-between border-b border-[#374151]/60 pb-1">
+                      <input type="text" class="w-full bg-[#0B0F19] border border-[#374151] rounded px-2 py-1 text-xs text-white font-bold" value="${escapeHtml(pl.name || '')}" oninput="updatePricingPlanField(${idx}, ${plIdx}, 'name', this.value)" placeholder="Plan Name">
+                      <button type="button" onclick="removePricingPlan(${idx}, ${plIdx})" class="p-1 text-[#EF4444] hover:bg-[#EF4444]/20 rounded ml-1"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
+                    </div>
+                    <div class="grid grid-cols-2 gap-1.5">
+                      <input type="text" class="w-full bg-[#0B0F19] border border-[#374151] rounded px-1.5 py-1 text-[11px] text-purple-300 font-mono" value="${escapeHtml(pl.tag || '')}" oninput="updatePricingPlanField(${idx}, ${plIdx}, 'tag', this.value)" placeholder="Badge">
+                      <input type="text" class="w-full bg-[#0B0F19] border border-[#374151] rounded px-1.5 py-1 text-[11px] text-emerald-400 font-bold font-mono" value="${escapeHtml(pl.price || '')}" oninput="updatePricingPlanField(${idx}, ${plIdx}, 'price', this.value)" placeholder="₹9,999">
+                    </div>
+                    <div>
+                      <label class="block text-[9px] font-mono text-[#9CA3AF]">FOCUS / IDEAL FOR</label>
+                      <input type="text" class="w-full bg-[#0B0F19] border border-[#374151] rounded px-1.5 py-1 text-[11px] text-slate-300" value="${escapeHtml(pl.focus || '')}" oninput="updatePricingPlanField(${idx}, ${plIdx}, 'focus', this.value)">
+                    </div>
+                    <div>
+                      <label class="block text-[9px] font-mono text-[#9CA3AF]">FEATURES (1 per line)</label>
+                      <textarea rows="3" class="w-full bg-[#0B0F19] border border-[#374151] rounded px-1.5 py-1 text-[11px] text-white font-mono" oninput="updatePricingPlanFeatures(${idx}, ${plIdx}, this.value)">${escapeHtml(Array.isArray(pl.features) ? pl.features.join('\n') : (pl.features || ''))}</textarea>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          `;
+        }
+
+        card.innerHTML = html;
+        container.appendChild(card);
+      });
+
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+      syncLocationSectionsToJson();
+    }
+
+    // Helper mutating functions for Location Sections
+    function updateSectionField(idx, field, val) {
+      if (locationSectionsData[idx]) {
+        locationSectionsData[idx][field] = val;
+        syncLocationSectionsToJson();
+      }
+    }
+
+    function updateSectionParagraphs(idx, val) {
+      if (locationSectionsData[idx]) {
+        const paras = val.split('\n\n').map(p => p.trim()).filter(Boolean);
+        locationSectionsData[idx].paragraphs = paras.length > 0 ? paras : [val];
+        syncLocationSectionsToJson();
+      }
+    }
+
+    function changeSectionType(idx, newType) {
+      if (!locationSectionsData[idx]) return;
+      locationSectionsData[idx].type = newType;
+      
+      // Initialize defaults if newly converted
+      if (newType === 'timeline' && !locationSectionsData[idx].phases) {
+        locationSectionsData[idx].phases = [
+          { phase: 'Phase 1', weeks: 'Weeks 1–2', title: 'Audit & Setup', description: 'Technical analysis and entity audit.', deliverable: '25-Point Fix Checklist' },
+          { phase: 'Phase 2', weeks: 'Weeks 3–6', title: 'Local Citations & Optimization', description: 'Complete GBP and map radius scaling.', deliverable: 'Verified Citations' }
+        ];
+      } else if (newType === 'comparison_table' && !locationSectionsData[idx].rows) {
+        locationSectionsData[idx].rows = [
+          { feature: 'Search Engine Coverage', d4l: 'Google Maps + ChatGPT + Gemini + Perplexity', competitor: 'Basic Google Web SEO only' },
+          { feature: 'Reporting Cadence', d4l: 'Real-time 5x5 Geo-Grid tracking dashboard', competitor: 'Monthly static PDF screenshots' }
+        ];
+      } else if (newType === 'honest_promises' && !locationSectionsData[idx].whatWeDo) {
+        locationSectionsData[idx].whatWeDo = ['Audit real rankings before quoting', 'Provide verified local case studies', 'Build genuine local citations'];
+        locationSectionsData[idx].whatWeNeverDo = ['Promise #1 rankings in 7 days', 'Use automated spam backlink bots', 'Lock you into opaque contracts'];
+      } else if (newType === 'locality_grid' && !locationSectionsData[idx].localities) {
+        locationSectionsData[idx].localities = [
+          { name: 'MP Nagar', tag: 'Commercial Hub', pincode: '462011' },
+          { name: 'Arera Colony', tag: 'Affluent / Healthcare', pincode: '462016' },
+          { name: 'Kolar Road', tag: 'Residential & Retail', pincode: '462042' },
+          { name: 'Hoshangabad Road', tag: 'Industrial & Auto', pincode: '462026' }
+        ];
+      } else if (newType === 'pricing_table' && !locationSectionsData[idx].plans) {
+        locationSectionsData[idx].plans = [
+          { name: 'Local Foundation', tag: 'STARTER', price: '₹9,999', period: '/ month', focus: 'Single location', features: ['Google Map 3-Pack Optimization', '10 Geo Citations', '5x5 Grid Tracking'] }
+        ];
+      }
+
+      renderLocationSectionsVisualBuilder();
+    }
+
+    function initSectionHighlights(idx) {
+      if (locationSectionsData[idx]) {
+        locationSectionsData[idx].highlights = ['Key takeaway point #1', 'Key takeaway point #2'];
+        renderLocationSectionsVisualBuilder();
+      }
+    }
+
+    function addSectionHighlight(idx) {
+      if (locationSectionsData[idx]) {
+        if (!Array.isArray(locationSectionsData[idx].highlights)) locationSectionsData[idx].highlights = [];
+        locationSectionsData[idx].highlights.push('');
+        renderLocationSectionsVisualBuilder();
+      }
+    }
+
+    function updateSectionHighlight(idx, hIdx, val) {
+      if (locationSectionsData[idx] && locationSectionsData[idx].highlights) {
+        locationSectionsData[idx].highlights[hIdx] = val;
+        syncLocationSectionsToJson();
+      }
+    }
+
+    function removeSectionHighlight(idx, hIdx) {
+      if (locationSectionsData[idx] && locationSectionsData[idx].highlights) {
+        locationSectionsData[idx].highlights.splice(hIdx, 1);
+        renderLocationSectionsVisualBuilder();
+      }
+    }
+
+    // Timeline helpers
+    function addTimelinePhase(idx) {
+      if (locationSectionsData[idx]) {
+        if (!Array.isArray(locationSectionsData[idx].phases)) locationSectionsData[idx].phases = [];
+        const pNum = locationSectionsData[idx].phases.length + 1;
+        locationSectionsData[idx].phases.push({
+          phase: `Phase ${pNum}`,
+          weeks: `Weeks ${pNum * 2 - 1}–${pNum * 2}`,
+          title: `New Sprint Milestone ${pNum}`,
+          description: 'Milestone description and action steps.',
+          deliverable: 'Verified Deliverable'
+        });
+        renderLocationSectionsVisualBuilder();
+      }
+    }
+
+    function updateTimelinePhaseField(idx, pIdx, field, val) {
+      if (locationSectionsData[idx] && locationSectionsData[idx].phases && locationSectionsData[idx].phases[pIdx]) {
+        locationSectionsData[idx].phases[pIdx][field] = val;
+        syncLocationSectionsToJson();
+      }
+    }
+
+    function removeTimelinePhase(idx, pIdx) {
+      if (locationSectionsData[idx] && locationSectionsData[idx].phases) {
+        locationSectionsData[idx].phases.splice(pIdx, 1);
+        renderLocationSectionsVisualBuilder();
+      }
+    }
+
+    // Comparison row helpers
+    function addComparisonRow(idx) {
+      if (locationSectionsData[idx]) {
+        if (!Array.isArray(locationSectionsData[idx].rows)) locationSectionsData[idx].rows = [];
+        locationSectionsData[idx].rows.push({
+          feature: 'New Comparison Feature',
+          d4l: 'Digital4Local standard',
+          competitor: 'Traditional standard'
+        });
+        renderLocationSectionsVisualBuilder();
+      }
+    }
+
+    function updateComparisonRowField(idx, rIdx, field, val) {
+      if (locationSectionsData[idx] && locationSectionsData[idx].rows && locationSectionsData[idx].rows[rIdx]) {
+        locationSectionsData[idx].rows[rIdx][field] = val;
+        syncLocationSectionsToJson();
+      }
+    }
+
+    function removeComparisonRow(idx, rIdx) {
+      if (locationSectionsData[idx] && locationSectionsData[idx].rows) {
+        locationSectionsData[idx].rows.splice(rIdx, 1);
+        renderLocationSectionsVisualBuilder();
+      }
+    }
+
+    // Promise items helpers
+    function addPromiseItem(idx, listKey) {
+      if (locationSectionsData[idx]) {
+        if (!Array.isArray(locationSectionsData[idx][listKey])) locationSectionsData[idx][listKey] = [];
+        locationSectionsData[idx][listKey].push('');
+        renderLocationSectionsVisualBuilder();
+      }
+    }
+
+    function updatePromiseItem(idx, listKey, pIdx, val) {
+      if (locationSectionsData[idx] && locationSectionsData[idx][listKey]) {
+        locationSectionsData[idx][listKey][pIdx] = val;
+        syncLocationSectionsToJson();
+      }
+    }
+
+    function removePromiseItem(idx, listKey, pIdx) {
+      if (locationSectionsData[idx] && locationSectionsData[idx][listKey]) {
+        locationSectionsData[idx][listKey].splice(pIdx, 1);
+        renderLocationSectionsVisualBuilder();
+      }
+    }
+
+    // Locality helpers
+    function addLocalityCard(idx) {
+      if (locationSectionsData[idx]) {
+        if (!Array.isArray(locationSectionsData[idx].localities)) locationSectionsData[idx].localities = [];
+        locationSectionsData[idx].localities.push({ name: '', tag: 'Commercial / Retail', pincode: '462001' });
+        renderLocationSectionsVisualBuilder();
+      }
+    }
+
+    function updateLocalityCardField(idx, lIdx, field, val) {
+      if (locationSectionsData[idx] && locationSectionsData[idx].localities && locationSectionsData[idx].localities[lIdx]) {
+        locationSectionsData[idx].localities[lIdx][field] = val;
+        syncLocationSectionsToJson();
+      }
+    }
+
+    function removeLocalityCard(idx, lIdx) {
+      if (locationSectionsData[idx] && locationSectionsData[idx].localities) {
+        locationSectionsData[idx].localities.splice(lIdx, 1);
+        renderLocationSectionsVisualBuilder();
+      }
+    }
+
+    // Pricing plan helpers
+    function addPricingPlan(idx) {
+      if (locationSectionsData[idx]) {
+        if (!Array.isArray(locationSectionsData[idx].plans)) locationSectionsData[idx].plans = [];
+        locationSectionsData[idx].plans.push({
+          name: 'Growth Plan',
+          tag: 'POPULAR',
+          price: '₹14,999',
+          period: '/ month',
+          focus: 'Scaling local businesses',
+          features: ['Map 3-Pack Optimization', 'AI Overview Citations', 'Weekly Reporting']
+        });
+        renderLocationSectionsVisualBuilder();
+      }
+    }
+
+    function updatePricingPlanField(idx, plIdx, field, val) {
+      if (locationSectionsData[idx] && locationSectionsData[idx].plans && locationSectionsData[idx].plans[plIdx]) {
+        locationSectionsData[idx].plans[plIdx][field] = val;
+        syncLocationSectionsToJson();
+      }
+    }
+
+    function updatePricingPlanFeatures(idx, plIdx, val) {
+      if (locationSectionsData[idx] && locationSectionsData[idx].plans && locationSectionsData[idx].plans[plIdx]) {
+        locationSectionsData[idx].plans[plIdx].features = val.split('\n').map(s => s.trim()).filter(Boolean);
+        syncLocationSectionsToJson();
+      }
+    }
+
+    function removePricingPlan(idx, plIdx) {
+      if (locationSectionsData[idx] && locationSectionsData[idx].plans) {
+        locationSectionsData[idx].plans.splice(plIdx, 1);
+        renderLocationSectionsVisualBuilder();
+      }
+    }
+
+    // Top Level Section Actions
+    function addNewLocationSection(type) {
+      toggleAddSectionDropdown();
+      let newSec = {
+        type: type,
+        id: 'section-' + (locationSectionsData.length + 1),
+        tag: 'NEW SECTION',
+        title: 'New Dynamic Section Title',
+        subtitle: 'Enter section description and strategic context.',
+        paragraphs: ['Write rich paragraph text here to inform and convert prospective clients.']
+      };
+
+      if (type === 'timeline') {
+        newSec.tag = '90-DAY ROADMAP';
+        newSec.title = 'The 90-Day Local Dominance Sprint';
+        newSec.phases = [
+          { phase: 'Phase 1', weeks: 'Weeks 1–2', title: 'Audit & Entity Foundation', description: 'Technical analysis and profile cleanup.', deliverable: '25-Point Fix Plan' },
+          { phase: 'Phase 2', weeks: 'Weeks 3–6', title: 'Local Grid Expansion', description: 'Radius scaling and geo-targeted citations.', deliverable: 'Live Grid Rankings' },
+          { phase: 'Phase 3', weeks: 'Weeks 7–12', title: 'AI Citations & Review Velocity', description: 'ChatGPT & Gemini entity feeding.', deliverable: 'AI Overview Top Ranking' }
+        ];
+      } else if (type === 'comparison_table') {
+        newSec.tag = 'HOW WE DIFFER';
+        newSec.title = 'Digital4Local vs Traditional Agencies';
+        newSec.rows = [
+          { feature: 'Search Engines Optimized', d4l: 'Google Maps + ChatGPT + Gemini + Perplexity', competitor: 'Basic Google Web Only' },
+          { feature: 'Ranking Tracking', d4l: '5x5 Live Geo-Grid Map Pin matrix', competitor: 'Static PDF report with generic rankings' },
+          { feature: 'Contract Structure', d4l: 'No 12-month lock-in; performance driven', competitor: 'Rigid 6–12 month lock-in retainers' }
+        ];
+      } else if (type === 'honest_promises') {
+        newSec.tag = 'OUR ETHICAL STANDARD';
+        newSec.title = 'Honest Commitments We Make';
+        newSec.whatWeDo = ['Audit real rankings before taking retainers', 'Track every neighborhood pin separately', 'Transparent weekly reporting'];
+        newSec.whatWeNeverDo = ['Promise unrealistic 7-day #1 ranks', 'Build automated spam blog comments', 'Hold your accounts hostage'];
+      } else if (type === 'locality_grid') {
+        newSec.tag = 'LOCAL COVERAGE';
+        newSec.title = 'Key Neighborhoods We Cover';
+        newSec.localities = [
+          { name: 'MP Nagar', tag: 'Commercial Core', pincode: '462011' },
+          { name: 'Arera Colony', tag: 'Healthcare & High-End', pincode: '462016' },
+          { name: 'Kolar Road', tag: 'Residential Corridor', pincode: '462042' },
+          { name: 'Hoshangabad Road', tag: 'Industrial / Auto', pincode: '462026' }
+        ];
+      } else if (type === 'pricing_table') {
+        newSec.tag = 'INVESTMENT PLANS';
+        newSec.title = 'Transparent Monthly Retainers';
+        newSec.plans = [
+          { name: 'Local Foundation Sprint', tag: 'STARTER', price: '₹9,999', period: '/ month', focus: 'Single location', features: ['Google Map 3-Pack Optimization', '15 Local Citations', '5x5 Geo-Grid Tracking'] },
+          { name: 'AI & Multi-Channel Dominance', tag: 'MOST POPULAR', price: '₹14,999', period: '/ month', focus: 'Multi-radius businesses', features: ['All Foundation features', 'ChatGPT & Gemini Entity Ingestion', 'Bi-weekly Strategy Call'] }
+        ];
+      }
+
+      locationSectionsData.push(newSec);
+      renderLocationSectionsVisualBuilder();
+      showToast(`Added new ${type.replace('_', ' ')} section!`, 'success');
+    }
+
+    function removeLocationSection(idx) {
+      if (confirm('Are you sure you want to delete this section?')) {
+        locationSectionsData.splice(idx, 1);
+        renderLocationSectionsVisualBuilder();
+        showToast('Section removed', 'info');
+      }
+    }
+
+    function moveLocationSection(idx, delta) {
+      const newIdx = idx + delta;
+      if (newIdx < 0 || newIdx >= locationSectionsData.length) return;
+      const sec = locationSectionsData.splice(idx, 1)[0];
+      locationSectionsData.splice(newIdx, 0, sec);
+      renderLocationSectionsVisualBuilder();
+    }
+
+    function duplicateLocationSection(idx) {
+      if (locationSectionsData[idx]) {
+        const cloned = JSON.parse(JSON.stringify(locationSectionsData[idx]));
+        cloned.id = cloned.id + '-copy';
+        cloned.title = cloned.title + ' (Copy)';
+        locationSectionsData.splice(idx + 1, 0, cloned);
+        renderLocationSectionsVisualBuilder();
+        showToast('Section duplicated!', 'success');
+      }
+    }
+
+    // Initial render of Visual Sections
+    renderLocationSectionsVisualBuilder();
+
+    // 5.b Location Sections JSON Validation Helpers
+    function liveValidateSectionsJson(val) {
+      const statusEl = document.getElementById('loc-json-status');
+      if (!statusEl) return;
+      try {
+        const parsed = JSON.parse(val);
+        if (Array.isArray(parsed)) {
+          statusEl.textContent = '● Valid JSON (' + parsed.length + ' sections)';
+          statusEl.className = 'text-[10px] font-mono text-[#10B981] font-bold';
+        } else {
+          statusEl.textContent = '● JSON must be an array []';
+          statusEl.className = 'text-[10px] font-mono text-[#EF4444] font-bold';
+        }
+      } catch (e) {
+        statusEl.textContent = '● Invalid JSON: ' + e.message.substring(0, 30);
+        statusEl.className = 'text-[10px] font-mono text-[#EF4444] font-bold';
+      }
+    }
+
+    function formatLocationSectionsJson() {
+      const textarea = document.getElementById('loc-sections-json');
+      if (!textarea) return;
+      try {
+        const parsed = JSON.parse(textarea.value);
+        textarea.value = JSON.stringify(parsed, null, 2);
+        showToast('Sections JSON formatted cleanly!', 'success');
+        liveValidateSectionsJson(textarea.value);
+      } catch (e) {
+        showToast('Could not format JSON: ' + e.message, 'error');
+      }
+    }
+
+    function validateLocationSectionsJson() {
+      const textarea = document.getElementById('loc-sections-json');
+      if (!textarea) return;
+      try {
+        const parsed = JSON.parse(textarea.value);
+        if (!Array.isArray(parsed)) {
+          showToast('JSON root must be an array [] of section objects', 'error');
+          return;
+        }
+        showToast(`Validation Passed! ${parsed.length} dynamic sections configured properly.`, 'success');
+      } catch (e) {
+        showToast('JSON Error: ' + e.message, 'error');
+      }
+    }
+
+    function updateLocSeoPreview() {
+      const title = document.getElementById('loc-meta-title-input')?.value || '';
+      const desc = document.getElementById('loc-meta-desc-input')?.value || '';
+
+      const tLen = document.getElementById('loc-meta-title-length');
+      const dLen = document.getElementById('loc-meta-desc-length');
+      if (tLen) tLen.textContent = title.length;
+      if (dLen) dLen.textContent = desc.length;
+
+      const pTitle = document.getElementById('loc-serp-preview-title');
+      const pDesc = document.getElementById('loc-serp-preview-desc');
+      if (pTitle) pTitle.textContent = title || 'Location Page Title';
+      if (pDesc) pDesc.textContent = desc || 'Meta description snippet appears here.';
+    }
+
+    // Helper to resolve media URLs dynamically with window.BASE_PATH
+    function resolveMediaUrl(rawUrl) {
+      if (!rawUrl) return '';
+      if (rawUrl.startsWith('http://') || rawUrl.startsWith('https://') || rawUrl.startsWith('data:') || rawUrl.startsWith('blob:')) {
+        return rawUrl;
+      }
+      const basePath = window.BASE_PATH || '/';
+      const cleanBase = basePath.endsWith('/') ? basePath : basePath + '/';
+      const cleanRel = rawUrl.replace(/^\.?\/+/, '');
+      
+      // If rawUrl already starts with base folder name, prevent duplicate
+      const folderName = cleanBase.replace(/^\/+|\/+$/g, '');
+      if (folderName && cleanRel.startsWith(folderName + '/')) {
+        return '/' + cleanRel;
+      }
+      return (cleanBase === '/' ? '/' : cleanBase) + cleanRel;
+    }
+
+    // 6. Inline & Featured Image Upload Handler
     async function handleInlineImageUpload(event) {
       const file = event.target.files[0];
       if (!file) return;
 
       const formData = new FormData();
       formData.append('media_file', file);
-      formData.append('csrf_token', window.CSRF_TOKEN);
+      formData.append('csrf_token', window.CSRF_TOKEN || '');
       showToast('Uploading image...', 'info');
 
       try {
         const response = await fetch('api/upload-media.php', { 
           method: 'POST', 
-          headers: { 'X-CSRF-Token': window.CSRF_TOKEN },
+          headers: { 'X-CSRF-Token': window.CSRF_TOKEN || '' },
           body: formData 
         });
         const result = await response.json();
         if (result.success && editorInstance) {
-          const content = `<p><img src="${result.url}" alt="Uploaded Media" class="max-w-full rounded-xl my-4" /></p>`;
+          const resolvedSrc = resolveMediaUrl(result.url);
+          const content = `<p><img src="${resolvedSrc}" alt="Uploaded Media" class="max-w-full rounded-xl my-4 shadow-sm" /></p>`;
           const viewFragment = editorInstance.data.processor.toView(content);
           const modelFragment = editorInstance.data.toModel(viewFragment);
           editorInstance.model.insertContent(modelFragment);
@@ -1206,18 +2530,19 @@ $page_cfg = get_page_config($active_key);
 
       const formData = new FormData();
       formData.append('media_file', file);
-      formData.append('csrf_token', window.CSRF_TOKEN);
+      formData.append('csrf_token', window.CSRF_TOKEN || '');
       showToast('Uploading featured image...', 'info');
 
       try {
         const response = await fetch('api/upload-media.php', { 
           method: 'POST', 
-          headers: { 'X-CSRF-Token': window.CSRF_TOKEN },
+          headers: { 'X-CSRF-Token': window.CSRF_TOKEN || '' },
           body: formData 
         });
         const result = await response.json();
         if (result.success) {
-          document.getElementById('featured-image-preview').src = result.url;
+          const resolvedSrc = resolveMediaUrl(result.url);
+          document.getElementById('featured-image-preview').src = resolvedSrc;
           document.getElementById('featured-image-url-input').value = result.url;
           showToast('Featured image updated!', 'success');
         } else {
@@ -1234,29 +2559,32 @@ $page_cfg = get_page_config($active_key);
 
       const formData = new FormData();
       formData.append('media_file', file);
-      formData.append('csrf_token', window.CSRF_TOKEN);
+      formData.append('csrf_token', window.CSRF_TOKEN || '');
       showToast('Uploading media...', 'info');
 
       try {
         const response = await fetch('api/upload-media.php', { 
           method: 'POST', 
-          headers: { 'X-CSRF-Token': window.CSRF_TOKEN },
+          headers: { 'X-CSRF-Token': window.CSRF_TOKEN || '' },
           body: formData 
         });
         const result = await response.json();
         if (result.success) {
           showToast('Media uploaded: ' + result.filename, 'success');
           const grid = document.getElementById('sidebar-media-grid');
-          const newCard = document.createElement('div');
-          newCard.className = 'p-1 bg-[#1F2937] rounded-lg border border-[#374151] cursor-pointer hover:border-[#00A8B5]';
-          newCard.onclick = () => copyMediaUrl(result.url);
-          newCard.innerHTML = `<img src="${result.url}" class="w-full h-16 object-cover rounded"><div class="text-[9px] text-[#9CA3AF] truncate mt-1">${result.filename}</div>`;
-          grid.prepend(newCard);
+          if (grid) {
+            const resolvedSrc = resolveMediaUrl(result.url);
+            const newCard = document.createElement('div');
+            newCard.className = 'p-1 bg-[#1F2937] rounded-lg border border-[#374151] cursor-pointer hover:border-[#00A8B5]';
+            newCard.onclick = () => copyMediaUrl(result.url);
+            newCard.innerHTML = `<img src="${resolvedSrc}" class="w-full h-16 object-cover rounded"><div class="text-[9px] text-[#9CA3AF] truncate mt-1">${result.filename}</div>`;
+            grid.prepend(newCard);
+          }
         } else {
-          showToast(result.message, 'error');
+          showToast(result.message || 'Upload failed', 'error');
         }
       } catch (err) {
-        showToast('Upload error', 'error');
+        showToast('Upload error: ' + err.message, 'error');
       }
     }
 
@@ -1266,28 +2594,38 @@ $page_cfg = get_page_config($active_key);
     }
 
     function updateFeaturedPreview(url) {
-      if (url) document.getElementById('featured-image-preview').src = url;
+      if (!url) return;
+      document.getElementById('featured-image-preview').src = resolveMediaUrl(url);
     }
 
     function clearFeaturedImage() {
-      document.getElementById('featured-image-preview').src = 'assets/images/hero_dashboard_light_v2.png';
+      const defaultImg = resolveMediaUrl('assets/images/hero_dashboard_light_v2.png');
+      document.getElementById('featured-image-preview').src = defaultImg;
       document.getElementById('featured-image-url-input').value = '';
     }
 
-    // 6. SEO Live Preview Updates
+    // 7. SEO Live Preview Updates (Standard Pages)
     function updateSeoPreview() {
-      const title = document.getElementById('seo-meta-title').value;
-      const desc = document.getElementById('seo-meta-description').value;
+      const titleEl = document.getElementById('seo-meta-title');
+      const descEl = document.getElementById('seo-meta-description');
+      if (!titleEl || !descEl) return;
 
-      document.getElementById('meta-title-length').textContent = title.length;
-      document.getElementById('meta-desc-length').textContent = desc.length;
+      const title = titleEl.value;
+      const desc = descEl.value;
 
-      document.getElementById('serp-preview-title').textContent = title || 'Page Title | Digital4Local';
-      document.getElementById('serp-preview-desc').textContent = desc || 'Description preview will appear here.';
+      const tLen = document.getElementById('meta-title-length');
+      const dLen = document.getElementById('meta-desc-length');
+      if (tLen) tLen.textContent = title.length;
+      if (dLen) dLen.textContent = desc.length;
+
+      const pTitle = document.getElementById('serp-preview-title');
+      const pDesc = document.getElementById('serp-preview-desc');
+      if (pTitle) pTitle.textContent = title || 'Page Title | Digital4Local';
+      if (pDesc) pDesc.textContent = desc || 'Description preview will appear here.';
     }
     updateSeoPreview();
 
-    // 7. Viewport Switcher
+    // 8. Viewport Switcher
     function setViewport(w) {
       const wrapper = document.getElementById('preview-wrapper');
       wrapper.style.width = w;
@@ -1303,26 +2641,121 @@ $page_cfg = get_page_config($active_key);
 
     function reloadPreviewIframe() {
       const iframe = document.getElementById('cms-live-preview-frame');
-      const isBlog = document.getElementById('form-is-blog-post').value === '1';
+      if (!iframe) return;
+      const isBlog = document.getElementById('form-is-blog-post')?.value === '1';
+      const isLoc = document.getElementById('form-is-location-page')?.value === '1';
+
       if (isBlog) {
         const slug = document.getElementById('edit-blog-slug')?.value || document.getElementById('form-blog-slug')?.value || '';
         iframe.src = 'blog/' + encodeURIComponent(slug) + '?t=' + new Date().getTime();
+      } else if (isLoc) {
+        const slug = document.getElementById('loc-slug-input')?.value || document.getElementById('form-location-slug')?.value || '';
+        iframe.src = encodeURIComponent(slug) + '/?t=' + new Date().getTime();
       } else {
         iframe.src = iframe.src.split('?')[0] + '?t=' + new Date().getTime();
       }
     }
 
-    // 8. Save All CMS Settings via API
+    // 9. Save All CMS Settings via API
     async function saveCmsSettings() {
-      // Sync CKEditor data to textarea
+      const isLoc = document.getElementById('form-is-location-page')?.value === '1';
+      const isBlog = document.getElementById('form-is-blog-post')?.value === '1';
+      const activeKey = document.getElementById('form-active-page-key')?.value;
+
+      // Location Cluster Save Flow
+      if (isLoc) {
+        let parsedSections = locationSectionsData;
+        if (locSectionsMode === 'code') {
+          const rawSections = document.getElementById('loc-sections-json')?.value || '[]';
+          try {
+            parsedSections = JSON.parse(rawSections);
+            if (!Array.isArray(parsedSections)) {
+              showToast('Sections JSON must be an array []', 'error');
+              return;
+            }
+          } catch (e) {
+            showToast('Invalid Sections JSON syntax: ' + e.message, 'error');
+            return;
+          }
+        }
+
+        const locSlug = document.getElementById('loc-slug-input')?.value.trim() || document.getElementById('form-location-slug')?.value;
+        const locCity = document.getElementById('loc-city-input')?.value.trim() || document.getElementById('form-location-city')?.value || 'bhopal';
+
+        const locData = {
+          slug: locSlug,
+          city: locCity,
+          state: document.getElementById('loc-state-input')?.value.trim() || 'Madhya Pradesh',
+          country: document.getElementById('loc-country-input')?.value.trim() || 'India',
+          isHub: document.getElementById('loc-is-hub-input')?.checked || false,
+          schemaType: document.getElementById('loc-schema-type-input')?.value || 'ProfessionalService',
+          h1: document.getElementById('loc-h1-input')?.value || '',
+          badge: document.getElementById('loc-badge-input')?.value || '',
+          heroDirectAnswer: document.getElementById('loc-hero-direct-answer-input')?.value || '',
+          heroSubtitle: document.getElementById('loc-hero-subtitle-input')?.value || '',
+          heroMotif: document.getElementById('loc-hero-motif-input')?.value || 'combined',
+          lastUpdated: document.getElementById('loc-last-updated-input')?.value || '',
+          primaryKeyword: document.getElementById('loc-primary-keyword-input')?.value || '',
+          metaTitle: document.getElementById('loc-meta-title-input')?.value || '',
+          metaDescription: document.getElementById('loc-meta-desc-input')?.value || '',
+          relatedSlugs: (document.getElementById('loc-related-slugs-input')?.value || '').split(',').map(s => s.trim()).filter(Boolean),
+          recentInsightsTags: (document.getElementById('loc-insights-tags-input')?.value || '').split(',').map(s => s.trim()).filter(Boolean),
+          cta: {
+            label: document.getElementById('loc-cta-label-input')?.value || '',
+            sublabel: document.getElementById('loc-cta-sublabel-input')?.value || '',
+            buttonText: document.getElementById('loc-cta-btn-text-input')?.value || '',
+            whatsappText: document.getElementById('loc-cta-wa-text-input')?.value || ''
+          },
+          author: {
+            name: document.getElementById('loc-author-name-input')?.value || 'Abhishek Raikwar',
+            role: document.getElementById('loc-author-role-input')?.value || 'Founder, Digital4Local',
+            bio: document.getElementById('loc-author-bio-input')?.value || '',
+            photo: document.getElementById('loc-author-photo-input')?.value || '/assets/images/abhishek-raikwar.jpg',
+            linkedin: document.getElementById('loc-author-linkedin-input')?.value || ''
+          },
+          faqs: faqsData,
+          sections: parsedSections
+        };
+
+        showToast('Saving Location Cluster page...', 'info');
+
+        try {
+          const response = await fetch('api/update-cms-settings.php', {
+            method: 'POST',
+            headers: { 
+              'Content-Type': 'application/json',
+              'X-CSRF-Token': window.CSRF_TOKEN
+            },
+            body: JSON.stringify({
+              action: 'save_location_page',
+              location_slug: locSlug,
+              city: locCity.toLowerCase(),
+              location_data: locData,
+              csrf_token: window.CSRF_TOKEN
+            })
+          });
+          const result = await response.json();
+          if (result.success) {
+            showToast('Location page saved & synced live!', 'success');
+            reloadPreviewIframe();
+          } else {
+            showToast('Save failed: ' + result.message, 'error');
+          }
+        } catch (err) {
+          showToast('Error saving location page: ' + err.message, 'error');
+        }
+        return;
+      }
+
+      // Standard / Blog Page Save Flow
       if (editorInstance) {
-        document.querySelector('#ck-content-editor').value = editorInstance.getData();
+        const ckEl = document.querySelector('#ck-content-editor');
+        if (ckEl) ckEl.value = editorInstance.getData();
       }
 
       const form = document.getElementById('cms-editor-form');
       const formData = new FormData(form);
       
-      // Convert form data to nested JSON object
       const payload = { csrf_token: window.CSRF_TOKEN };
       for (const [key, value] of formData.entries()) {
         const matches = key.match(/^([^\[]+)\[([^\]]+)\](?:\[([^\]]+)\])?$/);
@@ -1342,10 +2775,7 @@ $page_cfg = get_page_config($active_key);
         }
       }
 
-      // Add status & slugs
       const status = document.getElementById('editor-page-status').value;
-      const isBlog = document.getElementById('form-is-blog-post').value === '1';
-      const activeKey = document.getElementById('form-active-page-key').value;
 
       if (isBlog) {
         if (!payload['active_blog_post']) payload['active_blog_post'] = {};
@@ -1375,7 +2805,15 @@ $page_cfg = get_page_config($active_key);
         });
         const result = await response.json();
         if (result.success) {
-          showToast('Blog & CMS configuration saved successfully!', 'success');
+          showToast('Configuration saved successfully!', 'success');
+          if (isBlog && result.post_slug) {
+            const newSlug = result.post_slug;
+            if (document.getElementById('form-orig-blog-slug')) document.getElementById('form-orig-blog-slug').value = newSlug;
+            if (document.getElementById('form-blog-slug')) document.getElementById('form-blog-slug').value = newSlug;
+            if (document.getElementById('edit-blog-slug')) document.getElementById('edit-blog-slug').value = newSlug;
+            if (document.getElementById('form-active-page-key')) document.getElementById('form-active-page-key').value = 'blog_' + newSlug;
+            window.history.replaceState({}, '', 'admin-cms.php?page=blog_' + encodeURIComponent(newSlug));
+          }
           reloadPreviewIframe();
         } else {
           showToast('Save failed: ' + result.message, 'error');
@@ -1385,7 +2823,8 @@ $page_cfg = get_page_config($active_key);
       }
     }
 
-    document.getElementById('btn-save-all').addEventListener('click', saveCmsSettings);
+    const saveBtn = document.getElementById('btn-save-all');
+    if (saveBtn) saveBtn.addEventListener('click', saveCmsSettings);
 
     // Ctrl+S Keyboard Shortcut
     window.addEventListener('keydown', e => {
@@ -1395,7 +2834,7 @@ $page_cfg = get_page_config($active_key);
       }
     });
 
-    // 9. Custom Page & Blog Creation Handlers
+    // 10. Creation Modal Handlers
     function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
     function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 
@@ -1409,9 +2848,12 @@ $page_cfg = get_page_config($active_key);
       document.getElementById('new-post-slug-input').value = slug;
     }
 
-    function updateBlogSlugPreview(title) {
-      // Optional live suggestion
+    function autoGenerateLocSlug(title) {
+      const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      document.getElementById('new-loc-slug-input').value = slug;
     }
+
+    function updateBlogSlugPreview(title) {}
 
     async function submitCreatePage() {
       const title = document.getElementById('new-page-title-input').value.trim();
@@ -1467,6 +2909,36 @@ $page_cfg = get_page_config($active_key);
       }
     }
 
+    async function submitCreateLocationPage() {
+      const title = document.getElementById('new-loc-title-input').value.trim();
+      const slug = document.getElementById('new-loc-slug-input').value.trim();
+      const city = document.getElementById('new-loc-city-input').value.trim() || 'bhopal';
+      const isHub = document.getElementById('new-loc-type-select').value === 'hub';
+      if (!title) { alert('Please enter a location page title.'); return; }
+
+      const response = await fetch('api/update-cms-settings.php', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': window.CSRF_TOKEN
+        },
+        body: JSON.stringify({ 
+          action: 'add_location_page', 
+          location_title: title, 
+          location_slug: slug, 
+          location_city: city,
+          is_hub: isHub,
+          csrf_token: window.CSRF_TOKEN
+        })
+      });
+      const res = await response.json();
+      if (res.success) {
+        window.location.href = 'admin-cms.php?page=' + encodeURIComponent(res.page_key);
+      } else {
+        alert(res.message);
+      }
+    }
+
     async function deleteCustomPage(pageKey, pageTitle) {
       if (!confirm(`Are you sure you want to permanently delete '${pageTitle}'?`)) return;
       const response = await fetch('api/update-cms-settings.php', {
@@ -1503,7 +2975,7 @@ $page_cfg = get_page_config($active_key);
       if (res.success) window.location.href = 'admin-cms.php?page=blog';
     }
 
-    // 10. Toast Helper
+    // 11. Toast Helper
     function showToast(msg, type = 'success') {
       const container = document.getElementById('toast-container');
       const toast = document.createElement('div');

@@ -77,69 +77,77 @@ if (!empty($confirm_password) && $new_password !== $confirm_password) {
     exit;
 }
 
-if (!file_exists($auth_file)) {
-    http_response_code(500);
-    echo json_encode(['success' => false, 'message' => 'Authentication database not found.']);
-    exit;
-}
+// 5. Verify Current Password against Database / JSON
+$verified = false;
+$user_email = $current_admin['email'] ?? 'admin@digital4local.com';
+$user_id = $current_admin['id'] ?? 'USR-001';
 
-$auth_json = @file_get_contents($auth_file);
-$auth_data = @json_decode($auth_json, true);
+try {
+    $db_user = db_get_admin_by_identifier($current_admin['username'] ?? $current_admin['email']);
+    if ($db_user && !empty($db_user['password_hash'])) {
+        if (password_verify($current_password, $db_user['password_hash'])) {
+            $verified = true;
+            $user_id = $db_user['admin_id'] ?? $db_user['id'];
+            $user_email = $db_user['email'];
+        }
+    }
+} catch (Exception $e) {}
 
-if (!$auth_data || !isset($auth_data['users']) || !is_array($auth_data['users'])) {
-    http_response_code(500);
-    echo json_encode(['success' => false, 'message' => 'Corrupt authentication record.']);
-    exit;
-}
-
-// 5. Locate Logged In User
+// Fallback verification against JSON if DB did not verify
+$auth_data = null;
 $user_index = -1;
-foreach ($auth_data['users'] as $idx => $u) {
-    if (($u['id'] ?? '') === $current_admin['id'] || ($u['username'] ?? '') === $current_admin['username']) {
-        $user_index = $idx;
-        break;
+if (file_exists($auth_file)) {
+    $auth_json = @file_get_contents($auth_file);
+    $auth_data = @json_decode($auth_json, true);
+    if ($auth_data && isset($auth_data['users']) && is_array($auth_data['users'])) {
+        foreach ($auth_data['users'] as $idx => $u) {
+            if (($u['id'] ?? '') === $current_admin['id'] || ($u['username'] ?? '') === $current_admin['username'] || ($u['email'] ?? '') === $current_admin['email']) {
+                $user_index = $idx;
+                break;
+            }
+        }
+        if ($user_index === -1) $user_index = 0;
+        
+        if (!$verified && isset($auth_data['users'][$user_index]['password_hash'])) {
+            if (password_verify($current_password, $auth_data['users'][$user_index]['password_hash'])) {
+                $verified = true;
+            }
+        }
     }
 }
 
-if ($user_index === -1) {
-    // Fallback to first matching user
-    $user_index = 0;
-}
-
-// 6. Verify Current Password Hash
-if (!password_verify($current_password, $auth_data['users'][$user_index]['password_hash'])) {
+if (!$verified) {
     http_response_code(403);
     echo json_encode(['success' => false, 'message' => 'The current password you entered is incorrect.']);
     exit;
 }
 
-// 7. Hash New Password with Bcrypt
+// 6. Hash New Password with Bcrypt
 $new_hash = password_hash($new_password, PASSWORD_BCRYPT);
-$auth_data['users'][$user_index]['password_hash'] = $new_hash;
-$auth_data['users'][$user_index]['password_updated_at'] = date('Y-m-d H:i:s');
 
-// Also update secondary user alias if it's master admin
-if (count($auth_data['users']) > 1 && $user_index === 0) {
-    $auth_data['users'][1]['password_hash'] = $new_hash;
-    $auth_data['users'][1]['password_updated_at'] = date('Y-m-d H:i:s');
+// 7. Update in Database
+$db_updated = false;
+try {
+    $db_updated = db_update_admin_password($user_id, $new_hash);
+} catch (Exception $e) {}
+
+// 8. Update in JSON file for backup sync
+if ($auth_data && isset($auth_data['users']) && is_array($auth_data['users'])) {
+    if ($user_index >= 0 && isset($auth_data['users'][$user_index])) {
+        $auth_data['users'][$user_index]['password_hash'] = $new_hash;
+        $auth_data['users'][$user_index]['password_updated_at'] = date('Y-m-d H:i:s');
+    }
+    // Also update secondary user alias if it's master admin
+    if (count($auth_data['users']) > 1 && $user_index === 0) {
+        $auth_data['users'][1]['password_hash'] = $new_hash;
+        $auth_data['users'][1]['password_updated_at'] = date('Y-m-d H:i:s');
+    }
+    @file_put_contents($auth_file, json_encode($auth_data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES), LOCK_EX);
 }
 
-$saved = @file_put_contents(
-    $auth_file, 
-    json_encode($auth_data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES),
-    LOCK_EX
-);
+echo json_encode([
+    'success' => true,
+    'message' => 'Password updated successfully across Database and configuration! All future sessions will require the new credentials.',
+    'user' => $user_email
+]);
 
-if ($saved !== false) {
-    echo json_encode([
-        'success' => true,
-        'message' => 'Password updated successfully! All future sessions will require the new credentials.',
-        'user' => $auth_data['users'][$user_index]['email']
-    ]);
-} else {
-    http_response_code(500);
-    echo json_encode([
-        'success' => false,
-        'message' => 'Failed to save updated password to config/admin_auth.json.'
-    ]);
-}

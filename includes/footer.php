@@ -50,6 +50,27 @@ $footer_logo_rel_path = ltrim($site_config['brand']['logo_path'], '/');
         </div>
       </div>
 
+      <!-- Bhopal Hub Column -->
+      <div class="space-y-3">
+        <div class="text-xs font-mono text-[#00A8B5] uppercase tracking-wider font-bold flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-[#00A8B5]"></span>
+          Bhopal Hub
+        </div>
+        <ul class="space-y-2 text-[#5B5F6B] text-xs">
+          <li><a href="<?php echo $footer_base_path; ?>seo-agency-bhopal/" class="hover:text-[#00A8B5] transition-colors font-bold text-[#14151A]">SEO Agency Bhopal (Hub)</a></li>
+          <li><a href="<?php echo $footer_base_path; ?>local-seo-bhopal/" class="hover:text-[#00A8B5] transition-colors">Local SEO Services</a></li>
+          <li><a href="<?php echo $footer_base_path; ?>google-business-profile-optimization-bhopal/" class="hover:text-[#00A8B5] transition-colors">GBP Optimization</a></li>
+          <li><a href="<?php echo $footer_base_path; ?>ai-seo-bhopal/" class="hover:text-[#00A8B5] transition-colors">AI SEO & GEO Search</a></li>
+          <li><a href="<?php echo $footer_base_path; ?>digital-marketing-agency-bhopal/" class="hover:text-[#00A8B5] transition-colors">Digital Marketing Agency</a></li>
+          <li><a href="<?php echo $footer_base_path; ?>ai-agency-bhopal/" class="hover:text-[#00A8B5] transition-colors">AI Agency & Automation</a></li>
+        </ul>
+        <div class="pt-2 text-[11px] text-[#5B5F6B] leading-tight border-t border-[#E4E7EC]">
+          <strong class="text-[#14151A]">Office Address:</strong><br>
+          Sant Aasharam Nagar, Bagmugaliya, Bhopal, MP 462043<br>
+          <a href="tel:+919131140530" class="text-[#00A8B5] font-semibold mt-1 inline-block">+91 91311 40530</a>
+        </div>
+      </div>
+
       <!-- Services Column -->
       <div class="space-y-3">
         <div class="text-xs font-mono text-[#14151A] uppercase tracking-wider font-bold">Services</div>
@@ -78,8 +99,6 @@ $footer_logo_rel_path = ltrim($site_config['brand']['logo_path'], '/');
           <li><a href="<?php echo $footer_base_path; ?>pricing.php" class="hover:text-[#00A8B5] transition-colors">Pricing & Plans</a></li>
           <li><a href="<?php echo $footer_base_path; ?>about.php" class="hover:text-[#00A8B5] transition-colors">About & Tech Stack</a></li>
           <li><a href="<?php echo $footer_base_path; ?>blog.php" class="hover:text-[#00A8B5] transition-colors font-semibold">Blog & Playbooks</a></li>
-          <li><a href="<?php echo $footer_base_path; ?>admin-cms.php" class="text-[#00A8B5] font-bold hover:underline transition-colors flex items-center gap-1"><i data-lucide="layers" class="w-3.5 h-3.5"></i> Page Manager CMS</a></li>
-          <li><a href="<?php echo $footer_base_path; ?>admin.php" class="text-[#475569] font-medium hover:text-[#0F172A] transition-colors flex items-center gap-1"><i data-lucide="layout-dashboard" class="w-3.5 h-3.5"></i> CRM & Leads Admin</a></li>
         </ul>
       </div>
 

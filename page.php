@@ -92,7 +92,8 @@ if (!empty($cfg['faqs']) && is_array($cfg['faqs'])) {
     <section class="max-w-4xl mx-auto px-4 pb-20">
       <div class="card-dark p-8 md:p-12 bg-[#F6F8FB] border border-[#E4E7EC] rounded-2xl landing-body-content">
         <?php
-        echo $cfg['content_html'] ?? '<h2>Tailored Growth Blueprint</h2><p>Engineering specialized search optimization and conversion solutions for your business.</p>';
+        $body_content = $cfg['content_html'] ?? '<h2>Tailored Growth Blueprint</h2><p>Engineering specialized search optimization and conversion solutions for your business.</p>';
+        echo d4l_resolve_content_images($body_content, $base_path);
         ?>
       </div>
     </section>

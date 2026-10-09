@@ -1,0 +1,173 @@
+{
+  "slug": "ai-seo-bhopal",
+  "city": "Bhopal",
+  "state": "Madhya Pradesh",
+  "country": "India",
+  "isHub": false,
+  "schemaType": "Service",
+  "h1": "AI SEO Agency in Bhopal: Get Your Business Named in ChatGPT, Gemini and Google AI Overviews",
+  "metaTitle": "AI SEO Agency in Bhopal | ChatGPT & Perplexity Citations | Digital4Local",
+  "metaDescription": "Get your business named inside ChatGPT, Gemini & Google AI Overviews. Generative Engine Optimization (GEO) & AEO for Bhopal businesses by Digital4Local.",
+  "primaryKeyword": "AI SEO agency Bhopal",
+  "badge": "GENERATIVE ENGINE OPTIMIZATION (GEO) · AEO",
+  "heroDirectAnswer": "AI SEO is the work of making your business easy for AI tools to find, understand and recommend. Digital4Local is an AI SEO agency in Bhopal offering Generative Engine Optimization (GEO) and Answer Engine Optimization (AEO), so your business shows up when customers ask ChatGPT, Gemini, Perplexity or Google's AI Overviews who to choose.",
+  "heroSubtitle": "Customers now ask AI tools who to hire. We make sure your business is the recommended answer.",
+  "heroMotif": "ai-chat",
+  "lastUpdated": "October 2026",
+  "author": {
+    "name": "Abhishek Raikwar",
+    "role": "Founder, Digital4Local",
+    "photo": "/assets/images/abhishek-raikwar.jpg",
+    "bio": "Abhishek Raikwar leads SEO, AEO and GEO strategy personally on every account, with research published on the Digital4Local blog.",
+    "linkedin": "https://www.linkedin.com/in/abhishek-raikwar-seo/"
+  },
+  "cta": {
+    "label": "Run a free AI visibility check",
+    "sublabel": "See how AI tools describe your business today across 30–50 buyer prompts.",
+    "buttonText": "Run free AI check",
+    "whatsappText": "Hi Abhishek, I want a free AI visibility check for my business in Bhopal."
+  },
+  "sections": [
+    {
+      "id": "what-changed",
+      "type": "content_block",
+      "tag": "THE AI SEARCH SHIFT",
+      "title": "What changed: customers now ask AI who to hire",
+      "content": "<p>A parent in Bhopal choosing a coaching institute might once have searched “best NEET coaching Bhopal” and opened five tabs. Now many people type a full question into ChatGPT or Gemini: “Which NEET coaching in Bhopal has good results and is near MP Nagar?” The AI writes one answer and names two or three places.</p><p>If your business is not one of those names, you are not on the shortlist. There is no page two in an AI answer.</p>"
+    },
+    {
+      "id": "geo-aeo-plain-language",
+      "type": "comparison_table",
+      "tag": "CONCEPTS EXPLAINED",
+      "title": "GEO and AEO in plain language",
+      "subtitle": "They are not separate tricks. AI tools still draw heavily on search indexes and trusted websites, so strong SEO is the base.",
+      "headers": [
+        "Term",
+        "Stands for",
+        "What it targets & Goal"
+      ],
+      "rows": [
+        {
+          "feature": "SEO",
+          "competitor": "Search Engine Optimization",
+          "d4l": "Targets Google's ranked results and Maps. Goal: Rank and get clicked."
+        },
+        {
+          "feature": "AEO",
+          "competitor": "Answer Engine Optimization",
+          "d4l": "Targets featured snippets, “People also ask”, voice assistants, AI Overviews. Goal: Be the direct answer."
+        },
+        {
+          "feature": "GEO",
+          "competitor": "Generative Engine Optimization",
+          "d4l": "Targets ChatGPT, Gemini, Perplexity, Copilot, AI Overviews. Goal: Be named and cited in AI-written answers."
+        }
+      ]
+    },
+    {
+      "id": "how-ai-decides",
+      "type": "content_block",
+      "tag": "AI RANKING SIGNALS",
+      "title": "How AI tools decide which Bhopal businesses to mention",
+      "content": "<p>Nobody outside these companies knows the exact rules, and anyone claiming to is overselling. From our testing, the businesses that get named tend to share these traits:</p><ul class=\"list-disc pl-5 space-y-2 text-[#5B5F6B]\"><li><strong>Clear, consistent identity.</strong> The same name, address, phone and description across your website, Google Business Profile, JustDial, Practo, LinkedIn and other listings.</li><li><strong>Third-party mentions.</strong> Being discussed on local news sites, review platforms, comparison lists and forums, not just on your own site.</li><li><strong>Reviews with detail.</strong> Reviews that mention specific services and areas (“root canal at their Kolar clinic”) give AI tools concrete facts to repeat.</li><li><strong>Pages that answer real questions.</strong> Direct, factual answers near the top of the page are easier to extract than marketing slogans.</li><li><strong>Structured data.</strong> Schema markup tells machines exactly what you are, where you are and what you offer.</li></ul>"
+    },
+    {
+      "id": "service-includes",
+      "type": "timeline",
+      "tag": "OUR SCOPE",
+      "title": "What our AI SEO service includes",
+      "subtitle": "A structured programme to establish and grow your AI citation share.",
+      "steps": [
+        {
+          "number": "01",
+          "phase": "Step 1",
+          "title": "AI visibility audit",
+          "description": "We run 30–50 real customer prompts for your category across ChatGPT, Gemini, Perplexity and Google AI Overviews (including Hindi and Hinglish prompts)."
+        },
+        {
+          "number": "02",
+          "phase": "Step 2",
+          "title": "Entity and schema foundation",
+          "description": "We add Organization, LocalBusiness, Service, FAQ and Person schema, connect your social profiles with sameAs links, and fix inconsistent business details across the web."
+        },
+        {
+          "number": "03",
+          "phase": "Step 3",
+          "title": "Answer-first content",
+          "description": "We restructure key pages so each one opens with a short, direct answer and then goes deeper. We add FAQ sections built from questions customers actually ask on calls and WhatsApp."
+        },
+        {
+          "number": "04",
+          "phase": "Step 4",
+          "title": "Citation building",
+          "description": "We earn mentions on the sources AI tools rely on: local publications, industry directories, comparison articles and review platforms."
+        },
+        {
+          "number": "05",
+          "phase": "Step 5",
+          "title": "Monthly AI tracking",
+          "description": "We re-run the same prompt set every month and report your share of mentions against named competitors, alongside normal SEO metrics."
+        }
+      ]
+    },
+    {
+      "id": "honest-promises",
+      "type": "honest_promises",
+      "tag": "E-E-A-T PRINCIPLES",
+      "title": "What we will not promise",
+      "subtitle": "Real AI search visibility comes from factual clarity and real trust signals:",
+      "promises": [
+        {
+          "claim": "No guaranteed ChatGPT placement",
+          "reality": "No agency controls what AI models say. Answers also vary by user, wording and location."
+        },
+        {
+          "claim": "No “AI hacks”",
+          "reality": "Hidden text written for AI bots or mass-produced AI pages can damage your Google rankings and your reputation."
+        },
+        {
+          "claim": "No instant change",
+          "reality": "AI tools refresh their knowledge at different speeds. Expect to measure progress over 3–6 months."
+        }
+      ]
+    },
+    {
+      "id": "who-needs-pricing",
+      "type": "content_block",
+      "tag": "TARGET VERTICALS & PRICING",
+      "title": "Who needs AI SEO in Bhopal first & Pricing",
+      "content": "<p>AI SEO matters most where customers research before buying: hospitals and specialist clinics, IVF and dental centres, coaching institutes and universities, real estate projects, hotels and wedding venues, and B2B manufacturers whose buyers research suppliers online.</p><p class=\"pt-2\">AI SEO is included in our Growth and Authority SEO plans in Bhopal, or available as a standalone programme. [[VERIFY pricing]]</p>"
+    }
+  ],
+  "faqs": [
+    {
+      "q": "What is GEO (Generative Engine Optimization)?",
+      "a": "GEO is the practice of improving how often and how accurately AI tools such as ChatGPT, Gemini and Perplexity mention your business in their answers. It focuses on consistent business information, credible third-party mentions, structured data and clear, factual content that AI systems can confidently quote."
+    },
+    {
+      "q": "What is AEO (Answer Engine Optimization)?",
+      "a": "AEO is optimising content to be selected as the direct answer to a question, in featured snippets, “People also ask” boxes, voice assistants and Google AI Overviews. It relies on question-led headings, short direct answers near the top of a page, and FAQ schema markup."
+    },
+    {
+      "q": "Is AI SEO different from normal SEO?",
+      "a": "It builds on normal SEO rather than replacing it. AI tools still rely heavily on search indexes and trusted websites. AI SEO adds work on entity consistency, third-party mentions and answer-first content, so your business is not only found but also named and correctly described inside AI answers."
+    },
+    {
+      "q": "How do I check if ChatGPT recommends my business?",
+      "a": "Ask ChatGPT, Gemini and Perplexity the questions your customers would ask, such as “best physiotherapist in Bhopal for sports injuries”, in English and in Hindi. Note who is named and what is said about you. Our free AI visibility check does this systematically across dozens of prompts."
+    },
+    {
+      "q": "How long does AI SEO take to show results?",
+      "a": "Most businesses see early changes in Google AI Overviews and Perplexity within 2 to 3 months, because these pull from live web results. Changes in ChatGPT and Gemini answers can take 3 to 6 months or longer, depending on how quickly those tools refresh what they know."
+    }
+  ],
+  "relatedSlugs": [
+    "seo-agency-bhopal",
+    "local-seo-bhopal",
+    "ai-agency-bhopal"
+  ],
+  "recentInsightsTags": [
+    "ai-search",
+    "local-seo"
+  ]
+}

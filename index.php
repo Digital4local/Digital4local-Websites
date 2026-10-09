@@ -220,12 +220,12 @@ $page_description = $index_cfg['meta_description'] ?? $site_config['seo']['meta_
     <!-- 3. WHY CHOOSE DIGITAL4LOCAL -->
     <section class="max-w-7xl mx-auto px-4 sm:px-8 py-24 sm:py-32" data-aos="fade-up">
       <div class="text-center space-y-4 max-w-3xl mx-auto mb-16">
-        <span class="pulse-badge"><?php echo htmlspecialchars($site_config['why_choose_us']['badge']); ?></span>
+        <span class="pulse-badge"><?php echo htmlspecialchars($site_config['why_choose_us']['badge'] ?? 'WHY DIGITAL4LOCAL'); ?></span>
         <h2 class="text-3xl sm:text-5xl font-extrabold text-[#14151A] tracking-tight">
-          <?php echo htmlspecialchars($site_config['why_choose_us']['heading']); ?>
+          <?php echo htmlspecialchars($site_config['why_choose_us']['heading'] ?? 'Built for Local Businesses & Growth Brands'); ?>
         </h2>
         <p class="text-base text-[#5B5F6B] leading-relaxed">
-          <?php echo htmlspecialchars($site_config['why_choose_us']['subheading']); ?>
+          <?php echo htmlspecialchars($site_config['why_choose_us']['subheading'] ?? "We don't sell vanity metrics. We build AI systems that capture market share, rank on Google Maps, and drive qualified inbound phone calls."); ?>
         </p>
       </div>
 
@@ -236,9 +236,9 @@ $page_description = $index_cfg['meta_description'] ?? $site_config['seo']['meta_
           <div class="w-12 h-12 rounded-xl bg-[#00F0FF]/15 text-[#00A8B5] flex items-center justify-center font-bold">
             <i data-lucide="map-pin" class="w-6 h-6"></i>
           </div>
-          <h3 class="text-xl font-bold text-[#14151A]"><?php echo htmlspecialchars($site_config['why_choose_us']['feature1_title']); ?></h3>
+          <h3 class="text-xl font-bold text-[#14151A]"><?php echo htmlspecialchars($site_config['why_choose_us']['feature1_title'] ?? '5x5 Geo-Grid Precision Tracking'); ?></h3>
           <p class="text-xs text-[#5B5F6B] leading-relaxed">
-            <?php echo htmlspecialchars($site_config['why_choose_us']['feature1_desc']); ?>
+            <?php echo htmlspecialchars($site_config['why_choose_us']['feature1_desc'] ?? 'Real-time zip-code pin rank monitoring so you see exact local search dominance.'); ?>
           </p>
           <ul class="space-y-2 text-xs font-mono text-[#5B5F6B] border-t border-[#E4E7EC] pt-4">
             <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-[#16A34A]"></i> 25-Point Zip Code Geo Grid Matrix</li>
@@ -251,9 +251,9 @@ $page_description = $index_cfg['meta_description'] ?? $site_config['seo']['meta_
           <div class="w-12 h-12 rounded-xl bg-[#16A34A]/15 text-[#16A34A] flex items-center justify-center font-bold">
             <i data-lucide="bot" class="w-6 h-6"></i>
           </div>
-          <h3 class="text-xl font-bold text-[#14151A]"><?php echo htmlspecialchars($site_config['why_choose_us']['feature3_title']); ?></h3>
+          <h3 class="text-xl font-bold text-[#14151A]"><?php echo htmlspecialchars($site_config['why_choose_us']['feature3_title'] ?? 'GEO & AEO Search Dominance'); ?></h3>
           <p class="text-xs text-[#5B5F6B] leading-relaxed">
-            <?php echo htmlspecialchars($site_config['why_choose_us']['feature3_desc']); ?>
+            <?php echo htmlspecialchars($site_config['why_choose_us']['feature3_desc'] ?? 'Optimized metadata and schema structured specifically for ChatGPT, Claude & Perplexity citations.'); ?>
           </p>
           <ul class="space-y-2 text-xs font-mono text-[#5B5F6B] border-t border-[#E4E7EC] pt-4">
             <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-[#16A34A]"></i> ChatGPT, Perplexity & SearchGPT Prompt Citation</li>
@@ -266,9 +266,9 @@ $page_description = $index_cfg['meta_description'] ?? $site_config['seo']['meta_
           <div class="w-12 h-12 rounded-xl bg-[#8B5CF6]/15 text-[#8B5CF6] flex items-center justify-center font-bold">
             <i data-lucide="cpu" class="w-6 h-6"></i>
           </div>
-          <h3 class="text-xl font-bold text-[#14151A]"><?php echo htmlspecialchars($site_config['why_choose_us']['feature2_title']); ?></h3>
+          <h3 class="text-xl font-bold text-[#14151A]"><?php echo htmlspecialchars($site_config['why_choose_us']['feature2_title'] ?? 'Sub-60s Lead Response Automations'); ?></h3>
           <p class="text-xs text-[#5B5F6B] leading-relaxed">
-            <?php echo htmlspecialchars($site_config['why_choose_us']['feature2_desc']); ?>
+            <?php echo htmlspecialchars($site_config['why_choose_us']['feature2_desc'] ?? 'Instant WhatsApp and SMS follow-ups powered by n8n and AI intent classification.'); ?>
           </p>
           <ul class="space-y-2 text-xs font-mono text-[#5B5F6B] border-t border-[#E4E7EC] pt-4">
             <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-[#16A34A]"></i> Instant Lead Enrichment & CRM Sync</li>
@@ -281,9 +281,9 @@ $page_description = $index_cfg['meta_description'] ?? $site_config['seo']['meta_
           <div class="w-12 h-12 rounded-xl bg-[#D97706]/15 text-[#D97706] flex items-center justify-center font-bold">
             <i data-lucide="code" class="w-6 h-6"></i>
           </div>
-          <h3 class="text-xl font-bold text-[#14151A]"><?php echo htmlspecialchars($site_config['why_choose_us']['feature4_title']); ?></h3>
+          <h3 class="text-xl font-bold text-[#14151A]"><?php echo htmlspecialchars($site_config['why_choose_us']['feature4_title'] ?? 'Custom Web & Mobile Builds'); ?></h3>
           <p class="text-xs text-[#5B5F6B] leading-relaxed">
-            <?php echo htmlspecialchars($site_config['why_choose_us']['feature4_desc']); ?>
+            <?php echo htmlspecialchars($site_config['why_choose_us']['feature4_desc'] ?? 'High-converting, lightning-fast modern websites and apps designed for maximum conversion.'); ?>
           </p>
           <ul class="space-y-2 text-xs font-mono text-[#5B5F6B] border-t border-[#E4E7EC] pt-4">
             <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-[#16A34A]"></i> 100/100 Core Web Vitals Optimization</li>

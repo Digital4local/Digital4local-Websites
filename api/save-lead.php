@@ -18,17 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $client_ip = get_client_ip();
 
-// 1. IP Rate Limiting (Max 5 submissions per 10 minutes)
-if (!check_lead_submission_rate_limit($client_ip, 5, 600)) {
-    http_response_code(429);
-    echo json_encode([
-        'success' => false,
-        'message' => 'Too many submissions received from your network. Please wait a few minutes before submitting again.'
-    ]);
-    exit;
-}
-
-// 2. Read incoming payload
+// 1. Read incoming payload
 $raw_input = @file_get_contents('php://input');
 $data = @json_decode($raw_input, true);
 
@@ -42,7 +32,7 @@ if (empty($data) || !is_array($data)) {
     exit;
 }
 
-// 3. Bot Protection Layer A: Honeypot Detection
+// 2. Bot Protection Layer A: Honeypot Detection
 // If any hidden honeypot field is filled, silently discard without saving spam
 $honeypot_fields = ['_hp_company_sec', '_hp_check', 'website_url_val', 'confirm_email_field'];
 foreach ($honeypot_fields as $hp) {
@@ -57,12 +47,12 @@ foreach ($honeypot_fields as $hp) {
     }
 }
 
-// 4. Bot Protection Layer B: Submission Speed Check (if timestamp passed)
+// 3. Bot Protection Layer B: Submission Speed Check (if timestamp passed)
 if (isset($data['form_ts']) && is_numeric($data['form_ts'])) {
     $submit_time = (int)$data['form_ts'];
     $now = time();
     $elapsed = $now - $submit_time;
-    // Submissions faster than 1.5 seconds from form load are automated bots
+    // Submissions faster than 1 second from form load are automated bots
     if ($elapsed < 1 || $submit_time > $now) {
         echo json_encode([
             'success' => true,
@@ -71,6 +61,16 @@ if (isset($data['form_ts']) && is_numeric($data['form_ts'])) {
         ]);
         exit;
     }
+}
+
+// 4. IP Rate Limiting (Max 20 submissions per 10 minutes for humans)
+if (!check_lead_submission_rate_limit($client_ip, 20, 600)) {
+    http_response_code(429);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Too many submissions received from your network. Please wait a few minutes before submitting again.'
+    ]);
+    exit;
 }
 
 // 5. Strict Input Validation and Sanitization
@@ -120,7 +120,14 @@ $lead = [
     'source' => htmlspecialchars($clean_source, ENT_QUOTES, 'UTF-8')
 ];
 
-// 6. Thread-Safe Lead Recording
+// 6. Database & JSON Lead Recording
+$db_saved = false;
+try {
+    $db_saved = db_save_lead($lead);
+} catch (Exception $e) {
+    // Continue with JSON fallback
+}
+
 $leads = [];
 if (file_exists($leads_file)) {
     $json = @file_get_contents($leads_file);
@@ -141,6 +148,10 @@ $saved = @file_put_contents(
     json_encode($leads, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
     LOCK_EX
 );
+
+// If database or file succeeded, consider saved
+$is_successful = ($db_saved || $saved !== false);
+
 
 // 7. Security Hardened Email Dispatch (Anti-Header Injection)
 $safe_email_address = str_replace(["\r", "\n", "%0a", "%0d"], '', $clean_email);
@@ -197,7 +208,7 @@ if (!empty($safe_email_address)) {
 
 @mail($target_notification_email, $email_subject, $email_body, $headers);
 
-if ($saved !== false) {
+if ($is_successful) {
     echo json_encode([
         'success' => true,
         'message' => 'Strategy session requested successfully! A senior growth engineer will contact you shortly.',

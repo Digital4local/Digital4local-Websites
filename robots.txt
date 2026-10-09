@@ -19,5 +19,24 @@ Disallow: /pants/
 Disallow: /shoes/
 Disallow: /nail-tips/
 
+# AI Search Crawlers & Citation Bots
+User-agent: GPTBot
+Allow: /
+Allow: /llms.txt
+Allow: /llms-full.txt
+
+User-agent: ClaudeBot
+Allow: /
+Allow: /llms.txt
+Allow: /llms-full.txt
+
+User-agent: PerplexityBot
+Allow: /
+Allow: /llms.txt
+Allow: /llms-full.txt
+
+User-agent: Google-Extended
+Allow: /
+
 Sitemap: https://digital4local.com/sitemap.xml
 Sitemap: https://digital4local.com/sitemap.php

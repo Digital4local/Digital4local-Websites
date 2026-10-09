@@ -1,5 +1,14 @@
 <?php
 require_once __DIR__ . '/includes/site-config.php';
+$base_path = get_base_path();
+
+// Force fresh dynamic output (prevent CDN/Browser from caching stale blog listings)
+if (!headers_sent()) {
+    header("Cache-Control: no-cache, no-store, must-revalidate, max-age=0");
+    header("Pragma: no-cache");
+    header("Expires: 0");
+}
+
 $blg_cfg = get_page_config('blog');
 $page_title = $blg_cfg['meta_title'] ?? "Insights & AI SEO Playbooks | Digital4Local Blog";
 $page_description = $blg_cfg['meta_description'] ?? "Actionable guides on Generative Engine Optimization (GEO), Google Maps grid ranking, n8n marketing workflows.";
@@ -7,6 +16,16 @@ $page_description = $blg_cfg['meta_description'] ?? "Actionable guides on Genera
 $all_posts = get_blog_posts(true);
 $featured_post = !empty($all_posts) ? $all_posts[0] : null;
 $grid_posts = !empty($all_posts) ? array_slice($all_posts, 1) : [];
+
+// Extract unique categories from published articles
+$known_categories = ['Local SEO', 'GEO & AEO', 'AI Automation', 'Technical SEO', 'Social Media', 'Web Development', 'App Development'];
+$post_categories = [];
+foreach ($all_posts as $p) {
+    if (!empty($p['category'])) {
+        $post_categories[] = trim($p['category']);
+    }
+}
+$available_categories = array_values(array_unique(array_merge(['Local SEO', 'GEO & AEO', 'AI Automation', 'Technical SEO'], $post_categories)));
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -29,23 +48,30 @@ $grid_posts = !empty($all_posts) ? array_slice($all_posts, 1) : [];
 
       <!-- Category Filter Pills -->
       <div class="flex flex-wrap items-center justify-center gap-2 pt-4">
-        <button class="blog-cat-filter active px-4 py-2 rounded-xl bg-[#00F0FF] text-[#0A0A0F] text-xs font-bold" data-cat="all">All Articles</button>
-        <button class="blog-cat-filter px-4 py-2 rounded-xl bg-[#F6F8FB] border border-[#E4E7EC] text-[#5B5F6B] hover:text-[#14151A] text-xs font-medium" data-cat="Local SEO">Local SEO</button>
-        <button class="blog-cat-filter px-4 py-2 rounded-xl bg-[#F6F8FB] border border-[#E4E7EC] text-[#5B5F6B] hover:text-[#14151A] text-xs font-medium" data-cat="GEO & AEO">GEO & AEO</button>
-        <button class="blog-cat-filter px-4 py-2 rounded-xl bg-[#F6F8FB] border border-[#E4E7EC] text-[#5B5F6B] hover:text-[#14151A] text-xs font-medium" data-cat="AI Automation">AI Automation</button>
-        <button class="blog-cat-filter px-4 py-2 rounded-xl bg-[#F6F8FB] border border-[#E4E7EC] text-[#5B5F6B] hover:text-[#14151A] text-xs font-medium" data-cat="Technical SEO">Technical SEO</button>
+        <button class="blog-cat-filter active px-4 py-2 rounded-xl bg-[#00F0FF] text-[#0A0A0F] text-xs font-bold" data-cat="all">All Articles (<?php echo count($all_posts); ?>)</button>
+        <?php foreach ($available_categories as $cat_pill): ?>
+        <button class="blog-cat-filter px-4 py-2 rounded-xl bg-[#F6F8FB] border border-[#E4E7EC] text-[#5B5F6B] hover:text-[#14151A] text-xs font-medium" data-cat="<?php echo htmlspecialchars($cat_pill); ?>">
+          <?php echo htmlspecialchars($cat_pill); ?>
+        </button>
+        <?php endforeach; ?>
       </div>
     </section>
 
-    <?php if ($featured_post): ?>
+    <?php if ($featured_post): 
+      $feat_img = $featured_post['featured_image'] ?? '';
+      if (!empty($feat_img) && strpos($feat_img, 'http://') !== 0 && strpos($feat_img, 'https://') !== 0) {
+          $feat_img = $base_path . ltrim($feat_img, '/.');
+      }
+      $feat_url = $base_path . 'blog/' . urlencode($featured_post['slug']);
+    ?>
     <!-- Featured Hero Article -->
     <section class="max-w-7xl mx-auto px-4 sm:px-8 pb-16">
-      <a href="blog/<?php echo urlencode($featured_post['slug']); ?>" class="block group">
+      <a href="<?php echo $feat_url; ?>" class="block group">
         <div class="card-dark p-6 sm:p-10 border-l-4 border-l-[#1B5FAA] flex flex-col lg:flex-row gap-8 items-center justify-between group-hover:border-[#00B4D8] bg-[#F6F8FB] rounded-3xl shadow-sm hover:shadow-xl transition-all">
           <div class="space-y-4 max-w-2xl">
             <div class="flex items-center gap-3 text-xs font-mono">
               <span class="px-2.5 py-1 rounded-md bg-[#1B5FAA]/10 text-[#1B5FAA] font-bold uppercase"><?php echo htmlspecialchars($featured_post['category'] ?? 'FEATURED PLAYBOOK'); ?></span>
-              <span class="text-[#5B5F6B]"><?php echo htmlspecialchars($featured_post['read_time'] ?? '9 Min Read'); ?></span>
+              <span class="text-[#5B5F6B]"><?php echo htmlspecialchars($featured_post['read_time'] ?? '8 Min Read'); ?></span>
               <span class="text-[#5B5F6B]">• <?php echo htmlspecialchars(date('F j, Y', strtotime($featured_post['date'] ?? 'now'))); ?></span>
             </div>
             <h2 class="text-2xl sm:text-4xl font-bold text-[#14151A] group-hover:text-[#1B5FAA] transition-colors leading-tight font-['Montserrat',sans-serif]">
@@ -61,8 +87,8 @@ $grid_posts = !empty($all_posts) ? array_slice($all_posts, 1) : [];
             </div>
           </div>
           <div class="w-full lg:w-96 rounded-2xl overflow-hidden border border-[#E4E7EC] bg-white shadow-md group-hover:shadow-lg transition-all shrink-0">
-            <?php if (!empty($featured_post['featured_image'])): ?>
-              <img src="<?php echo htmlspecialchars($featured_post['featured_image']); ?>" alt="<?php echo htmlspecialchars($featured_post['title']); ?>" class="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-500" />
+            <?php if (!empty($feat_img)): ?>
+              <img src="<?php echo htmlspecialchars($feat_img); ?>" alt="<?php echo htmlspecialchars($featured_post['title']); ?>" class="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-500" />
             <?php else: ?>
               <div class="w-full h-56 flex flex-col justify-center items-center p-6 text-center space-y-2 bg-gradient-to-br from-[#1B5FAA]/5 to-[#00B4D8]/10">
                 <i data-lucide="book-open" class="w-12 h-12 text-[#1B5FAA]"></i>
@@ -77,13 +103,26 @@ $grid_posts = !empty($all_posts) ? array_slice($all_posts, 1) : [];
 
     <!-- Articles Grid -->
     <section class="max-w-7xl mx-auto px-4 sm:px-8 pb-20">
+      <?php if (empty($all_posts)): ?>
+      <div class="text-center py-16 bg-[#F6F8FB] rounded-3xl border border-[#E4E7EC] p-8 space-y-3">
+        <i data-lucide="book-open" class="w-12 h-12 text-[#00A8B5] mx-auto"></i>
+        <h3 class="text-xl font-bold text-[#14151A]">No published articles yet</h3>
+        <p class="text-sm text-[#5B5F6B]">New research and AI SEO playbooks will appear here once published from the Admin CMS.</p>
+      </div>
+      <?php else: ?>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="blog-posts-grid">
-        <?php foreach ($grid_posts as $post): ?>
-        <a href="blog/<?php echo urlencode($post['slug']); ?>" class="blog-card card-dark overflow-hidden flex flex-col justify-between group rounded-3xl bg-white border border-[#E2E8F0] shadow-sm hover:shadow-xl hover:border-[#1B5FAA] transition-all" data-category="<?php echo htmlspecialchars($post['category'] ?? 'General'); ?>">
+        <?php foreach ($grid_posts as $post): 
+          $grid_img = $post['featured_image'] ?? '';
+          if (!empty($grid_img) && strpos($grid_img, 'http://') !== 0 && strpos($grid_img, 'https://') !== 0) {
+              $grid_img = $base_path . ltrim($grid_img, '/.');
+          }
+          $post_url = $base_path . 'blog/' . urlencode($post['slug']);
+        ?>
+        <a href="<?php echo $post_url; ?>" class="blog-card card-dark overflow-hidden flex flex-col justify-between group rounded-3xl bg-white border border-[#E2E8F0] shadow-sm hover:shadow-xl hover:border-[#1B5FAA] transition-all" data-category="<?php echo htmlspecialchars($post['category'] ?? 'General'); ?>">
           <div>
-            <?php if (!empty($post['featured_image'])): ?>
+            <?php if (!empty($grid_img)): ?>
             <div class="w-full h-48 overflow-hidden bg-slate-100 border-b border-[#E2E8F0]">
-              <img src="<?php echo htmlspecialchars($post['featured_image']); ?>" alt="<?php echo htmlspecialchars($post['title']); ?>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+              <img src="<?php echo htmlspecialchars($grid_img); ?>" alt="<?php echo htmlspecialchars($post['title']); ?>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
             </div>
             <?php endif; ?>
             <div class="p-6 space-y-3">
@@ -103,6 +142,7 @@ $grid_posts = !empty($all_posts) ? array_slice($all_posts, 1) : [];
         </a>
         <?php endforeach; ?>
       </div>
+      <?php endif; ?>
     </section>
 
     <!-- Bottom CTA Band -->
@@ -132,7 +172,8 @@ $grid_posts = !empty($all_posts) ? array_slice($all_posts, 1) : [];
 
         const cat = btn.getAttribute('data-cat');
         document.querySelectorAll('.blog-card').forEach(card => {
-          if (cat === 'all' || card.getAttribute('data-category').toLowerCase().includes(cat.toLowerCase())) {
+          const cardCat = (card.getAttribute('data-category') || '').toLowerCase();
+          if (cat === 'all' || cardCat.includes(cat.toLowerCase()) || cat.toLowerCase().includes(cardCat)) {
             card.style.display = 'flex';
           } else {
             card.style.display = 'none';

@@ -1,14 +1,21 @@
 <?php
 require_once __DIR__ . '/includes/site-config.php';
+$base_path = get_base_path();
+
+// Force fresh dynamic output (prevent CDN/Browser caching stale article edits)
+if (!headers_sent()) {
+    header("Cache-Control: no-cache, no-store, must-revalidate, max-age=0");
+    header("Pragma: no-cache");
+    header("Expires: 0");
+}
 
 // Clean URL Redirection: If accessed directly via /blog-single.php?slug=xxx, 301 redirect to clean URL /blog/xxx
 if (isset($_SERVER['REQUEST_URI']) && strpos($_SERVER['REQUEST_URI'], 'blog-single.php') !== false) {
     $raw_slug = $_GET['slug'] ?? '';
     $clean_slug = preg_replace('/\.php$/', '', trim($raw_slug, '/'));
     if (!empty($clean_slug)) {
-        $base_url_prefix = function_exists('get_base_path') ? get_base_path() : '/';
         header("HTTP/1.1 301 Moved Permanently");
-        header("Location: " . rtrim($base_url_prefix, '/') . "/blog/" . urlencode($clean_slug));
+        header("Location: " . rtrim($base_path, '/') . "/blog/" . urlencode($clean_slug));
         exit;
     }
 }
@@ -303,7 +310,10 @@ $schema_graph[] = [
         <?php endif; ?>
 
         <!-- Primary HTML Body Content -->
-        <?php echo $post['content_html'] ?? '<p>No content written for this post yet.</p>'; ?>
+        <?php 
+        $article_body = $post['content_html'] ?? '<p>No content written for this post yet.</p>';
+        echo d4l_resolve_content_images($article_body, $base_path); 
+        ?>
 
         <!-- Automated Dynamic FAQ Accordion Section (if FAQs array exists and not already hardcoded in content_html) -->
         <?php 
