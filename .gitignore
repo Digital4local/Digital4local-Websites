@@ -1,0 +1,4 @@
+*.zip
+.system_generated/
+__pycache__/
+*.log
